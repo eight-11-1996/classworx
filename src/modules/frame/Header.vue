@@ -122,13 +122,13 @@ body{
         BUTTONS
 */
 .btn-primary{
-  background: #1caceb;
-  border-color: #1caceb;
+  background: #006600;
+  border-color: #006600;
 }
 
 .btn-primary:hover{
-  background: #1caceb;
-  border-color: #1caceb;
+  background: #006600;
+  border-color: #006600;
 }
 
 .btn-danger{
@@ -161,13 +161,13 @@ body{
 */
 
 .btn-primary-hallow{
-  border-color: #1caceb;
-  color: #1caceb;
+  border-color: #006600;
+  color: #006600;
   background: #fff;
 }
 .btn-primary-hallow:hover{
-  color: #1caceb;
-  border-color: #1caceb;
+  color: #006600;
+  border-color: #006600;
 }
 .btn-danger-hallow{
   border-color: #aa0000;
@@ -208,11 +208,11 @@ body{
     height: 50px;
     font-size: 24px;
     width: 18%;
-    background: #1caceb;
+    background: #006600;
     text-align: center;
   }
   .header-navbar{
-    background: #1caceb;
+    background: #006600;
     height: 50px;
     float: left;
     width: 82%;

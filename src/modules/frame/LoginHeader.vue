@@ -49,13 +49,13 @@ body{
 
 
 .btn-primary{
-  background: #1caceb;
-  border-color: #1caceb;
+  background: #006600;
+  border-color: #006600;
 }
 
 .btn-primary:hover{
-  background: #1caceb;
-  border-color: #1caceb;
+  background: #006600;
+  border-color: #006600;
 }
 
 .btn-danger{
@@ -88,13 +88,13 @@ body{
 */
 
 .btn-primary-hallow{
-  border-color: #1caceb;
-  color: #1caceb;
+  border-color: #006600;
+  color: #006600;
   background: #fff;
 }
 .btn-primary-hallow:hover{
-  color: #1caceb;
-  border-color: #1caceb;
+  color: #006600;
+  border-color: #006600;
 }
 .btn-danger-hallow{
   border-color: #aa0000;

@@ -1,15 +1,18 @@
 <template>
   <div class="container-fluid custom-container" v-if="!tokenData.verifyingToken && !tokenData.token">
     <div class="row">
-      <div class="col-md-6 col-lg-4 mx-auto login-container">
+      <div class="col-sm-12 col-md-8 hide-this">
+        <div class="container-fluid banner">
+          <!-- <img src="../../assets/img/Top.png"  height="100%" width="100%"> -->
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-4">
         <div class="login-wrapper">
-          <span class="login-company-name">TALK TO FLUENT SPANISH</span>
-          <br />
-          <span class="text-primary login-spacer login-trial"><label v-on:click="redirect('signup')">Start your 15 Day Free Trial</label></span>
-          <br />
-          <br />
-          <div class="login-input-holder">
-          <span class="text-center login-spacer"><h6 class="text-center">Login</h6></span>
+          <div class="login-header">
+            <h1 class="navbar-brand">
+              Log In
+            </h1>
+          </div>
           <div class="login-message-holder login-spacer" v-if="errorMessage != ''">
             <span class="text-danger"><b>Oops!</b> {{errorMessage}}</span>
           </div>
@@ -22,20 +25,20 @@
               <span class="input-group-addon" id="addon-2"><i class="fa fa-key"></i></span>
               <input type="password" class="form-control form-control-login" placeholder="********" aria-describedby="addon-2" v-model="password">
             </div>
-            <div class="form-check">
-<!--               <label class="form-check-label">
-                <input type="checkbox" class="form-check-input">
-                Remember Me
-              </label> -->
-              <label class="text-primary text-center" v-on:click="redirect('recover_account')">
-                Forgot Password?
-              </label>
-            </div>
             <button class="btn btn-primary btn-block btn-login login-spacer" v-on:click="logIn()">Login</button>
-            <br />
-            <br />
-            <br />
-          </div>
+            <!-- <div class="form-check">
+              <label class="form-check-label">
+                <input type="checkbox" class="form-check-input">
+                Keep me logged in
+              </label>
+            </div> -->
+            <button class="btn btn-warning btn-block btn-login login-spacer" v-on:click="redirect('recover_account')">Forget your Password?</button>
+            <br>
+            <div class="container-fluid separator">
+                or
+            </div>
+            <br>
+            <button class="btn btn-blue btn-block btn-login login-spacer" v-on:click="redirect('registration')">Create Account Now!</button>
           </div>
         </div>
       </div>
@@ -45,7 +48,6 @@
 <script>
 import ROUTER from '../../router'
 import AUTH from '../../services/auth'
-import CONFIG from '../../config.js'
 export default {
   mounted(){
   },
@@ -56,22 +58,49 @@ export default {
       errorMessage: '',
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      config: CONFIG
+      branchesEmployees: [],
+      branches: []
     }
   },
   methods: {
     logIn(){
       AUTH.authenticate(this.username, this.password, (response) => {
-        ROUTER.push('dashboard')
+        this.setCompanyAuth()
       }, (response, status) => {
-        this.errorMessage = (status === 401) ? 'Your Username and password didnot matched.' : 'Cannot log in? Contact us through email: support@talkfluent.com'
+        this.errorMessage = (status === 401) ? 'Your Username and password didnot matched.' : 'Cannot log in? Contact us through email: support@ilinya.com'
       })
     },
     redirect(parameter){
       ROUTER.push(parameter)
     },
-    request(parameter){
-      this.APIRequest(parameter, {}).then(response => {
+    setCompanyAuth(){
+      let parameter = {
+        'condition': [{
+          'column': 'account_id',
+          'clause': '=',
+          'value': this.user.userID
+        }]
+      }
+      this.APIRequest('company_branch_employee/retrieve', parameter).then(response => {
+        this.branchesEmployees = response.data
+        if(this.branchesEmployees.length > 1){
+          ROUTER.push('select')
+        }else{
+          let parameter1 = {
+            'condition': [{
+              'column': 'id',
+              'clause': '=',
+              'value': this.branchesEmployees[0].company_branch_id
+            }]
+          }
+          this.APIRequest('company_branch/retrieve', parameter1).then(response => {
+            this.branches = response.data
+            if(this.branches.length === 1){
+              AUTH.setCompany(this.branches[0].company_id, this.branchesEmployees[0].company_branch_id)
+              ROUTER.push('dashboard')
+            }
+          })
+        }
       })
     }
   }
@@ -85,28 +114,34 @@ export default {
   3. Common
   4. Screen Changes
 */
-.app-logo{
-  width: 80%;
-  margin: 0 10% 20px 10%;
+
+.app-img{
+  float: left;
+  width: 30%;
+  text-align: right;
+}
+.app-title{
+  float: left;
+  width: 70%;
+  text-align: left;
+}
+.app-img img{
+  height: 50px;
+  width: 50px;
 }
 
+.app-title label{
+  vertical-align: middle;
+  font-size: 30px;
+  left: 0;
+}
 .login-header{
   height: 40px;
-  color: #1caceb;
+  color: #006600;
   width: 100%;
   float: left;
 }/*-- login-header --*/
 
-.login-container{
-  margin-top: 150px;
-  box-shadow: 2px 2px 2px 2px #ccc;
-}
-
-.login-company-name{
-  font-weight: 700;
-  font-size: 18px;
-  width: 100%;
-}
 .login-message-holder{
   min-height: 30px;
   font-size: 12px;
@@ -114,39 +149,27 @@ export default {
   overflow: hidden;
 }
 
-.login-trial label{
-  text-align: right;
-  width: 100%;
-  float: left;
-}
-
-.login-wrapper{
-    width: 96%;
-    margin: 25px 2% 0 2%;
-}
-
-.login-input-holder{
-  width: 70%;
-  margin: 0 15% 0 15%;
-}
 .login-spacer{
   margin-bottom: 10px;
 }/*-- login-spacer --*/
 
 .forgot-password a{
-  color: #1caceb !important;
+  color: #006600 !important;
 }
 .forgot-password a:hover{
   cursor: pointer !important;
   text-decoration: underline !important;
-  color: #1caceb !important;
+  color: #009900 !important;
 }
 
+/*----------------------------------------
 
+            Forms
+
+------------------------------------------*/
 .form-control-login{
   height: 45px;
 }
-
 
 
 /*----------------------------------------
@@ -157,7 +180,6 @@ export default {
 .btn-login{
   height: 45px;
 }/*-- form-control --*/
-
 
 /*    Line with text on top  */
 .separator>*{
@@ -189,9 +211,16 @@ export default {
     margin-right: -100%;
 }
 
-/*      Colors           */
-.primary-color{
-  color: #1caceb;
+.btn-warning{
+  color: #fff;
+}
+.btn-blue{
+  background: #1caceb;
+  color: #fff;
+}
+.btn-blue:hover{
+  background: #1caceb;
+  color: #fff;
 }
 /*---------------------------------------------------------
 
@@ -201,39 +230,37 @@ export default {
 
 /*-------------- Large Screens for Desktop --------------*/
 @media (min-width: 1200px){
-
+  .login-wrapper{
+    width: 80%;
+    margin: 0 5% 0 15%;
+  }
 }
 
 
 /*-------------- Medium Screen for Tablets  --------------*/
 @media screen (min-width: 992px), screen and (max-width: 1199px){
+  .login-wrapper{
+    width: 80%;
+    margin: 0 5% 0 15%;
+  }
 }
 
 /*-------------- Small Screen for Mobile Phones  --------------*/
 @media screen (min-width: 768px), screen and (max-width: 991px){
- 
+  .login-wrapper{
+    width: 98%;
+    margin: 0 2% 0 0%;
+  }
 }
 
 /*-------------- Extra Small Screen for Mobile Phones --------------*/
-@media (max-width: 991px){
+@media (max-width: 767px){
   .hide-this{
     display: none;
   }
-  .login-container{
-    box-shadow: 0 0 0 0 #fff !important;
-    margin-top: 75px !important;
-  }
-  .login-company-name, .login-trial label, .form-check{
-    text-align: center !important; 
-    width: 100% !important;
-  }
-  .login-trial label{
-    margin-top: 20px;
-    margin-bottom: 20px;
-  }
-  .login-input-holder{
-    width: 100% !important;
-    margin-left: 0 !important;
+  .login-wrapper{
+    width: 80%;
+    margin: 0 10% 0 10%;
   }
 }
 </style>
