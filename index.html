@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html style="height:100%">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>ClassWorx</title>
+
+    <style>
+      body{
+        font-family: 'Museo Sans Rounded', serif;
+      }
+    </style>
+    <script type="text/javascript">
+      var previous = null;
+      function playBasicAudio(id){
+        var audio = document.getElementById(id)
+        var container = document.getElementById(id + 'PlayButton')
+        audio.currentTime = 0
+        if (/Mobi/.test(navigator.userAgent)) {
+          if(audio.readyState >= 1){
+            makeActive(id + 'PlayButton')
+            if(previous === null){
+              previous = id
+            }else{
+              pausePlaying()
+              makeInActive(previous + 'PlayButton')
+              previous = id
+            }
+            container.classList.add('fa-volume-up')
+            container.classList.remove('fa-spinner')
+            container.classList.remove('fa-spin')
+            audio.play()
+          }else{
+            container.classList.remove('fa-volume-up')
+            container.classList.add('fa-spinner')
+            container.classList.add('fa-spin')
+          }
+        }else{
+          audio.addEventListener('progress', () => {
+          container.classList.remove('fa-volume-up')
+          container.classList.add('fa-spinner')
+          container.classList.add('fa-spin')
+          }, true)
+          audio.addEventListener('canplaythrough', () => {
+            makeActive(id + 'PlayButton')
+            if(previous === null){
+              previous = id
+            }else{
+              pausePlaying()
+              makeInActive(previous + 'PlayButton')
+              previous = id
+            }
+            audio.play()
+          }, true)
+          audio.addEventListener('playing', () => {
+            container.classList.add('fa-volume-up')
+            container.classList.remove('fa-spinner')
+            container.classList.remove('fa-spin')
+          }, true)
+          audio.addEventListener('ended', () => {
+            container.classList.add('fa-volume-up')
+            container.classList.remove('fa-spinner')
+            container.classList.remove('fa-spin')
+          }, true)
+        }
+      }
+      function pausePlaying(){
+        if(previous !== null){
+          var prevAudio = document.getElementById(previous)
+          if(prevAudio !== null){
+            prevAudio.pause()
+          }else{
+            //
+          }
+        }
+      }
+      function makeActive(id){
+        var container = document.getElementById(id)
+        if(id === 'lessonAudioPlayButton'){
+          container.style.background = '#ccc'
+        }else{
+          container.style.background = '#1caceb'
+        }
+        container.style.color = '#fff'
+      }
+
+      function makeInActive(id){
+        var container = document.getElementById(id)
+        if(container !== null){
+          container.style.color = '#1caceb'
+          container.classList.add('fa-volume-up')
+          container.classList.remove('fa-spinner')
+          container.classList.remove('fa-spin')
+          if(id === 'lessonAudioPlayButton'){
+            container.style.background = '#fff'
+          }else{
+            container.style.background = 'inherit'
+          }  
+        }
+      }
+      function insertImage(src){
+        var tag = document.getElementById('image-body')
+        tag.innerHTML = '<img src=' + src + ' class=image-viewer height=100% width=100% />'
+      }
+
+      function hide(){
+        $('#imageView').modal('hide')
+      }
+     
+    </script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/2.0.5/wavesurfer.min.js">
+        var wavesurfer = null;
+        var parameter = {
+          container: '#mp3_player',
+          waveColor: '#1caceb',
+          progressColor: '#1caceb',
+          hideScrollbar: true,
+          height: 128,
+          backend: 'MediaElement'
+        };
+       function initVisualizer(url){
+          if(wavesurfer === null){
+            wavesurfer = WaveSurfer.create(parameter)
+          }else{
+            wavesurfer.load(url)
+          }
+          wavesurfer.on('ready', function () {
+            wavesurfer.play()
+          })
+        }
+    </script>
+<!--     <script type="text/javascript">
+      var modal_counter = 0
+      $(document).ready(function () {
+          $('.modal').on('shown.bs.modal', function () {
+              modal_counter++
+          }
+          $('.modal').on('hidden.bs.modal', function () {
+              modal_counter--
+              if(modal_counter){
+                  $('body').addClass('modal-open')
+              }
+              else{
+                  $('body').removeClass('modal-open')
+              }
+          })
+      })
+    </script> -->
+  </head>
+  <body style="height:100%">
+    <div id="app" ></div>
+          <!-- Modal 
+
+      IMAGES
+    -->
+    <div class="modal fade" id="imageView" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-md">
+        <div class="modal-content" id="mc-imageview">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"></h5>
+            <button type="button" class="close" aria-label="Close" onclick="hide()">
+              <span aria-hidden="true" class="text-white">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="image-body">
+          </div>
+        </div>
+      </div>
+    </div>
+    <style>
+      #app{
+        min-height: 100%
+      }
+      #imageView{
+        z-index: 10000  !important;
+        overflow-y: auto;
+      }
+      #mc-imageview{
+        background: #000  !important;
+      }
+      #md-custom{
+        width: 700px !important;
+      }
+      .image-viewer{
+        width: 100%;
+        height: 100%;
+      }
+      .modal{
+        overflow:auto !important;
+      }
+    </style>
+    <!-- built files will be auto injected -->
+  </body>
+</html>

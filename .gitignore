@@ -1,20 +1,14 @@
-vendor/
-node_modules/
+.DS_Store
 npm-debug.log
-
-# Laravel 4 specific
-bootstrap/compiled.php
-app/storage/
-
-# Laravel 5 & Lumen specific
-public/storage
-public/hot
-storage/*.key
-.env.*.php
-.env.php
-.env
-Homestead.yaml
-Homestead.json
-
-# Rocketeer PHP task runner and deployment package. https://github.com/rocketeers/rocketeer
-.rocketeer/
+test/unit/coverage
+test/e2e/reports
+selenium-debug.log
+api/vendor/
+api/composer.lock
+src/modules/test/Casera.vue
+src/modules/test/Plenos.vue
+api/app/Department.php
+node_modules/
+src/config.js
+api/.env
+dist/
