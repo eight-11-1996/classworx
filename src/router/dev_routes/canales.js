@@ -10,7 +10,7 @@ export default{
   },
   {
     path: '/signup',
-    name: 'registration',
+    name: 'signup',
     component: resolve => require(['modules/home/Signup.vue'], resolve),
     meta: {
       tokenRequired: false
@@ -25,8 +25,8 @@ export default{
     }
   },
   {
-    path: '/recover_account',
-    name: 'recoverAccount',
+    path: '/forget_password',
+    name: 'forgetPassword',
     component: resolve => require(['modules/home/RecoverAccount.vue'], resolve),
     meta: {
       tokenRequired: false

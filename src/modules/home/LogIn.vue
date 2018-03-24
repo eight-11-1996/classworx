@@ -8,7 +8,7 @@
       </div>
       <div class="col-sm-12 col-md-4">
         <div class="login-wrapper">
-          <div class="login-header">
+          <div class="login-header" style="margin-top: 75px;">
             <h1 class="navbar-brand">
               Log In
             </h1>
@@ -32,13 +32,13 @@
                 Keep me logged in
               </label>
             </div> -->
-            <button class="btn btn-warning btn-block btn-login login-spacer" v-on:click="redirect('recover_account')">Forget your Password?</button>
+            <button class="btn btn-warning btn-block btn-login login-spacer" v-on:click="redirect('forget_password')">Forget your Password?</button>
             <br>
             <div class="container-fluid separator">
                 or
             </div>
             <br>
-            <button class="btn btn-blue btn-block btn-login login-spacer" v-on:click="redirect('registration')">Create Account Now!</button>
+            <button class="btn btn-blue btn-block btn-login login-spacer" v-on:click="redirect('signup')">Create Account Now!</button>
           </div>
         </div>
       </div>
@@ -212,6 +212,9 @@ export default {
 }
 
 .btn-warning{
+  color: #fff;
+}
+.btn-warning:hover{
   color: #fff;
 }
 .btn-blue{

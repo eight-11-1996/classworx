@@ -1,8 +1,8 @@
 <template>
   <div class="row">
     <div class="col-lg-4 col-md-6 mx-auto custom-holder">
-      <span class="site-title"><h5  class="text-center">TALK TO FLUENT SPANISH</h5></span>
-      <span class="text-center login-spacer"><h6 class="text-center">Account Recovery</h6></span>
+      <span class="site-title"><h5  class="text-center">Class Worx</h5></span>
+      <span class="text-center login-spacer"><h6 class="text-center">Recover Account</h6></span>
       <div class="input-holder">
         <div class="login-message-holder login-spacer" v-if="errorMessage != ''">
             <span class="text-danger text-center" v-if="successMessage === null && errorMessage !== null"><b>Oops!</b> {{errorMessage}}</span>
@@ -84,7 +84,6 @@ export default {
 <style>
 .custom-holder{
   margin-top: 100px;
-  box-shadow: 2px 2px 2px 2px #ccc;
 }
 
 .header-title{
@@ -94,8 +93,8 @@ export default {
   font-weight: 700px;
 }
 .input-holder{
-  width: 80%;
-  margin:  0 10% 0 10%;
+  width: 90%;
+  margin:  0 5% 0 5%;
 }
 
 .btn, .form-control{
