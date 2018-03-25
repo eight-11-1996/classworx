@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-class AccountController extends TalkController
+class AccountController extends ClassWorxController
 {
      function __construct(){  
         $this->model = new Account();

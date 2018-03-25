@@ -14,7 +14,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuthExceptions\JWTException;
 use Carbon\Carbon;
 
-class TalkController extends Controller
+class ClassWorxController extends Controller
 {
   /*
     Author: Kennette Canales
