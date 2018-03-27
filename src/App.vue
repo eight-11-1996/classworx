@@ -3,7 +3,7 @@
     <div v-bind:style="(globalVariables.showModal) ? 'overflow-y:hidden; height:'+deviceHeight+'px!important': ''">
       <div v-if="tokenData.verifyingToken === false && tokenData.token !== null">
        <system-header></system-header>
-       <system-content></system-content >
+       <system-sidebar></system-sidebar>
       </div>
       <div v-else>
         <login-header></login-header>
@@ -19,10 +19,10 @@ import global from './helpers/global'
 export default {
   name: 'app',
   mounted(){
-    this.validate()
+    // this.validate()
   },
   created(){
-    this.validate()
+    // his.validate()
   },
   data(){
     return {
@@ -42,7 +42,7 @@ export default {
       ROUTER.go('/')
     },
     validate(){
-      if(this.tokenData.verifyingToken === false || this.tokenData.token !== null){
+      if(this.tokenData.verifyingToken === false && this.tokenData.token !== null){
         ROUTER.push('/dashboard')
       }else{
         ROUTER.push('/login')

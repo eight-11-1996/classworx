@@ -2,7 +2,7 @@
   <div>
     <div class="system-header">
       <a class="navbar-brand" v-on:click="redirect('dashboard')">
-        <label class="navbar-brand"><b>Talk</b>Fluent</label>
+        <label class="navbar-brand"><b>Class</b>Worx</label>
       </a>
     </div>
     <nav class="header-navbar">
@@ -36,19 +36,9 @@
               </span>
               <span class="account-info text-center">{{user.username}}</span>
             </span>
-            <span class="dropdown-item" v-on:click="redirect('category_lesson')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Category Lesson</span>
-            <span class="dropdown-item" v-on:click="redirect('subcategory_lesson')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Sub Category Lesson</span>
-            <span class="dropdown-item" v-on:click="redirect('lesson_management')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Lesson Management</span>
-            <span class="dropdown-item" v-on:click="redirect('audio_files')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Audio File Management</span>
-            <!-- <span class="dropdown-item" v-on:click="redirect('accent_audio')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Accent Audio Management</span>
-            <span class="dropdown-item" v-on:click="redirect('accent_video')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Accent Video Management</span> -->
-            <span class="dropdown-item" v-on:click="redirect('content_management')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Content Management</span>
-            <span class="dropdown-item" v-on:click="redirect('word_popup')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Word Popup</span>
-            <span class="dropdown-item" v-on:click="redirect('sentence_popup')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Sentence Popup</span>
-            <span class="dropdown-item" v-on:click="redirect('word_audio')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Word Management</span>
-            <span class="dropdown-item" v-on:click="redirect('history')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Already Known</span>
-            <span class="dropdown-item" v-on:click="redirect('dashboard')">Dashboard</span>
-            <span class="dropdown-item" v-on:click="redirect('help')">Help</span>
+<!--             <span class="dropdown-item" v-on:click="redirect('history')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Already Known</span> -->
+            <span class="dropdown-item" v-on:click="redirect('dashboard')">Settings</span>
+            <span class="dropdown-item" v-on:click="redirect('help')">Tutorials</span>
             <span class="dropdown-item" v-on:click="logOut()">Logout</span>
           </span>
         </span>
@@ -292,7 +282,7 @@ body{
 }
 
 .nav-item:hover{
-  background: #1c73eb;
+  background: #006600;
   cursor: pointer;
 }
 

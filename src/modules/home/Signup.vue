@@ -4,13 +4,13 @@
       <div class="login-wrapper">
         <span class="site-title"><h5 class="text-center">Class Worx</h5></span>
         <br>
+        <span class="text-center login-spacer"><h6 class="text-center">Signup</h6></span>
         <div class="signup-holder">
-          <div class="login-message-holder login-spacer" v-if="errorMessage != ''">
-            <span class="text-danger"><b>Oops!</b> {{errorMessage}}</span>
+          <div class="login-message-holder login-spacer text-center" v-if="errorMessage != ''">
+            <span class="text-danger text-center"><b>Oops!</b> {{errorMessage}}</span>
           </div>
           <br>
           <br>  
-          <span class="text-center login-spacer"><h6 class="text-center">Signup</h6></span>
           <div>
             <div class="input-group login-spacer">
               <span class="input-group-addon" id="addon-1"><i class="fa fa-user"></i></span>

@@ -103,117 +103,53 @@ Route::post('/accounts/update', "AccountController@update");
 Route::post('/accounts/delete', "AccountController@delete");
 Route::get('/accounts/test', 'AccountController@test');
 
-//Test
-Route::get('/test/test', 'TestController@test');
-Route::post('/test/create', 'TestController@create');
-Route::get('/test/retrieve', 'TestController@retrieve');
-Route::post('/test/update', 'TestController@update');
-Route::post('/test/delete', 'TestController@delete');
+
+//Account Informations
+Route::post('/account_informations/create', "AccountInformationController@create");
+Route::post('/account_informations/retrieve', "AccountInformationController@retrieve");
+Route::post('/account_informations/update', "AccountInformationController@update");
+Route::post('/account_informations/delete', "AccountInformationController@delete");
+Route::get('/account_informations/test', 'AccountInformationController@test');
+
+
+//Account Profiles
+Route::post('/account_profiles/create', "AccountProfileController@create");
+Route::post('/account_profiles/retrieve', "AccountProfileController@retrieve");
+Route::post('/account_profiles/update', "AccountProfileController@update");
+Route::post('/account_profiles/delete', "AccountProfileController@delete");
+Route::get('/account_profiles/test', 'AccountProfileController@test');
 
 
 
-//Lesson
-Route::get('/lesson/test', 'LessonController@test');
-Route::post('/lesson/create', 'LessonController@create');
-Route::post('/lesson/retrieve', 'LessonController@retrieve');
-Route::post('/lesson/update', 'LessonController@update');
-Route::post('/lesson/delete', 'LessonController@delete');
-Route::post('/lesson/dashboard', 'LessonController@dashboard');
-
-
-//Word Audio
-Route::get('/word_audio/test', 'WordAudioController@test');
-Route::post('/word_audio/create', 'WordAudioController@create');
-Route::post('/word_audio/retrieve', 'WordAudioController@retrieve');
-Route::post('/word_audio/update', 'WordAudioController@update');
-Route::post('/word_audio/delete', 'WordAudioController@delete');
-Route::post('/word_audio/deleteFile/{filename}', 'WordAudioController@deleteAudioFile');
-Route::post('/word_audio/dashboard', 'WordAudioController@dashboard');
-
-
-//Content Audio
-Route::get('/content/test', 'ContentController@test');
-Route::post('/content/create', 'ContentController@create');
-Route::post('/content/retrieve', 'ContentController@retrieve');
-Route::post('/content/update', 'ContentController@update');
-Route::post('/content/delete', 'ContentController@delete');
-Route::post('/content/dashboard', 'ContentController@dashboard');
-
-
-//Answer Audio
-Route::get('/sentence_popup/test', 'SentencePopupController@test');
-Route::post('/sentence_popup/create', 'SentencePopupController@create');
-Route::post('/sentence_popup/retrieve', 'SentencePopupController@retrieve');
-Route::post('/sentence_popup/update', 'SentencePopupController@update');
-Route::post('/sentence_popup/delete', 'SentencePopupController@delete');
-Route::post('/sentence_popup/dashboard', 'SentencePopupController@dashboard');
-
-
-//Answer Audio
-Route::get('/word_popup/test', 'WordPopupController@test');
-Route::post('/word_popup/create', 'WordPopupController@create');
-Route::post('/word_popup/retrieve', 'WordPopupController@retrieve');
-Route::post('/word_popup/update', 'WordPopupController@update');
-Route::post('/word_popup/delete', 'WordPopupController@delete');
-Route::post('/word_popup/dashboard', 'WordPopupController@dashboard');
+//Modules
+Route::post('/modules/create', "ModuleController@create");
+Route::post('/modules/retrieve', "ModuleController@retrieve");
+Route::post('/modules/update', "ModuleController@update");
+Route::post('/modules/delete', "ModuleController@delete");
+Route::get('/modules/test', 'ModuleController@test');
 
 
 
-//Save Words
-Route::get('/save/test', 'SaveController@test');
-Route::post('/save/create', 'SaveController@create');
-Route::post('/save/retrieve', 'SaveController@retrieve');
-Route::post('/save/custom_retrieve', 'SaveController@customRetrieve');
-Route::post('/save/update', 'SaveController@update');
-Route::post('/save/delete', 'SaveController@delete');
-Route::post('/save/retrieve_history', 'SaveController@retrieveHistory');
+//Semesters
+Route::post('/semesters/create', "SemesterController@create");
+Route::post('/semesters/retrieve', "SemesterController@retrieve");
+Route::post('/semesters/update', "SemesterController@update");
+Route::post('/semesters/delete', "SemesterController@delete");
+Route::get('/semesters/test', 'SemesterController@test');
+
+//Courses
+Route::post('/courses/create', "CourseController@create");
+Route::post('/courses/retrieve', "CourseController@retrieve");
+Route::post('/courses/update', "CourseController@update");
+Route::post('/courses/delete', "CourseController@delete");
+Route::get('/courses/test', 'CourseController@test');
+
+//Grades Settings
+Route::post('/grade_settings/create', "GradeSettingsController@create");
+Route::post('/grade_settings/retrieve', "GradeSettingsController@retrieve");
+Route::post('/grade_settings/update', "GradeSettingsController@update");
+Route::post('/grade_settings/delete', "GradeSettingsController@delete");
+Route::get('/grade_settings/test', 'GradeSettingsController@test');
 
 
-//Save Contents
-Route::get('/save_content/test', 'SaveContentController@test');
-Route::post('/save_content/create', 'SaveContentController@create');
-Route::post('/save_content/retrieve', 'SaveContentController@retrieve');
-Route::post('/save_content/custom_retrieve', 'SaveContentController@customRetrieve');
-Route::post('/save_content/update', 'SaveContentController@update');
-Route::post('/save_content/delete', 'SaveContentController@delete');
-Route::post('/save_content/retrieve_history', 'SaveContentController@retrieveHistory');
 
-
-
-//Accent Audios
-Route::get('/accent_audio/test', 'AccentAudioController@test');
-Route::post('/accent_audio/create', 'AccentAudioController@create');
-Route::post('/accent_audio/retrieve', 'AccentAudioController@retrieve');
-Route::post('/accent_audio/custom_retrieve', 'AccentAudioController@customRetrieve');
-Route::post('/accent_audio/update', 'AccentAudioController@update');
-Route::post('/accent_audio/delete', 'AccentAudioController@delete');
-
-//Accent Videos
-Route::get('/accent_video/test', 'AccentVideoController@test');
-Route::post('/accent_video/create', 'AccentVideoController@create');
-Route::post('/accent_video/retrieve', 'AccentVideoController@retrieve');
-Route::post('/accent_video/custom_retrieve', 'AccentVideoController@customRetrieve');
-Route::post('/accent_video/update', 'AccentVideoController@update');
-Route::post('/accent_video/delete', 'AccentVideoController@delete');
-
-
-//Files
-Route::get('/audio_file/test', 'AudioFileController@test');
-Route::post('/audio_file/create', 'AudioFileController@create');
-Route::post('/audio_file/retrieve', 'AudioFileController@retrieve');
-Route::post('/audio_file/update', 'AudioFileController@update');
-Route::post('/audio_file/delete', 'AudioFileController@delete');
-
-//Files
-Route::get('/category/test', 'TopLessonController@test');
-Route::post('/category/create', 'TopLessonController@create');
-Route::post('/category/retrieve', 'TopLessonController@retrieve');
-Route::post('/category/update', 'TopLessonController@update');
-Route::post('/category/delete', 'TopLessonController@delete');
-
-//Files
-Route::get('/sub_category/test', 'CategoryLessonController@test');
-Route::post('/sub_category/create', 'CategoryLessonController@create');
-Route::post('/sub_category/retrieve', 'CategoryLessonController@retrieve');
-Route::post('/sub_category/update', 'CategoryLessonController@update');
-Route::post('/sub_category/delete', 'CategoryLessonController@delete');

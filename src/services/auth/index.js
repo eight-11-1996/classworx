@@ -32,7 +32,7 @@ export default {
         vue.APIRequest('authenticate/refresh', {}, (response) => {
           this.setToken(response['token'])
         }, (response) => {
-          ROUTER.push('/dashboard')
+          ROUTER.go('/') // points to dashboard
         })
       }, 1000 * 60 * 50) // 50min
     }

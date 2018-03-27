@@ -65,42 +65,16 @@ export default {
   methods: {
     logIn(){
       AUTH.authenticate(this.username, this.password, (response) => {
-        this.setCompanyAuth()
+        ROUTER.push('dashboard')
       }, (response, status) => {
-        this.errorMessage = (status === 401) ? 'Your Username and password didnot matched.' : 'Cannot log in? Contact us through email: support@ilinya.com'
+        this.errorMessage = (status === 401) ? 'Your Username and password didnot matched.' : 'Cannot log in? Contact us through email: support@talkfluent.com'
       })
     },
     redirect(parameter){
       ROUTER.push(parameter)
     },
-    setCompanyAuth(){
-      let parameter = {
-        'condition': [{
-          'column': 'account_id',
-          'clause': '=',
-          'value': this.user.userID
-        }]
-      }
-      this.APIRequest('company_branch_employee/retrieve', parameter).then(response => {
-        this.branchesEmployees = response.data
-        if(this.branchesEmployees.length > 1){
-          ROUTER.push('select')
-        }else{
-          let parameter1 = {
-            'condition': [{
-              'column': 'id',
-              'clause': '=',
-              'value': this.branchesEmployees[0].company_branch_id
-            }]
-          }
-          this.APIRequest('company_branch/retrieve', parameter1).then(response => {
-            this.branches = response.data
-            if(this.branches.length === 1){
-              AUTH.setCompany(this.branches[0].company_id, this.branchesEmployees[0].company_branch_id)
-              ROUTER.push('dashboard')
-            }
-          })
-        }
+    request(parameter){
+      this.APIRequest(parameter, {}).then(response => {
       })
     }
   }
@@ -249,21 +223,27 @@ export default {
 }
 
 /*-------------- Small Screen for Mobile Phones  --------------*/
-@media screen (min-width: 768px), screen and (max-width: 991px){
+@media screen (min-width: 800px), screen and (max-width: 991px){
   .login-wrapper{
     width: 98%;
     margin: 0 2% 0 0%;
   }
 }
 
+@media screen (min-width: 501px), screen and (max-width: 799px){
+  .login-wrapper{
+    width: 70%;
+    margin: 0 15% 0 15%;
+  }
+}
 /*-------------- Extra Small Screen for Mobile Phones --------------*/
-@media (max-width: 767px){
+@media (max-width: 500px){
   .hide-this{
     display: none;
   }
   .login-wrapper{
-    width: 80%;
-    margin: 0 10% 0 10%;
+    width: 90%;
+    margin: 0 5% 0 5%;
   }
 }
 </style>
