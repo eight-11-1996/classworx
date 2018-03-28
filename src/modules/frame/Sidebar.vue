@@ -4,7 +4,7 @@
 -->
 <template>
   <div class="system-body"> 
-     <div class="main-sidebar sidebar-collapse navbar-collapse" v-bind:class="hide + ' ' + toggleOnClick" id="cuverrSidebar" >
+     <div class="main-sidebar sidebar-collapse navbar-collapse" v-bind:class="hide + ' ' + toggleOnClick" id="ClassWorx" >
       <div class="sidebar">
         <ul class="sidebar-menu">
             <li class="header">
@@ -39,7 +39,7 @@
                 </ul>
               </li> -->
               <li v-for="(item,index) in menu" v-bind:class="{ appActive: isActive(item.id) }" v-on:click="setActive(item.id)">
-                <a v-on:click="navigateTo(item.path, true)" data-toggle="collapse" :data-target="'#cuverrSidebar'" v-bind:class="hide">
+                <a v-on:click="navigateTo(item.path, true)" data-toggle="collapse" :data-target="'#ClassWorx'" v-bind:class="hide">
                   <i></i> 
                   <span v-bind:class="'sm-title'" >{{item.description}}
                   </span>
@@ -327,7 +327,7 @@ export default {
     left: 0;
     z-index: 10;
     background-color: rgba(0,0,0,0.5);
-    margin-top: 100px;
+    margin-top: 50px;
   }
   .content-holder{
     width: 10px;

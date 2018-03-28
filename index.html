@@ -14,57 +14,82 @@
   </head>
   <body style="height:100%">
     <div id="app" ></div>
-          <!-- Modal 
-
-      IMAGES
-    -->
-    <div class="modal fade" id="imageView" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-md">
-        <div class="modal-content" id="mc-imageview">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel"></h5>
-            <button type="button" class="close" aria-label="Close" onclick="hide()">
-              <span aria-hidden="true" class="text-white">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body" id="image-body">
-          </div>
-        </div>
-      </div>
-    </div>
     <style>
       #app{
         min-height: 100%
       }
-      #imageView{
-        z-index: 10000  !important;
-        overflow-y: auto;
+      
+      .module-header{
+        width: 90%;
+        min-height: 60px;
+        float: left;
+        overflow-y: hidden;
+        margin: 20px 5% 0 5%;
       }
-      #mc-imageview{
-        background: #000  !important;
+      .table-result, .table-footer{
+        width: 90%;
+        min-height: 50px;
+        float: left;
+        overflow-y: hidden;
+        margin: 5px 5% 5px 5%;
       }
-      #md-custom{
-        width: 700px !important;
+      .module-header .title{
+        width: 40%;
+        float: left !important;
+        height: 60px;
+        font-size: 24px;
+      } 
+      .module-header .items-display{
+        width: 40%;
+        float: left;
+        height: 60px;
+        text-align: right;
       }
-      .image-viewer{
-        width: 100%;
-        height: 100%;
+      .items-display label{
+        float: left;
+        padding-top: 10px;
+        padding-right: 10px;
       }
-      .modal{
-        overflow:auto !important;
-      }
-      .table-selector{
+      .items-display select{
+        float: left;
         height: 30px;
-        width: 40px;
         text-align: center;
         border-top: none;
         border-left: none;
         border-right: none;
         border-bottom: solid 1px #eee;
         color: #777;
+        margin-top: 5px;
+      }
+      .module-header .add{
+        width: 20%;
+        float: left;
+        height: 100%;
       }
       .table-selector-large-text{
         width: 150px !important;
+      }
+      .table-footer .items-total{
+        width: 40%;
+        float: left;
+      }
+      .table-footer .items-pager{
+        width: 60%;
+        float: left;
+      }
+      .page-link{
+        color: #009900;
+        background: inherit;
+      }
+      .empty-table:hover{
+        cursor: pointer;
+        color: white !important;
+        background: #009900;
+      }
+      .page-link:hover{
+        cursor: pointer;
+        background: #009900 !important;
+        color: white !important;
       }
       td i{
         font-size: 16px !important;

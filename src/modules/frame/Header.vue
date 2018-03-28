@@ -6,6 +6,9 @@
       </a>
     </div>
     <nav class="header-navbar">
+    <span class="navbar-menu-toggler-md" v-bind:class="{'active-menu': menuFlag === true}" data-toggle="collapse" data-target="#ClassWorx" aria-controls="ClassWorx" aria-expanded="false" aria-label="Toggle navigation" v-on:click="makeActive('menu')">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+    </span>
     <span class="header-margin"></span><!--       
     <div class="dropdown"> 
         <div class="header-navbar-nav" id="account-holder" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -25,7 +28,7 @@
         </div>
     </div>     -->
     <div class="dropdown"> 
-        <span class="nav-item" data-toggle="dropdown" id="settings" aria-haspopup="true" aria-expanded="false">
+        <span class="nav-item" v-bind:class="{'active-menu': settingFlag === true}" data-toggle="dropdown" id="settings" aria-haspopup="true" aria-expanded="false" v-on:click="makeActive('dropdown')" v-bind:onkeypress="makeActive('')">
           <span>
             <i class="fa fa-cog"></i>
           </span>
@@ -61,10 +64,24 @@ export default {
     return{
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      account: []
+      account: [],
+      settingFlag: false,
+      menuFlag: false
     }
   },
   methods: {
+    makeActive(icon){
+      if(icon === 'dropdown'){
+        this.settingFlag = true
+        this.menuFlag = false
+      }else if(icon === 'sidebar'){
+        this.settingFlag = false
+        this.menuFlag = true
+      }else{
+        this.settingFlag = false
+        this.menuFlag = false
+      }
+    },
     logOut(){
       AUTH.deaunthenticate()
       ROUTER.go('/login')
@@ -361,7 +378,11 @@ body{
 }
 .navbar-menu-toggler-md:hover{
   cursor: pointer;
-  background: #1c73eb;
+  background: #006600;
+}
+
+.active-menu{
+  background: #006600;
 }
 
 
@@ -440,7 +461,7 @@ body{
 /*-------------- Small Screen for Mobile Phones --------------*/
  @media (max-width: 767px){
     .header-margin{
-     width: 0% !important;
+     width: 10% !important;
     }
     .system-header{
       width: 40%;
@@ -449,14 +470,14 @@ body{
       width: 60%;
     }
    .navbar-menu-toggler-md{
-      width: 15%
+      width: 20%
     }
     .header-navbar-nav{
       text-align: center;
       width: 50%;
     }
     .nav-item{
-      width: 40%;
+      width: 20%;
     }
   }
 </style>

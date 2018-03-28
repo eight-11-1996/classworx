@@ -8,11 +8,12 @@
       </div>
       <div class="col-sm-12 col-md-4">
         <div class="login-wrapper">
-          <div class="login-header" style="margin-top: 75px;">
-            <h1 class="navbar-brand">
-              Log In
+          <div class="login-header" style="margin-top: 50px;text-align:center;">
+            <h1 class="navbar-brand text-center" style="font-size:32px;">
+              Class<b>Worx</b>
             </h1>
           </div>
+          <span style="width:100%;float:left;text-align:center;margin-top:25px;font-size:20px;margin-bottom:20px;">Login</span>
           <div class="login-message-holder login-spacer" v-if="errorMessage != ''">
             <span class="text-danger"><b>Oops!</b> {{errorMessage}}</span>
           </div>

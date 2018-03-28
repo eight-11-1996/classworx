@@ -49,9 +49,17 @@ export default{
     }
   },
   {
-    path: '/courses',
+    path: '/courses/:id',
     name: 'courses',
     component: resolve => require(['modules/course/Course.vue'], resolve),
+    meta: {
+      tokenRequired: true
+    }
+  },
+  {
+    path: '/quizes/:id',
+    name: 'quizes',
+    component: resolve => require(['modules/quize/Quize.vue'], resolve),
     meta: {
       tokenRequired: true
     }

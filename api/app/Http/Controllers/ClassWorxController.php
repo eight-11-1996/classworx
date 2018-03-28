@@ -150,11 +150,11 @@ class ClassWorxController extends Controller
         $childID["id"] = $this->model->id;;
         $response = $childID;
       }
-      $this->response["result"] = $response;
+      $this->response["data"] = $response;
       return $response;
     }else{
       if($this->model->id){
-        $this->response["result"] = $this->model->id;
+        $this->response["data"] = $this->model->id;
         return true;
       }else{
         $this->response["error"]["status"] = 1;
