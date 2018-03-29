@@ -63,6 +63,14 @@ export default{
     meta: {
       tokenRequired: true
     }
+  },
+  {
+    path: '/mchoice',
+    name: 'mchoice',
+    component: resolve => require(['modules/question/MultipleChoice.vue'], resolve),
+    meta: {
+      tokenRequired: true
+    }
   }
   ]
 }

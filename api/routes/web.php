@@ -152,4 +152,19 @@ Route::post('/grade_settings/delete', "GradeSettingsController@delete");
 Route::get('/grade_settings/test', 'GradeSettingsController@test');
 
 
+//Questions
+Route::post('/questions/create', "QuestionController@create");
+Route::post('/questions/retrieve', "QuestionController@retrieve");
+Route::post('/questions/update', "QuestionController@update");
+Route::post('/questions/delete', "QuestionController@delete");
+Route::get('/questions/test', 'QuestionController@test');
+
+//Question Options
+Route::post('/question_options/create', "QuestionOptionController@create");
+Route::post('/question_options/retrieve', "QuestionOptionController@retrieve");
+Route::post('/question_options/update', "QuestionOptionController@update");
+Route::post('/question_options/delete', "QuestionOptionController@delete");
+Route::get('/question_options/test', 'QuestionOptionController@test');
+
+
 
