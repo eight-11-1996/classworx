@@ -22,6 +22,7 @@ import ROUTER from '../../router'
 import AUTH from '../../services/auth'
 export default {
   mounted(){
+    this.init()
   },
   data(){
     return {
@@ -36,7 +37,18 @@ export default {
       questionId: 1
     }
   },
+  props: [
+    'questionIdParam'
+  ],
+  watch: {
+    questionIdParam(value){
+      this.questionId = this.questionIdParam
+    }
+  },
   methods: {
+    init(){
+      this.questionId = this.questionIdParam
+    },
     add(){
       if(this.flag === false){
         this.data.push({'description': null, 'question_id': this.questionId})

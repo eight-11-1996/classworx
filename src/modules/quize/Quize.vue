@@ -2,12 +2,16 @@
   <div>
       <div class="module-header">
         <div class="title">
-          <label>My <b>Courses</b></label>
+          <label>My <b>Quizes</b></label>
         </div>
         <div class="items-display pull-right">
-          <label v-if="semesters.length > 1">Semesters</label>
-          <select v-if="semesters.length > 1" v-on:change="filterSemester()" v-model="semesterId">
+          <label v-if="semesters.length > 0">Semesters</label>
+          <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="semesterId">
             <option v-for="item, index in semesters"  v-bind:value="item.id">{{item.description}}</option>
+          </select>
+          <label v-if="courses.length > 0">Courses</label>
+          <select v-if="courses.length > 0" v-on:change="filterCourses()" v-model="courseId">
+            <option v-for="item, index in courses"  v-bind:value="item.id">{{item.description}}</option>
           </select>
           <label>Show</label>
           <select v-model="selectedTotalItems" v-on:change="filter()">
@@ -52,7 +56,7 @@
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" >Click Add Course Now!</td>
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" >Click to Add Quizes Now!</td>
             </tr>
           </tbody>
         </table>
@@ -189,11 +193,13 @@ export default {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
       modalTitle: 'Add Course',
-      parameter: this.$route.params.id,
+      parameter: this.$route.params.semesterId,
       data: [],
       semesters: [],
-      semesterId: this.$route.params.id,
+      semesterId: this.$route.params.semesterId,
       courses: [],
+      courseId: this.$route.params.courseId,
+      quizes: [],
       errorMessage: null,
       closeFag: false,
       code: null,
@@ -244,13 +250,28 @@ export default {
       })
     },
     filterSemester(){
-      this.createParameter(this.semesterId)
+      this.retrieveCourse(this.semesterId)
+    },
+    retrieveCourse(value){
+      let parameter = {
+        'condition': [{
+          'value': value,
+          'column': 'semester_id',
+          'clause': '='
+        }]
+      }
+      this.APIRequest('courses/retrieve', parameter).then(response => {
+        this.courses = response.data
+      })
+    },
+    filterCourses(){
+      this.createParameter(this.courseId)
     },
     createParameter(value){
       let parameter = {
         'condition': [{
           'value': value,
-          'column': 'semester_id',
+          'column': 'course_id',
           'clause': '='
         }]
       }
@@ -263,7 +284,7 @@ export default {
           'condition': [{
             'value': this.parameter,
             'clause': '=',
-            'column': 'semester_id'
+            'column': 'course_id'
           }]
         }
         this.retrieveRequest(true, param)
@@ -272,9 +293,9 @@ export default {
       }
     },
     retrieveRequest(flag, parameter){
-      this.APIRequest('courses/retrieve', parameter).then(response => {
-        this.courses = response.data
-        this.data = this.courses
+      this.APIRequest('quizes/retrieve', parameter).then(response => {
+        this.quizes = response.data
+        this.data = this.quizes
       }).done(() => {
         if(flag === true){
           this.initDisplayer()
