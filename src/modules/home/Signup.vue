@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-6 col-lg-4 mx-auto signup-container">
       <div class="login-wrapper">
-        <span class="site-title"><h5 class="text-center">Class Worx</h5></span>
+        <span class="site-title text-center text-primary"><h1 class="text-center">Class<b>Worx</b></h1></span>
         <br>
         <span class="text-center login-spacer"><h6 class="text-center">Signup</h6></span>
         <div class="signup-holder">
@@ -122,6 +122,10 @@ export default {
 
 .btn, .form-control{
   height: 45px !important;
+}
+.input-group{
+  margin-top: 5px;
+  margin-bottom: 5px;
 }
 .site-title{
   margin-top: 25px;

@@ -187,8 +187,8 @@ export default {
       currentTotalIndex: 0,
       displayIndexAdder: 0,
       display: {
-        current: 1,
-        total: null,
+        current: 0,
+        total: 0,
         pager: null,
         prevFlag: true,
         nextFlag: true,

@@ -20,6 +20,7 @@ class QuestionOptionController extends ClassWorxController
 			$result = null;
 			for ($i=0; $i < $length; $i++) { 
 				$option[$i]['order'] = $i + 1;
+				$option[$i]['question_id'] = $data['question_id'];
 				if($this->checkIfExist($option[$i]) == false){
 					$result = QuestionOption::insert($option[$i]);	
 				}else{

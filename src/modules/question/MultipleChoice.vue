@@ -6,14 +6,16 @@
 		</span>
 		<span v-if="data.length > 0" class="option-holder">
 			<span class="holder" v-for="item, index in data">
-				<input type="text" class="form-control form-control-lg order" v-bind:value="index + 1" disabled>
+
+        <i class="far fa-dot-circle" v-bind:id="'option-' + index" v-on:click="selected(index)" ></i>
+				<!-- <input type="text" class="form-control form-control-lg order" v-bind:value="index + 1" disabled> -->
 				<input type="text" class="form-control form-control-lg value" v-model="item.description">
 				<i class="fa fa-trash text-danger" v-on:click="remove(index)"></i>
 			</span>
 		</span>
 		<span class="add-option">
-			<button class="btn btn-primary" v-on:click="add()"><i class="fa fa-plus"></i>Add Option</button>
-			<button class="btn btn-primary pull-right" v-on:click="submit()"><i class="fa fa-sign-in"></i>Save</button>
+			<button class="btn btn-primary" v-on:click="add()"><i class="fa fa-plus"></i>Add Choice</button>
+			<!-- <button class="btn btn-primary pull-right" v-on:click="submit()"><i class="fa fa-sign-in"></i>Save</button> -->
 		</span>
 	</div>
 </template>
@@ -34,7 +36,9 @@ export default {
       tokenData: AUTH.tokenData,
       data: [],
       flag: false,
-      questionId: 1
+      questionId: 1,
+      prev: null,
+      answer: null
     }
   },
   props: [
@@ -50,12 +54,7 @@ export default {
       this.questionId = this.questionIdParam
     },
     add(){
-      if(this.flag === false){
-        this.data.push({'description': null, 'question_id': this.questionId})
-        this.flag = true
-      }else{
-        this.flag = false
-      }
+      this.data.push({'description': null, 'question_id': this.questionId})
     },
     remove(index){
       this.data.splice(index, 1)
@@ -70,9 +69,29 @@ export default {
         this.createRequest()
       }
     },
-    createRequest(){
+    selected(index){
+      this.answer = index
+      if(this.prev === null){
+        document.getElementById('option-' + index).classList.add('fas')
+        document.getElementById('option-' + index).classList.remove('far')
+        this.prev = index
+      }else{
+        if(this.prev !== index){
+          document.getElementById('option-' + index).classList.add('fas')
+          document.getElementById('option-' + index).classList.remove('far')
+          document.getElementById('option-' + this.prev).classList.add('far')
+          document.getElementById('option-' + this.prev).classList.remove('fas')
+          this.prev = index
+        }else{
+          document.getElementById('option-' + index).classList.add('far')
+          document.getElementById('option-' + index).classList.remove('fas')
+          this.prev = index
+        }
+      }
+    },
+    createRequest(questionId){
       let parameter = {
-        'question_id': this.questionId,
+        'question_id': questionId,
         'options': this.data
       }
       this.APIRequest('question_options/create', parameter).then(response => {
@@ -84,6 +103,14 @@ export default {
           this.errorMessage = response.data.error.message
         }
       })
+    },
+    validation(){
+      for (var i = 0; i < this.data.length; i++) {
+        if(this.data[i].description === null){
+          return false
+        }
+      }
+      return true
     },
     redirect(parameter){
       // ROUTER.push(parameter)
@@ -118,13 +145,14 @@ export default {
 		margin-bottom: 5px;
 	}
 	.holder .value{
-		width: 85%;
+		width: 80%;
 		float: left;
 		margin-left: 2%;
 	}
 	.holder .order{
-		width: 5%;
+		width: 10%;
 		float: left;
+    text-align: center;
 	}
 	.holder i{
 		width: 5%;
@@ -134,13 +162,24 @@ export default {
 		margin-left: 2%;
 		text-align:right;
 	}
-	.holder i:hover{
+  .fa-dot-circle{
+    color: #009900;
+  }
+  .fa-dot-circle:hover{
+    color: #009900;
+    cursor: pointer;
+    -webkit-transition: width 2s; /* Safari */
+    transition: width 2s;
+  }
+	.fa-trash:hover{
 		cursor: pointer;
 		color: #009900 !important;
 	}
 	.add-option{
 		float: left;
 		width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
 	}
 
 	.add-option button i{

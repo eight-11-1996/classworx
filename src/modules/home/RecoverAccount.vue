@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col-lg-4 col-md-6 mx-auto custom-holder">
-      <span class="site-title"><h5  class="text-center">Class Worx</h5></span>
+      <span class="site-title text-center text-primary"><h1 class="text-center">Class<b>Worx</b></h1></span>
       <span class="text-center login-spacer"><h6 class="text-center">Recover Account</h6></span>
       <div class="input-holder">
         <div class="login-message-holder login-spacer" v-if="errorMessage != ''">

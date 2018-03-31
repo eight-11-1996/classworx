@@ -143,7 +143,7 @@ export default {
 
 ------------------------------------------*/
 .form-control-login{
-  height: 45px;
+  height: 50px !important;
 }
 
 
@@ -153,7 +153,7 @@ export default {
 
 ------------------------------------------*/
 .btn-login{
-  height: 45px;
+  height: 45px !important;
 }/*-- form-control --*/
 
 /*    Line with text on top  */

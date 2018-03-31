@@ -88,7 +88,7 @@ export default {
       ROUTER.push('/login')
     },
     redirect(parameter){
-      ROUTER.push(parameter)
+      ROUTER.push('/' + parameter)
     },
     display(){
     },

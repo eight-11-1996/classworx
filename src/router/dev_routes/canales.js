@@ -57,9 +57,9 @@ export default{
     }
   },
   {
-    path: '/quizes/:id',
+    path: '/quizes/:courseId',
     name: 'quizes',
-    component: resolve => require(['modules/quize/Quize.vue'], resolve),
+    component: resolve => require(['modules/quiz/Quiz.vue'], resolve),
     meta: {
       tokenRequired: true
     }
@@ -68,6 +68,14 @@ export default{
     path: '/mchoice',
     name: 'mchoice',
     component: resolve => require(['modules/question/MultipleChoice.vue'], resolve),
+    meta: {
+      tokenRequired: true
+    }
+  },
+  {
+    path: '/quizes/questions/:id',
+    name: 'questions',
+    component: resolve => require(['modules/question/Question.vue'], resolve),
     meta: {
       tokenRequired: true
     }

@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Quiz extends APIModel
 {
-    protected $table = 'quizes';
+    protected $table = 'quizzes';
     protected $fillable = ['course_id', 'description', 'type', 'start', 'end', 'timer'];
 }

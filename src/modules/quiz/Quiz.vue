@@ -1,10 +1,10 @@
 <template>
   <div>
       <div class="module-header">
-        <div class="title">
+        <div class="title" style="width: 30%;">
           <label>My <b>Quizes</b></label>
         </div>
-        <div class="items-display pull-right">
+        <div class="items-display" style="width: 60%;">
           <label v-if="semesters.length > 0">Semesters</label>
           <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="semesterId">
             <option v-for="item, index in semesters"  v-bind:value="item.id">{{item.description}}</option>
@@ -33,21 +33,21 @@
         <table class="table table-responsive table-bordered">
           <thead>
             <tr>
-              <td>Code</td>
               <td>Description</td>
-              <td>Units</td>
-              <td>Schedule</td>
+              <td>Type</td>
+              <td>Date</td>
+              <td>Timer</td>
               <td>Actions</td>
             </tr>
           </thead>
           <tbody v-if="data.length > 0">
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td>{{item.code}}</td>
               <td>{{item.description}}</td>
-              <td>{{item.units}}</td>
-              <td>{{item.time_start + '-' + item.time_end + ' (' + item.days + ')'}}</td>
-              <td>
-                <i class="fa fa-clipboard text-primary" v-on:click="redirect()"></i>
+              <td>{{item.type}}</td>
+              <td>{{item.start + ' - ' + item.end}}</td>
+              <td>{{item.timer}}</td>
+              <td class="text-center">
+                <b class="text-primary" v-on:click="redirect('questions/' + item.id)">{{index}}</b>
                 <i class="fa fa-pencil text-warning" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal">
                 </i>
                 <i class="fa fa-trash text-danger" v-on:click="deleteRequest(item.id)"></i>
@@ -93,29 +93,25 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Course Code</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.code" v-model="modalInput.code">
-            <br>
-            <label>Course Description</label>
+            <label>Description</label>
             <br>
             <input type="text" class="form-control" v-bind:placeholder="modalView.description" v-model="modalInput.description">
             <br>
-            <label>Course Units</label>
+            <label>Type</label>
             <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.units" v-model="modalInput.units">
+            <input type="text" class="form-control" v-bind:placeholder="modalView.type" v-model="modalInput.type">
             <br>
-            <label>Time Start</label>
+            <label>Start Date and Time</label>
             <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.time_start" v-model="modalInput.timeStart">
+            <input type="date" class="form-control" v-bind:placeholder="modalView.start" v-model="modalInput.start">
             <br>
-            <label>End Date</label>
+            <label>End Date and Time</label>
             <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.time_end" v-model="modalInput.timeEnd">
+            <input type="date" class="form-control" v-bind:placeholder="modalView.end" v-model="modalInput.end">
             <br>
-            <label>Days</label>
+            <label>Timer</label>
             <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.days" v-model="modalInput.days">
+            <input type="time" class="form-control" v-bind:placeholder="modalView.timer" v-model="modalInput.timer">
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
@@ -145,29 +141,25 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Course Code</label>
+            <label>Description</label>
             <br>
-            <input type="text" class="form-control" placeholder="Couse Code" v-model="code">
+            <input type="text" class="form-control" placeholder="Exam Description" v-model="description">
             <br>
-            <label>Couse Description</label>
+            <label>Type</label>
             <br>
-            <input type="text" class="form-control" placeholder="Course Description" v-model="description">
+            <input type="text" class="form-control" v-model="type">
             <br>
-            <label>Couse Units</label>
+            <label>Start Date and Time</label>
             <br>
-            <input type="text" class="form-control" placeholder="Course Units" v-model="units">
+            <input type="date" class="form-control" v-model="start">
             <br>
-            <label>Time Start</label>
+            <label>End Date and Time</label>
             <br>
-            <input type="time" class="form-control" v-model="timeStart">
+            <input type="date" class="form-control" v-model="end">
             <br>
-            <label>Time End</label>
+            <label>Timer</label>
             <br>
-            <input type="time" class="form-control" v-model="timeEnd">
-            <br>
-            <label>Days</label>
-            <br>
-            <input type="text" class="form-control" v-model="days">
+            <input type="time" class="form-control" v-model="timer">
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -193,38 +185,36 @@ export default {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
       modalTitle: 'Add Course',
-      parameter: this.$route.params.semesterId,
+      parameter: this.$route.params.courseId,
       data: [],
       semesters: [],
-      semesterId: this.$route.params.semesterId,
+      semesterId: null,
       courses: [],
       courseId: this.$route.params.courseId,
       quizes: [],
       errorMessage: null,
       closeFag: false,
-      code: null,
       description: null,
-      units: null,
-      timeStart: null,
-      timeEnd: null,
-      days: null,
+      type: null,
+      start: null,
+      end: null,
+      timer: null,
       modalView: null,
       modalInput: {
         id: null,
-        code: null,
         description: null,
-        units: null,
-        timeStart: null,
-        timeEnd: null,
-        days: null
+        type: null,
+        start: null,
+        end: null,
+        timer: null
       },
       selectedTotalItems: null,
       totalDisplay: 5,
       currentTotalIndex: 0,
       displayIndexAdder: 0,
       display: {
-        current: 1,
-        total: null,
+        current: 0,
+        total: 0,
         pager: null,
         prevFlag: true,
         nextFlag: true,
@@ -337,17 +327,16 @@ export default {
     },
     createRequest(){
       let formData = new FormData()
-      formData.append('semester_id', this.semesterId)
-      formData.append('code', this.code)
+      formData.append('course_id', this.courseId)
       formData.append('description', this.description)
-      formData.append('units', this.units)
-      formData.append('time_start', this.timeStart)
-      formData.append('time_end', this.timeEnd)
-      formData.append('days', this.days)
-      axios.post(CONFIG.BACKEND_URL + '/courses/create', formData).then(response => {
+      formData.append('type', this.type)
+      formData.append('start', this.start)
+      formData.append('end', this.end)
+      formData.append('timer', this.timer)
+      axios.post(CONFIG.BACKEND_URL + '/quizes/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
-          this.createParameter(this.semesterId)
+          this.createParameter(this.courseId)
         }else{
           this.errorMessage = response.error.message
         }
@@ -357,16 +346,16 @@ export default {
       let parameter = {
         id: index
       }
-      this.APIRequest('courses/delete', parameter).then(response => {
+      this.APIRequest('quizes/delete', parameter).then(response => {
         if(response.data === null){
           // Error Message
         }else{
-          this.createParameter(this.semesterId)
+          this.createParameter(this.courseId)
         }
       })
     },
     validation(){
-      if(this.description === null || this.startDate === null || this.endDate === null){
+      if(this.description === null || this.type === null || this.start === null || this.end === null || this.timer === null){
         return false
       }else{
         return true
@@ -379,30 +368,27 @@ export default {
     updateRequest(){
       let formData = new FormData()
       formData.append('id', this.modalInput.id)
-      if(this.modalInput.code !== null){
-        formData.append('code', this.modalInput.code)
-      }
       if(this.modalInput.description !== null){
         formData.append('description', this.modalInput.description)
       }
-      if(this.modalInput.units !== null){
-        formData.append('units', this.modalInput.units)
+      if(this.modalInput.type !== null){
+        formData.append('type', this.modalInput.type)
       }
-      if(this.modalInput.timeStart !== null){
-        formData.append('time_start', this.modalInput.timeStart)
+      if(this.modalInput.start !== null){
+        formData.append('start', this.modalInput.start)
       }
-      if(this.modalInput.timeEnd !== null){
-        formData.append('time_end', this.modalInput.timeEnd)
+      if(this.modalInput.end !== null){
+        formData.append('end', this.modalInput.end)
       }
-      if(this.modalInput.days !== null){
-        formData.append('days', this.modalInput.days)
+      if(this.modalInput.timer !== null){
+        formData.append('timer', this.modalInput.timer)
       }else{
         //
       }
-      axios.post(CONFIG.BACKEND_URL + '/courses/update', formData).then(response => {
+      axios.post(CONFIG.BACKEND_URL + '/quizes/update', formData).then(response => {
         if(response.data.data === true){
           $('#editModal').modal('hide')
-          this.createParameter(this.semesterId)
+          this.createParameter(this.courseId)
         }
       })
     },
