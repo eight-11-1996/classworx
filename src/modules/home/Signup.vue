@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-md-6 col-lg-4 mx-auto signup-container">
       <div class="login-wrapper">
-        <span class="site-title text-center text-primary"><h1 class="text-center">Class<b>Worx</b></h1></span>
+        <span class="site-title text-center text-primary"><h1 class="text-center text-primary">Class<b>Worx</b></h1></span>
         <br>
         <span class="text-center login-spacer"><h6 class="text-center">Signup</h6></span>
         <div class="signup-holder">
@@ -34,8 +34,8 @@
                 I agree the terms and conditions
               </label>
             </div> -->
-            <button class="btn btn-primary btn-block btn-login login-spacer" v-on:click="signUp()">Signup</button>
-            <button class="btn btn-danger btn-block btn-login login-spacer" v-on:click="redirect('/')">Back to Login</button>  
+            <button class="btn btn-login-primary btn-block btn-login login-spacer" v-on:click="signUp()">Signup</button>
+            <button class="btn btn-login-danger btn-block btn-login login-spacer" v-on:click="redirect('/')">Back to Login</button>  
           </div>
         </div>
       </div>
@@ -120,8 +120,24 @@ export default {
   margin:  0 5% 0 5%;
 }
 
-.btn, .form-control{
+.form-control{
   height: 45px !important;
+}
+.btn-login-primary{
+  background: #6a0090;
+  color: #fff;
+  height: 45px !important;
+}
+.btn-login-primary:hover{
+  border: solid 1px #3f0050;
+}
+.btn-login-danger{
+  background: #ff0000;
+  color: #fff;
+  height: 45px !important;
+}
+.btn-login-danger:hover{
+  border: solid 1px #a90201;
 }
 .input-group{
   margin-top: 5px;

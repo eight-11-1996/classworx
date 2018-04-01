@@ -153,11 +153,11 @@ Route::get('/grade_settings/test', 'GradeSettingsController@test');
 
 
 //Quizes
-Route::post('/quizes/create', "QuizController@create");
-Route::post('/quizes/retrieve', "QuizController@retrieve");
-Route::post('/quizes/update', "QuizController@update");
-Route::post('/quizes/delete', "QuizController@delete");
-Route::get('/quizes/test', 'QuizController@test');
+Route::post('/quizzes/create', "QuizController@create");
+Route::post('/quizzes/retrieve', "QuizController@retrieve");
+Route::post('/quizzes/update', "QuizController@update");
+Route::post('/quizzes/delete', "QuizController@delete");
+Route::get('/quizzes/test', 'QuizController@test');
 
 //Questions
 Route::post('/questions/create', "QuestionController@create");

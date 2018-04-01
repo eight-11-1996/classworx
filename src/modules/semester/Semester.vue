@@ -2,7 +2,7 @@
   <div>
       <div class="module-header">
         <div class="title">
-          <label>My <b>Semesters</b></label>
+          <label class="text-warning">My <b>Semesters</b></label>
         </div>
         <div class="items-display pull-right">
           <label>Show</label>
@@ -39,10 +39,10 @@
               <td>{{item.start_date}}</td>
               <td>{{item.end_date}}</td>
               <td>
-                <i class="fa fa-clipboard text-primary" v-on:click="redirect('courses/' + item.id)"></i>
-                <i class="fa fa-pencil text-warning" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal">
+                <i class="fa fa-clipboard text-primary action-link" v-on:click="redirect('courses/' + item.id)" data-hover="tooltip" data-placement="top" title="View Courses"></i>
+                <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Semester">
                 </i>
-                <i class="fa fa-trash text-danger" v-on:click="deleteRequest(item.id)"></i>
+                <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)" data-hover="tooltip" data-placement="top" title="Delete Semester"></i>
               </td>
             </tr>
           </tbody>
@@ -170,6 +170,8 @@ export default {
       modalTitle: 'Add Semester',
       data: [],
       semesters: [],
+      method: 'semesters',
+      methodId: 'account_id',
       errorMessage: null,
       closeFag: false,
       description: null,
@@ -209,9 +211,13 @@ export default {
           'column': 'account_id'
         }]
       }
-      this.APIRequest('semesters/retrieve', parameter).then(response => {
-        this.semesters = response.data
-        this.data = response.data
+      this.APIRequest(this.method + '/retrieve', parameter).then(response => {
+        if(response.data === null){
+          this.semesters = []
+        }else{
+          this.semesters = response.data
+        }
+        this.data = this.semesters
       }).done(() => {
         if(flag === true){
           this.initDisplayer()
@@ -253,11 +259,11 @@ export default {
     },
     createRequest(){
       let formData = new FormData()
-      formData.append('account_id', this.user.userID)
+      formData.append(this.methodId, this.user.userID)
       formData.append('description', this.description)
       formData.append('start_date', this.startDate)
       formData.append('end_date', this.endDate)
-      axios.post(CONFIG.BACKEND_URL + '/semesters/create', formData).then(response => {
+      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
           this.retrieveRequest(false)
@@ -270,7 +276,7 @@ export default {
       let parameter = {
         id: index
       }
-      this.APIRequest('semesters/delete', parameter).then(response => {
+      this.APIRequest(this.method + '/delete', parameter).then(response => {
         if(response.data === null){
           // Error Message
         }else{
@@ -303,7 +309,7 @@ export default {
       }else{
         //
       }
-      axios.post(CONFIG.BACKEND_URL + '/semesters/update', formData).then(response => {
+      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
         if(response.data.data === true){
           $('#editModal').modal('hide')
           this.retrieveRequest(false)
@@ -377,9 +383,9 @@ export default {
       }
     },
     makeActive(index){
-      $('.pager-active-' + index).css({'background': '#009900', 'color': 'white', 'border': 'solid 1px #009900'})
+      $('.pager-active-' + index).css({'background': '#3f0050', 'color': 'white', 'border': 'solid 1px #3f0050'})
       if(this.display.pagerActive !== index && this.display.pagerActive !== null){
-        $('.pager-active-' + this.display.pagerActive).css({'background': 'inherit', 'color': '#009900', 'border': 'solid 1px #ddd'})
+        $('.pager-active-' + this.display.pagerActive).css({'background': 'inherit', 'color': '#3f0050', 'border': 'solid 1px #ddd'})
         this.display.pagerActive = index
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
@@ -418,10 +424,6 @@ form input{
   height: 100%;
   outline: none;
   opacity: 0;
-}
-
-.bg-primary{
-  background: #009900 !important; 
 }
 
 .modal-title i{

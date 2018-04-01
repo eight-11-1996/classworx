@@ -57,8 +57,8 @@ export default{
     }
   },
   {
-    path: '/quizes/:courseId',
-    name: 'quizes',
+    path: '/quizzes/:courseId',
+    name: 'quizzes',
     component: resolve => require(['modules/quiz/Quiz.vue'], resolve),
     meta: {
       tokenRequired: true
@@ -73,7 +73,7 @@ export default{
     }
   },
   {
-    path: '/quizes/questions/:id',
+    path: '/quizzes/questions/:id',
     name: 'questions',
     component: resolve => require(['modules/question/Question.vue'], resolve),
     meta: {

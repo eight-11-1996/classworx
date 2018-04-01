@@ -2,7 +2,7 @@
   <div class="row">
     <div class="col-lg-4 col-md-6 mx-auto custom-holder">
       <span class="site-title text-center text-primary"><h1 class="text-center">Class<b>Worx</b></h1></span>
-      <span class="text-center login-spacer"><h6 class="text-center">Recover Account</h6></span>
+      <span class="text-center login-spacer"><h6 class="text-center text-primary">Recover Account</h6></span>
       <div class="input-holder">
         <div class="login-message-holder login-spacer" v-if="errorMessage != ''">
             <span class="text-danger text-center" v-if="successMessage === null && errorMessage !== null"><b>Oops!</b> {{errorMessage}}</span>
@@ -15,7 +15,7 @@
         <br>
         <input type="password" name="username" placeholder="Confirm New Password" class="form-control" v-model="confirmPassword">
         <br>
-        <button class="btn btn-primary btn-block btn-login login-spacer" v-on:click="update()">Update</button><button class="btn btn-danger btn-block btn-login login-spacer" v-on:click="redirect('/')">Back to Login</button>
+        <button class="btn btn-login-primary btn-block btn-login login-spacer" v-on:click="update()">Update</button><button class="btn btn-login-danger btn-block btn-login login-spacer" v-on:click="redirect('/')">Back to Login</button>
         <br>
         <br>
      </div>
@@ -97,8 +97,24 @@ export default {
   margin:  0 5% 0 5%;
 }
 
-.btn, .form-control{
+.form-control{
   height: 45px !important;
+}
+.btn-login-primary{
+  background: #6a0090;
+  color: #fff;
+  height: 45px !important;
+}
+.btn-login-primary:hover{
+  border: solid 1px #3f0050;
+}
+.btn-login-danger{
+  background: #ff0000;
+  color: #fff;
+  height: 45px !important;
+}
+.btn-login-danger:hover{
+  border: solid 1px #a90201;
 }
 .site-title{
   margin-top: 25px;

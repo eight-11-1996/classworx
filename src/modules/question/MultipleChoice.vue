@@ -1,16 +1,16 @@
 <template>
 	<div class="question-holder">
-		<span class="message-holder text-center" v-if="message !== null || errorMessage !== null">
+<!-- 		<span class="message-holder text-center" v-if="message !== null || errorMessage !== null">
 			<label class="text-primary" v-if="message !== null">{{message}}</label>
 			<label class="text-danger" v-if="errorMessage !== null"><b>Opps!</b> &nbsp;{{errorMessage}}</label>
-		</span>
+		</span> -->
 		<span v-if="data.length > 0" class="option-holder">
 			<span class="holder" v-for="item, index in data">
 
         <i class="far fa-dot-circle" v-bind:id="'option-' + index" v-on:click="selected(index)" ></i>
 				<!-- <input type="text" class="form-control form-control-lg order" v-bind:value="index + 1" disabled> -->
 				<input type="text" class="form-control form-control-lg value" v-model="item.description">
-				<i class="fa fa-trash text-danger" v-on:click="remove(index)"></i>
+				<i class="fa fa-trash text-danger action-link" v-on:click="remove(index)"></i>
 			</span>
 		</span>
 		<span class="add-option">
@@ -70,7 +70,7 @@ export default {
       }
     },
     selected(index){
-      this.answer = index
+      this.answer = (index + 1)
       if(this.prev === null){
         document.getElementById('option-' + index).classList.add('fas')
         document.getElementById('option-' + index).classList.remove('far')
@@ -87,6 +87,11 @@ export default {
           document.getElementById('option-' + index).classList.remove('fas')
           this.prev = index
         }
+      }
+    },
+    getAnswer(){
+      if(this.answer === null){
+        this.errorMessage = 'Please SELECT an answer.'
       }
     },
     createRequest(questionId){
@@ -107,6 +112,7 @@ export default {
     validation(){
       for (var i = 0; i < this.data.length; i++) {
         if(this.data[i].description === null){
+          this.errorMessage = 'Please FILLUP all the fields.'
           return false
         }
       }
@@ -162,19 +168,7 @@ export default {
 		margin-left: 2%;
 		text-align:right;
 	}
-  .fa-dot-circle{
-    color: #009900;
-  }
-  .fa-dot-circle:hover{
-    color: #009900;
-    cursor: pointer;
-    -webkit-transition: width 2s; /* Safari */
-    transition: width 2s;
-  }
-	.fa-trash:hover{
-		cursor: pointer;
-		color: #009900 !important;
-	}
+
 	.add-option{
 		float: left;
 		width: 100%;

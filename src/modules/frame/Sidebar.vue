@@ -174,11 +174,11 @@ export default {
 }
 .header i{
   font-size: 24px;
-  color: #006600;
+  color: #3f0050;
   }/*-- toggle-sidebar i --*/
 .header i:hover{
   cursor: pointer;
-  color: #009900;
+  color: #6a0090;
 }/*-- .toggle-sidebar i:hover --*/
 .sidebar-menu li{
   min-height: 40px;

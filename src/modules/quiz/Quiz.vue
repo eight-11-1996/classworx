@@ -1,16 +1,16 @@
 <template>
   <div>
       <div class="module-header">
-        <div class="title" style="width: 30%;">
-          <label>My <b>Quizes</b></label>
+        <div class="title">
+          <label class="text-warning">My <b>Quizzes</b></label>
         </div>
-        <div class="items-display" style="width: 60%;">
+        <div class="items-display">
           <label v-if="semesters.length > 0">Semesters</label>
           <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="semesterId">
             <option v-for="item, index in semesters"  v-bind:value="item.id">{{item.description}}</option>
           </select>
           <label v-if="courses.length > 0">Courses</label>
-          <select v-if="courses.length > 0" v-on:change="filterCourses()" v-model="courseId">
+          <select v-if="courses.length > 0" v-on:change="filterCourses()" v-model="parameter">
             <option v-for="item, index in courses"  v-bind:value="item.id">{{item.description}}</option>
           </select>
           <label>Show</label>
@@ -47,16 +47,17 @@
               <td>{{item.start + ' - ' + item.end}}</td>
               <td>{{item.timer}}</td>
               <td class="text-center">
-                <b class="text-primary" v-on:click="redirect('questions/' + item.id)">{{index}}</b>
-                <i class="fa fa-pencil text-warning" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal">
+                <b class="text-primary action-link" v-on:click="redirect('questions/' + item.id)" data-hover="tooltip" data-placement="top" title="View Questions">{{item.total_questions}}</b>
+                <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Quiz">
                 </i>
-                <i class="fa fa-trash text-danger" v-on:click="deleteRequest(item.id)"></i>
+                <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)" data-hover="tooltip" data-placement="top" title="Delete Quiz"></i>
               </td>
             </tr>
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" >Click to Add Quizes Now!</td>
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Quiz Now!</td>     
+              <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
             </tr>
           </tbody>
         </table>
@@ -191,7 +192,9 @@ export default {
       semesterId: null,
       courses: [],
       courseId: this.$route.params.courseId,
-      quizes: [],
+      method: 'quizzes',
+      methodId: 'course_id',
+      quizzes: [],
       errorMessage: null,
       closeFag: false,
       description: null,
@@ -255,13 +258,13 @@ export default {
       })
     },
     filterCourses(){
-      this.createParameter(this.courseId)
+      this.createParameter(this.parameter)
     },
     createParameter(value){
       let parameter = {
         'condition': [{
           'value': value,
-          'column': 'course_id',
+          'column': this.methodId,
           'clause': '='
         }]
       }
@@ -274,7 +277,7 @@ export default {
           'condition': [{
             'value': this.parameter,
             'clause': '=',
-            'column': 'course_id'
+            'column': this.methodId
           }]
         }
         this.retrieveRequest(true, param)
@@ -283,9 +286,13 @@ export default {
       }
     },
     retrieveRequest(flag, parameter){
-      this.APIRequest('quizes/retrieve', parameter).then(response => {
-        this.quizes = response.data
-        this.data = this.quizes
+      this.APIRequest(this.method + '/retrieve', parameter).then(response => {
+        if(response.data === null){
+          this.quizzes = []
+        }else{
+          this.quizzes = response.data
+        }
+        this.data = this.quizzes
       }).done(() => {
         if(flag === true){
           this.initDisplayer()
@@ -327,16 +334,16 @@ export default {
     },
     createRequest(){
       let formData = new FormData()
-      formData.append('course_id', this.courseId)
+      formData.append(this.methodId, this.parameter)
       formData.append('description', this.description)
       formData.append('type', this.type)
       formData.append('start', this.start)
       formData.append('end', this.end)
       formData.append('timer', this.timer)
-      axios.post(CONFIG.BACKEND_URL + '/quizes/create', formData).then(response => {
+      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
-          this.createParameter(this.courseId)
+          this.createParameter(this.parameter)
         }else{
           this.errorMessage = response.error.message
         }
@@ -346,11 +353,11 @@ export default {
       let parameter = {
         id: index
       }
-      this.APIRequest('quizes/delete', parameter).then(response => {
+      this.APIRequest(this.method + '/delete', parameter).then(response => {
         if(response.data === null){
           // Error Message
         }else{
-          this.createParameter(this.courseId)
+          this.createParameter(this.parameter)
         }
       })
     },
@@ -385,10 +392,10 @@ export default {
       }else{
         //
       }
-      axios.post(CONFIG.BACKEND_URL + '/quizes/update', formData).then(response => {
+      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
         if(response.data.data === true){
           $('#editModal').modal('hide')
-          this.createParameter(this.courseId)
+          this.createParameter(this.parameter)
         }
       })
     },
@@ -459,9 +466,9 @@ export default {
       }
     },
     makeActive(index){
-      $('.pager-active-' + index).css({'background': '#009900', 'color': 'white', 'border': 'solid 1px #009900'})
+      $('.pager-active-' + index).css({'background': '#3f0050', 'color': 'white', 'border': 'solid 1px #3f0050'})
       if(this.display.pagerActive !== index && this.display.pagerActive !== null){
-        $('.pager-active-' + this.display.pagerActive).css({'background': 'inherit', 'color': '#009900', 'border': 'solid 1px #ddd'})
+        $('.pager-active-' + this.display.pagerActive).css({'background': 'inherit', 'color': '#3f0050', 'border': 'solid 1px #ddd'})
         this.display.pagerActive = index
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
@@ -500,10 +507,6 @@ form input{
   height: 100%;
   outline: none;
   opacity: 0;
-}
-
-.bg-primary{
-  background: #009900 !important; 
 }
 
 .modal-title i{

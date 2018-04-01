@@ -125,66 +125,6 @@ body{
 }
 
 
-/*
-        BUTTONS
-*/
-.btn-primary{
-  background: #009900;
-  border-color: #009900;
-}
-
-.btn-primary:hover{
-  background: #009900;
-  border-color: #009900;
-}
-
-.btn-danger{
-  background: #ff0000;
-}
-
-.btn-danger:hover{
-  background: #ff0000;
-  border-color: #ff0000;
-}
-.btn-facebook{
-  background: #124abf;
-  color: #fff;
-}
-
-.btn-facebook:hover{
-  background: #3b5998;
-}
-
-.btn-gmail{
-  background: #c70000;
-  color: #fff;
-}
-.btn-gmail:hover{
-  background: #c71610;
-}
-/*
-      HALLOW
-
-*/
-
-.btn-primary-hallow{
-  border-color: #009900;
-  color: #009900;
-  background: #fff;
-}
-.btn-primary-hallow:hover{
-  color: #009900;
-  border-color: #009900;
-}
-.btn-danger-hallow{
-  border-color: #aa0000;
-  background: #fff;
-  color: #aa0000;
-}
-.btn-danger-hallow:hover{
-  color: #ff0000;
-  border-color: #ff0000;
-}
 .account-picture i{
   font-size: 100px !important;
 }
@@ -215,11 +155,11 @@ body{
     height: 50px;
     font-size: 24px;
     width: 18%;
-    background: #009900;
+    background: #3f0050;
     text-align: center;
   }
   .header-navbar{
-    background: #009900;
+    background: #6a0090;
     height: 50px;
     float: left;
     width: 82%;
@@ -254,7 +194,7 @@ body{
 
   .header-navbar-nav:hover{
     cursor: pointer;
-    background: #1c73eb;
+    background: #3f0050 ;
   }
 
 
@@ -299,7 +239,7 @@ body{
 }
 
 .nav-item:hover{
-  background: #006600;
+  background: #3f0050 ;
   cursor: pointer;
 }
 
@@ -378,11 +318,11 @@ body{
 }
 .navbar-menu-toggler-md:hover{
   cursor: pointer;
-  background: #006600;
+  background: #3f0050;
 }
 
 .active-menu{
-  background: #006600;
+  background: #3f0050;
 }
 
 

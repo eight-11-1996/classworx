@@ -1,16 +1,16 @@
 <template>
   <div class="question-holder">
-    <span class="message-holder text-center" v-if="message !== null || errorMessage !== null">
+<!--     <span class="message-holder text-center" v-if="message !== null || errorMessage !== null">
       <label class="text-primary" v-if="message !== null">{{message}}</label>
       <label class="text-danger" v-if="errorMessage !== null"><b>Opps!</b> &nbsp;{{errorMessage}}</label>
-    </span>
+    </span> -->
     <span v-if="data.length > 0" class="option-holder">
       <span class="holder" v-for="item, index in data">
 
         <i class="far fa-square" v-bind:id="'option-' + index" v-on:click="selected(index)" ></i>
         <!-- <input type="text" class="form-control form-control-lg order" v-bind:value="index + 1" disabled> -->
         <input type="text" class="form-control form-control-lg value" v-model="item.description">
-        <i class="fa fa-trash text-danger" v-on:click="remove(index)"></i>
+        <i class="fa fa-trash text-danger action-link" v-on:click="remove(index)"></i>
       </span>
     </span>
     <span class="add-option">
@@ -102,16 +102,22 @@ export default {
       for (var i = 0; i < this.dataTemp.length; i++) {
         if(this.dataTemp[i].flag === true){
           if(this.answer === null){
-            this.answer = (i + 1) + ''
+            this.answer = ',' + (i + 1)
           }else{
-            this.answer += '/' + (i + 1)
+            this.answer += ',' + (i + 1)
           }
         }
+      }
+      if(this.answer === null){
+        this.errorMessage = 'Please SELECT answers.'
+      }else{
+        this.answer += ','
       }
     },
     validation(){
       for (var i = 0; i < this.data.length; i++) {
         if(this.data[i].description === null){
+          this.errorMessage = 'Please FILLUP all the fields.'
           return false
         }
       }
@@ -167,19 +173,7 @@ export default {
     margin-left: 2%;
     text-align:right;
   }
-  .fa-square{
-    color: #009900;
-  }
-  .fa-square:hover{
-    color: #009900;
-    cursor: pointer;
-    -webkit-transition: width 2s; /* Safari */
-    transition: width 2s;
-  }
-  .fa-trash:hover{
-    cursor: pointer;
-    color: #009900 !important;
-  }
+  
   .add-option{
     float: left;
     width: 100%;

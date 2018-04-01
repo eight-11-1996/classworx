@@ -82,25 +82,44 @@
         width: 60%;
         float: left;
       }
+      @media screen (min-width: 200px), screen and (max-width: 991px){
+        .module-header .title{
+          width: 100%;
+        }
+        .module-header .items-display{
+          width: 100%;
+        }
+        .module-header .add{
+          width: 100%;
+        }
+      }
       .page-link{
-        color: #009900;
+        color: #3f0050;
         background: inherit;
       }
       .empty-table:hover{
         cursor: pointer;
         color: white !important;
-        background: #009900;
+        background: #3f0050;
       }
       .page-link:hover{
         cursor: pointer;
-        background: #009900 !important;
+        background: #3f0050 !important;
         color: white !important;
       }
       .text-primary{
-        color: #009900 !important;
+        color: #3f0050 !important;
+      }
+      .action-link:hover{
+        color: #028170 !important;
+        cursor: pointer;
+      }
+      .text-underline:hover{
+        cursor: pointer;
+        text-decoration: underline;
       }
       .breadcrumb{
-        color: #1caceb;
+        color: #028170;
         background: inherit !important;
         border: none !important;
       }
@@ -114,8 +133,77 @@
       }
       td i:hover, td b{
         cursor: pointer;
-        color: #009900 !important; 
+        color: #3f0050 !important; 
       }
+      .bg-primary{
+        background: #6a0090 !important; 
+      }
+
+      /*
+
+      BUTTONS
+
+      */
+      .btn-primary{
+        background: #028170;
+        border-color: #028170;
+        height: 35px !important;
+      }
+
+      .btn-primary:hover{
+        background: #028170;
+        border-color: #028170;
+      }
+
+      .btn-danger{
+        background: #ff0000;
+        height: 35px !important;
+      }
+
+      .btn-danger:hover{
+        background: #ff0000;
+        border-color: #ff0000;
+      }
+
+      .btn-warning{
+        background: #FCCD04 !important;
+        height: 35px !important;
+      }
+      /*
+
+        Question View
+
+      */
+      .answer label{
+        font-weight: 700;
+        color: #000;
+      }
+
+      /*
+
+        Questions Templates 
+
+      */
+      .fa-square{
+        color: #3f0050;
+      }
+      .fa-square:hover{
+        color: #028170;
+        cursor: pointer;
+        -webkit-transition: width 2s; /* Safari */
+        transition: width 2s;
+      }
+
+      .fa-dot-circle{
+        color: #3f0050;
+      }
+      .fa-dot-circle:hover{
+        color: #028170;
+        cursor: pointer;
+        -webkit-transition: width 2s; /* Safari */
+        transition: width 2s;
+      }
+
     </style>
     <!-- built files will be auto injected -->
   </body>

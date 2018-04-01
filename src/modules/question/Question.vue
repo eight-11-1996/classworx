@@ -1,17 +1,17 @@
 <template>
   <div>
       <div class="module-header">
-        <div class="title" style="width: 60%;">
-          <label v-on:click="redirect('/quizes/' + parameter)" class="breadcrumb"><b>Quizes</b></label> > <label v-if="quiz !== null">{{quiz.description}}</label>
+        <div class="title text-warning">
+          <label v-on:click="redirect('/quizzes/' + parameter)" class="text-underline"><b>Quizzes</b></label><label v-if="quiz !== null">/{{quiz.description}}</label>
         </div>
-        <div class="items-display pull-right" style="width:30%;">
+        <div class="items-display pull-right">
           <label>Show</label>
           <select v-model="selectedTotalItems" v-on:change="filter()">
             <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
             <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
           </select>
         </div>
   <!--       <div class="3">
@@ -25,30 +25,140 @@
         <table class="table table-responsive table-bordered">
           <thead>
             <tr>
-              <td>Order</td>
-              <td>Type</td>
-              <td>Question</td>
-              <td>Answer</td>
+              <td>Number</td>
+              <td colspan="3">Field</td>
               <td>Actions</td>
             </tr>
           </thead>
           <tbody v-if="data.length > 0">
-            <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td>{{item.order}}</td>
-              <td>{{item.type}}</td>
-              <td>{{item.question}}</td>
-              <td>{{item.answer}}</td>
+            <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)" class="editable-tr" v-on:dblclick="edit(index)" data-hover="tooltip" data-placement="top" title="Double Click to edit">
+              
+              <!--
+
+                    ORDER
+
+                 -->
+
+              <td>
+                <label v-if="data[index].edit === false">
+                  {{item.order}}
+                </label>
+                <input type="text" class="form-control text-center" v-model="data[index].order" v-else>
+              </td>
+
+
+              <td colspan="3">
+
+                <!--
+
+                    QUESTION & TYPE
+
+                 -->
+                <span class="options">
+                  <span class="option-item" v-if="data[index].edit === true">
+                    <label>
+                      Question Type: <b>{{data[index].type}}</b>
+                    </label>  
+                  </span>
+                  <span class="option-item" v-if="data[index].edit === false">
+                    <label>
+                      {{item.question}}
+                    </label>
+                  </span>
+                  <span v-else class="option-item">
+                    <label>Question:</label>
+                    <input type="text" class="form-control" v-model="data[index].question">
+                  </span>
+                </span>
+
+
+
+                <!--
+
+                    OPTIONS & ANSWER
+
+                 -->
+
+               <span v-if="item.type === 'multiple_choice'">
+                 <label>Choices:</label>
+                 <span class="options" v-if="data[index].edit === false">
+                  <span class="option-item" v-for="itemOption, indexOption in data[index].question_options" v-if="data[index].question_options.length > 0">
+                    <i class="fa-dot-circle action-link" v-bind:class="{'far': itemOption.order !== parseInt(item.answer), 'fas': itemOption.order === parseInt(item.answer)}"></i>
+                    {{itemOption.description}}
+                  </span>
+                </span>
+                 <span class="options" v-else>
+                  <label>Choices:</label>
+                  <span class="option-item edit-option" v-for="itemOption, indexOption in data[index].question_options" v-if="data[index].question_options.length > 0">
+                    <i class="fa-dot-circle action-link" v-bind:class="{'far': itemOption.order !== parseInt(item.answer), 'fas': itemOption.order === parseInt(item.answer)}" v-on:click="toggle(index, itemOption.order)"></i>
+                    <input type="text" class="form-control" v-model="data[index].question_options[indexOption].description">
+                      <i class="fa fa-trash text-danger action-link" v-on:click="remove(index, indexOption)"></i>
+                  </span>
+                </span>
+               </span>
+                
+
+                <span v-if="item.type === 'multiple_answers'">
+                  <label>Choices:</label>
+                  <span class="options" v-if="data[index].edit === false">
+                    <span class="option-item" v-for="itemOption, indexOption in data[index].question_options" v-if="data[index].question_options.length > 0">
+                      <i class="fa-square action-link" v-bind:class="{'far': item.answer.includes(',' + itemOption.order + ',') === false, 'fas': item.answer.includes(',' + itemOption.order + ',') === true}"></i>
+                      {{itemOption.description}}
+                    </span>
+                  </span>
+                  <span class="options" v-else>
+                    <label>Choices:</label>
+                    <span class="option-item edit-option" v-for="itemOption, indexOption in data[index].question_options" v-if="data[index].question_options.length > 0">
+                      <i class="fa-square action-link" v-bind:class="{'far': item.answer.includes(',' + itemOption.order + ',') === false, 'fas': item.answer.includes(',' + itemOption.order + ',') === true}" v-on:click="toggle(index, itemOption.order)"></i>
+                      <input type="text" class="form-control" v-model="data[index].question_options[indexOption].description">
+                      <i class="fa fa-trash text-danger action-link" v-on:click="remove(index, indexOption)"></i>
+                    </span>
+                  </span>
+                </span>
+
+
+                <span class="options" v-if="item.type === 'short_answer'">
+                  <span class="option-item"v-if="item.edit === false">Short Answer: 
+                    <label>{{item.answer}}</label>
+                  </span>
+                  <span class="option-item" v-else>
+                    <label>Short Answer:</label>
+                    <input type="text" class="form-control" v-model="data[index].answer">
+                  </span>
+                </span>
+
+
+                <span class="options" v-if="item.type === 'long_answer'">
+                  <span class="answer">Long Answer: {{item.answer}}</span>
+                </span>
+                
+
+                <!--
+
+                    BUTTONS
+
+                 -->
+
+                <span v-if="item.edit === true">
+                  <button class="btn btn-primary pull-left" style="margin-top:5px;" v-if="data[index].type === 'multiple_answers'" v-on:click="add(index)"><i class="fa fa-plus"></i>Add Answer</button>
+                  <button class="btn btn-primary pull-left" style="margin-top:5px;" v-if="data[index].type === 'multiple_choice'" v-on:click="add(index)"><i class="fa fa-plus"></i>Add Choice</button>
+                  <button class="btn btn-primary pull-right" style="margin-left: 10px; margin-top:5px;"><i class="fa fa-sync"></i>Update</button>
+                  <button class="btn btn-danger pull-right" style="margin-top:5px;" v-on:click="cancel(index)"><i class="fa fa-ban"></i>Cancel</button>
+                </span>
+
+              </td>
               <td class="text-center">
-                <i class="fas fa-eye text-primary"></i>
-                <i class="fa fa-pencil text-warning" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal">
+                <!-- <i class="fas fa-eye text-primary"></i> -->
+                <i class="fa fa-pencil text-warning action-link" v-on:click="edit(index)" data-hover="tooltip" data-placement="top" title="Edit Question">
                 </i>
-                <i class="fa fa-trash text-danger" v-on:click="deleteRequest(item.id)"></i>
+                <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)"  data-hover="tooltip" data-placement="top" title="Delete Question"></i>
               </td>
             </tr>
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" >Click to Add Question Now!</td>
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Question Now!</td>     
+              <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
             </tr>
           </tbody>
         </table>
@@ -65,48 +175,6 @@
           </ul>
        </div>
       </div>
-     
-
-    <!-- Modal 
-
-      EDIT
-    -->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="modalView !== null">
-      <div class="modal-dialog modal-md" role="document">
-        <div class="modal-content">
-          <div class="modal-header bg-primary">
-            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Update Question</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true" class="text-white">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <span v-if="errorMessage !== null" class="text-danger text-center">
-                <label><b>Opps! </b>{{errorMessage}}</label>
-            </span>
-            <br v-if="errorMessage !== null">
-            <label>Question</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.question" v-model="modalInput.question">
-            <br>
-            <label>Answer Type</label>
-            <br>
-            <select class="form-control" v-model="modalInput.type">
-              <option value="multiple_choice">Multiple Choice</option>
-            </select>
-            <br>
-            <label>Order</label>
-            <br>
-            <input type="time" class="form-control" v-bind:placeholder="modalView.order" v-model="modalInput.order">
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
-              <button type="button" class="btn btn-danger" v-else  data-dismiss="modal" aria-label="Close">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
 
 
     <!-- Modal 
@@ -134,9 +202,23 @@
             <label>Answer Type</label>
             <br>
             <select v-model="type" class="form-control">
+              <option value="short_answer">Short Answer</option>
+              <option value="long_answer">Long Answer</option>
               <option value="multiple_choice">Multiple Choice</option>
               <option value="multiple_answers">Multiple Answers</option>
             </select>
+            <span v-if="type === 'short_answer'">
+              <br>
+              <label>Answer <label class="text-danger">(<b>PLEASE ENTER YOUR ANSWER.</b>)</label></label>
+              <br>
+              <short-answer></short-answer>
+            </span>
+            <span v-if="type === 'long_answer'">
+              <br>
+              <label>Answer <label class="text-primary">(<b>NO ANSWER: MANUAL CHECKING.</b>)</label></label>
+              <br>
+              <long-answer></long-answer>
+            </span>
             <span v-if="type === 'multiple_choice'">
               <br>
               <label>Choices <label class="text-danger">(<b>PLEASE SELECT AN ANSWER.</b>)</label></label>
@@ -183,13 +265,7 @@ export default {
       closeFag: false,
       type: null,
       question: null,
-      modalView: null,
-      modalInput: {
-        id: null,
-        type: null,
-        question: null,
-        order: null
-      },
+      prevEditIndex: null,
       selectedTotalItems: null,
       totalDisplay: 5,
       currentTotalIndex: 0,
@@ -207,7 +283,9 @@ export default {
   },
   components: {
     'multiple-choice': require('modules/question/MultipleChoice.vue'),
-    'multiple-answers': require('modules/question/MultipleAnswers.vue')
+    'multiple-answers': require('modules/question/MultipleAnswers.vue'),
+    'short-answer': require('modules/question/ShortAnswer.vue'),
+    'long-answer': require('modules/question/LongAnswer.vue')
   },
   methods: {
     redirect(parameter){
@@ -221,7 +299,7 @@ export default {
           'clause': '='
         }]
       }
-      this.APIRequest('quizes/retrieve', parameter).then(response => {
+      this.APIRequest('quizzes/retrieve', parameter).then(response => {
         this.quiz = response.data[0]
       })
     },
@@ -255,8 +333,11 @@ export default {
     },
     retrieveRequest(flag, parameter){
       this.APIRequest(this.method + '/retrieve', parameter).then(response => {
-        this.quizes = response.data
-        this.data = this.quizes
+        if(response.data === null){
+          this.data = []
+        }else{
+          this.data = response.data
+        }
       }).done(() => {
         if(flag === true){
           this.initDisplayer()
@@ -296,9 +377,9 @@ export default {
           this.createRequest()
         }else{
           if(this.$children[0].answer === null){
-            this.errorMessage = 'Please SELECT an answer of the options.'
+            this.errorMessage = this.$children[0].errorMessage
           }else if(this.$children[0].validation() === false){
-            this.errorMessage = 'Pleases INPUT all the fields of the options'
+            this.errorMessage = this.$children[0].errorMessage
           }else{
             this.errorMessage = 'Please FILLUP the required informations'
           }
@@ -318,11 +399,31 @@ export default {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
           newId = response.data.data
-          this.$children[0].createRequest(newId)
-          this.createParameter(this.parameter)
+          if(this.type === 'multiple_choice' || this.type === 'multiple_answers'){
+            this.createRequestQuestionOptions(newId)
+          }else{
+            this.createParameter(this.parameter)
+          }
         }else{
           this.errorMessage = response.error.message
         }
+      })
+    },
+    createRequestQuestionOptions(newId){
+      let parameter = {
+        'question_id': newId,
+        'options': this.$children[0].data
+      }
+      this.APIRequest('question_options/create', parameter).then(response => {
+        if(response.data.data !== null){
+          this.$children[0].message = 'Successfully Added!'
+          this.$children[0].errorMessage = null
+        }else{
+          this.$children[0].message = null
+          this.$children[0].errorMessage = response.data.message
+        }
+      }).done(() => {
+        this.createParameter(this.parameter)
       })
     },
     deleteRequest(index){
@@ -344,9 +445,60 @@ export default {
         return true
       }
     },
-    editModalView(index){
-      this.modalView = this.data[index]
-      this.modalInput.id = this.modalView.id
+    edit(index){
+      if(this.prevEditIndex === null){
+        this.data[index].edit = true
+        this.prevEditIndex = index
+      }else{
+        if(index === this.prevEditIndex){
+          this.data[index].edit = false
+          this.prevEditIndex = null
+        }else{
+          this.data[index].edit = true
+          this.data[this.prevEditIndex].edit = false
+          this.prevEditIndex = index
+        }
+      }
+    },
+    cancel(index){
+      this.data[index].edit = false
+      this.prevEditIndex = null
+    },
+    toggle(index, order){
+      if(this.data[index].type === 'multiple_answers'){
+        if(this.data[index].answer.includes(',' + order + ',')){
+          let text = ',' + order + ','
+          let newAnswer = this.data[index].answer.replace(text, ',')
+          this.data[index].answer = newAnswer
+        }else{
+          this.data[index].answer += order + ','
+        }
+      }else if(this.data[index].type === 'multiple_choice'){
+        this.data[index].answer = order
+      }else{
+        //
+      }
+    },
+    remove(index, indexOption){
+      this.data[index].question_options.splice(indexOption, 1)
+    },
+    add(index){
+      if(this.data[index].question_options.length > 0){
+        let parameter = {
+          'question_id': this.data[index].id,
+          'description': null,
+          'order': this.data[index].question_options.length + 1
+        }
+        this.data[index].question_options.push(parameter)
+      }else{
+        this.data[index].question_options = []
+        let parameter = {
+          'question_id': this.data[index].id,
+          'description': null,
+          'order': 1
+        }
+        this.data[index].question_options.push(parameter)
+      }
     },
     updateRequest(){
       let formData = new FormData()
@@ -442,9 +594,9 @@ export default {
       }
     },
     makeActive(index){
-      $('.pager-active-' + index).css({'background': '#009900', 'color': 'white', 'border': 'solid 1px #009900'})
+      $('.pager-active-' + index).css({'background': '#3f0050', 'color': 'white', 'border': 'solid 1px #3f0050'})
       if(this.display.pagerActive !== index && this.display.pagerActive !== null){
-        $('.pager-active-' + this.display.pagerActive).css({'background': 'inherit', 'color': '#009900', 'border': 'solid 1px #ddd'})
+        $('.pager-active-' + this.display.pagerActive).css({'background': 'inherit', 'color': '#3f0050', 'border': 'solid 1px #ddd'})
         this.display.pagerActive = index
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
@@ -485,10 +637,6 @@ form input{
   opacity: 0;
 }
 
-.bg-primary{
-  background: #009900 !important; 
-}
-
 .modal-title i{
   padding-right: 10px;
 }
@@ -502,6 +650,34 @@ td button i{
 }
 thead{
   font-weight: 700;
+}
+td .question, td .answer, td .options, .options .option-item{
+  float: left;
+  width: 100%;
+}
+.editable-tr{
+  cursor: pointer;
+}
+.question{
+  font-size: 14px !important;
+  margin-bottom: 10px;
+}
+.option-item{
+  margin-bottom: 10px;
+}
+.option-item i{
+  font-size: 24px !important;
+}
+.edit-option i{
+  width: 5%;
+  text-align: center;
+  float: left;
+  padding-top: 10px;
+}
+.edit-option input{
+  width: 86%;
+  margin: 0 2% 0 2%;
+  float: left;
 }
 
 </style>

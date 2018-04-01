@@ -48,65 +48,6 @@ body{
 }
 
 
-.btn-primary{
-  background: #009900;
-  border-color: #009900;
-}
-
-.btn-primary:hover{
-  background: #009900;
-  border-color: #009900;
-}
-
-.btn-danger{
-  background: #ff0000;
-}
-
-.btn-danger:hover{
-  background: #ff0000;
-  border-color: #ff0000;
-}
-.btn-facebook{
-  background: #124abf;
-  color: #fff;
-}
-
-.btn-facebook:hover{
-  background: #3b5998;
-}
-
-.btn-gmail{
-  background: #c70000;
-  color: #fff;
-}
-.btn-gmail:hover{
-  background: #c71610;
-}
-/*
-      HALLOW
-
-*/
-
-.btn-primary-hallow{
-  border-color: #009900;
-  color: #009900;
-  background: #fff;
-}
-.btn-primary-hallow:hover{
-  color: #009900;
-  border-color: #009900;
-}
-.btn-danger-hallow{
-  border-color: #aa0000;
-  background: #fff;
-  color: #aa0000;
-}
-.btn-danger-hallow:hover{
-  color: #ff0000;
-  border-color: #ff0000;
-}
-
-
 /*------------------------------------
 
           TABLES

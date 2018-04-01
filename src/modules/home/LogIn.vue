@@ -9,7 +9,7 @@
       <div class="col-sm-12 col-md-4">
         <div class="login-wrapper">
           <div class="login-header" style="margin-top: 50px;text-align:center;">
-            <h1 class="navbar-brand text-center" style="font-size:32px;">
+            <h1 class="navbar-brand text-center text-primary" style="font-size:32px;">
               Class<b>Worx</b>
             </h1>
           </div>
@@ -26,14 +26,14 @@
               <span class="input-group-addon" id="addon-2"><i class="fa fa-key"></i></span>
               <input type="password" class="form-control form-control-login" placeholder="********" aria-describedby="addon-2" v-model="password">
             </div>
-            <button class="btn btn-primary btn-block btn-login login-spacer" v-on:click="logIn()">Login</button>
+            <button class="btn btn-login-primary btn-block btn-login login-spacer" v-on:click="logIn()">Login</button>
             <!-- <div class="form-check">
               <label class="form-check-label">
                 <input type="checkbox" class="form-check-input">
                 Keep me logged in
               </label>
             </div> -->
-            <button class="btn btn-warning btn-block btn-login login-spacer" v-on:click="redirect('forget_password')">Forget your Password?</button>
+            <button class="btn btn-login-warning btn-block btn-login login-spacer" v-on:click="redirect('forget_password')">Forget your Password?</button>
             <br>
             <div class="container-fluid separator">
                 or
@@ -143,18 +143,9 @@ export default {
 
 ------------------------------------------*/
 .form-control-login{
-  height: 50px !important;
+  height: 45px !important;
 }
 
-
-/*----------------------------------------
-
-            Buttons
-
-------------------------------------------*/
-.btn-login{
-  height: 45px !important;
-}/*-- form-control --*/
 
 /*    Line with text on top  */
 .separator>*{
@@ -186,19 +177,31 @@ export default {
     margin-right: -100%;
 }
 
-.btn-warning{
+.btn-login-primary{
+  background: #6a0090;
   color: #fff;
+  height: 45px !important;
 }
-.btn-warning:hover{
+.btn-login-primary:hover{
+  border: solid 1px #3f0050;
+}
+
+.btn-login-warning{
   color: #fff;
+  background: #FCCD04;
+  height: 45px !important;
+}
+.btn-login-warning:hover{
+  color: #fff;
+  border: solid 1px #bb9800;
 }
 .btn-blue{
-  background: #1caceb;
+  background: #028170;
   color: #fff;
+  height: 45px !important;
 }
 .btn-blue:hover{
-  background: #1caceb;
-  color: #fff;
+  border: solid 1px #026759;
 }
 /*---------------------------------------------------------
 

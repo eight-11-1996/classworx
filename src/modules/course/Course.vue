@@ -2,11 +2,11 @@
   <div>
       <div class="module-header">
         <div class="title">
-          <label>My <b>Courses</b></label>
+          <label class="text-warning">My <b>Courses</b></label>
         </div>
         <div class="items-display pull-right">
           <label v-if="semesters.length > 0">Semesters</label>
-          <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="semesterId">
+          <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="parameter">
             <option v-for="item, index in semesters"  v-bind:value="item.id">{{item.description}}</option>
           </select>
           <label>Show</label>
@@ -43,16 +43,17 @@
               <td>{{item.units}}</td>
               <td>{{item.time_start + '-' + item.time_end + ' (' + item.days + ')'}}</td>
               <td>
-                <i class="fa fa-file-text-o text-primary" v-on:click="redirect('/quizes/' + item.id)"></i>
-                <i class="fa fa-pencil text-warning" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal">
+                <i class="fa fa-file-text-o text-primary action-link" v-on:click="redirect('/quizzes/' + item.id)" data-hover="tooltip" data-placement="top" title="View Quizzes"></i>
+                <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Course">
                 </i>
-                <i class="fa fa-trash text-danger" v-on:click="deleteRequest(item.id)"></i>
+                <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)" data-hover="tooltip" data-placement="top" title="Delete Course"></i>
               </td>
             </tr>
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" >Click Add Course Now!</td>
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Course Now!</td>     
+              <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
             </tr>
           </tbody>
         </table>
@@ -194,6 +195,8 @@ export default {
       semesters: [],
       semesterId: this.$route.params.id,
       courses: [],
+      method: 'courses',
+      methodId: 'semester_id',
       errorMessage: null,
       closeFag: false,
       code: null,
@@ -244,13 +247,13 @@ export default {
       })
     },
     filterSemester(){
-      this.createParameter(this.semesterId)
+      this.createParameter(this.parameter)
     },
     createParameter(value){
       let parameter = {
         'condition': [{
           'value': value,
-          'column': 'semester_id',
+          'column': this.methodId,
           'clause': '='
         }]
       }
@@ -263,7 +266,7 @@ export default {
           'condition': [{
             'value': this.parameter,
             'clause': '=',
-            'column': 'semester_id'
+            'column': this.methodId
           }]
         }
         this.retrieveRequest(true, param)
@@ -272,8 +275,12 @@ export default {
       }
     },
     retrieveRequest(flag, parameter){
-      this.APIRequest('courses/retrieve', parameter).then(response => {
-        this.courses = response.data
+      this.APIRequest(this.method + '/retrieve', parameter).then(response => {
+        if(response.data === null){
+          this.courses = []
+        }else{
+          this.courses = response.data
+        }
         this.data = this.courses
       }).done(() => {
         if(flag === true){
@@ -316,14 +323,14 @@ export default {
     },
     createRequest(){
       let formData = new FormData()
-      formData.append('semester_id', this.semesterId)
+      formData.append(this.methodId, this.semesterId)
       formData.append('code', this.code)
       formData.append('description', this.description)
       formData.append('units', this.units)
       formData.append('time_start', this.timeStart)
       formData.append('time_end', this.timeEnd)
       formData.append('days', this.days)
-      axios.post(CONFIG.BACKEND_URL + '/courses/create', formData).then(response => {
+      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
           this.createParameter(this.semesterId)
@@ -336,7 +343,7 @@ export default {
       let parameter = {
         id: index
       }
-      this.APIRequest('courses/delete', parameter).then(response => {
+      this.APIRequest(this.metod + '/delete', parameter).then(response => {
         if(response.data === null){
           // Error Message
         }else{
@@ -378,7 +385,7 @@ export default {
       }else{
         //
       }
-      axios.post(CONFIG.BACKEND_URL + '/courses/update', formData).then(response => {
+      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
         if(response.data.data === true){
           $('#editModal').modal('hide')
           this.createParameter(this.semesterId)
@@ -452,9 +459,9 @@ export default {
       }
     },
     makeActive(index){
-      $('.pager-active-' + index).css({'background': '#009900', 'color': 'white', 'border': 'solid 1px #009900'})
+      $('.pager-active-' + index).css({'background': '#3f0050', 'color': 'white', 'border': 'solid 1px #3f0050'})
       if(this.display.pagerActive !== index && this.display.pagerActive !== null){
-        $('.pager-active-' + this.display.pagerActive).css({'background': 'inherit', 'color': '#009900', 'border': 'solid 1px #ddd'})
+        $('.pager-active-' + this.display.pagerActive).css({'background': 'inherit', 'color': '#3f0050', 'border': 'solid 1px #ddd'})
         this.display.pagerActive = index
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
@@ -493,10 +500,6 @@ form input{
   height: 100%;
   outline: none;
   opacity: 0;
-}
-
-.bg-primary{
-  background: #009900 !important; 
 }
 
 .modal-title i{
