@@ -45,7 +45,7 @@ class QuestionController extends ClassWorxController
       );
       $result = null;
       if(isset($data['condition'])){
-        $result = ($data['condition'][0]['column'] == 'quiz_id') ? Question::where('quiz_id', '=', $data['condition'][0]['value'])->get() : Question::where('exam_id', '=', $data['condition'][0]['value'])->get();
+        $result = ($data['condition'][0]['column'] == 'quiz_id') ? Question::where('quiz_id', '=', $data['condition'][0]['value'])->orderBy('order', 'ASC')->get() : Question::where('exam_id', '=', $data['condition'][0]['value'])->orderBy('order', 'ASC')->get();
         if(sizeof($result) > 0){
           $i = 0;
           foreach ($result as $key) {
@@ -67,5 +67,27 @@ class QuestionController extends ClassWorxController
         $this->retreveDB($data);
         return $this->response();
       }
+    }
+
+    public function update(Request $request){
+      $data = $request->all();
+      $response = array(
+        "data" => null,
+        "message" => null
+      );
+      if(isset($data['data']) == true){
+        // Update Questions table
+        // Update Question Options Table
+        $questionData = array(
+          "question" => $data['data']['question'],
+          "answer"   => $data['data']['answer'],
+          "order"    => $data['data']['order']
+        );
+        $result = Question::where('id', '=', $data['data']['id'])->update($questionData);
+        $response["data"] = true;
+      }else{
+        $response["message"] = "data is not found";
+      }
+      return response()->json($response);
     }
 }

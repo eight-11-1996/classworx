@@ -52,4 +52,36 @@ class QuestionOptionController extends ClassWorxController
 			return true;
 			return false;
 	}
+
+	public function update(Request $request){
+		$data = $request->all();
+		$questionOptions = $data['question_options'];
+		$response = array(
+			"data" => null,
+			"message" => null
+		);
+		if(sizeof($questionOptions) > 0){
+			$i = 0;
+			foreach ($questionOptions as $key) {
+				$questionOptions[$i]['order'] = $i + 1;
+				$questionOptions[$i]['question_id'] = $data['id'];
+				$result = null;
+				if($this->checkIfExist($questionOptions[$i]) === true){
+					$qOptionData = array(
+						"description" => $questionOptions[$i]['description'],
+						"order" => $questionOptions[$i]['order'],
+						"question_id" => $data['id']
+					);
+					$result = QuestionOption::where('id', '=', $questionOptions[$i]['id'])->update($qOptionData);
+				}else{
+					$result = QuestionOption::insert($questionOptions[$i]);
+				}
+				$i++;
+			}
+			$response['data'] = true;
+		}else{
+			$response['message'] = "Empty Data";	
+		}
+		return response()->json($response);
+	}
 }

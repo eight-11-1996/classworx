@@ -31,7 +31,7 @@
             </tr>
           </thead>
           <tbody v-if="data.length > 0">
-            <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)" v-bind:class="{'editable-tr': data[index].edit === false}" v-on:dblclick="edit(index)" v-bind:data-hover="{'tooltip': data[index].edit === false}" v-bind:data-placement="{'top': data[index].edit === false}" v-bind:title="{'Double Click to edit': data[index].edit === false}">
+            <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)" v-bind:class="{'editable-tr': data[index].edit === false}" v-on:dblclick="edit(index)" v-bind:data-hover="{'tooltip': data[index].edit === false}" v-bind:data-placement="{'top': data[index].edit === false}" title="Double Click to edit">
               
               <!--
 
@@ -142,7 +142,7 @@
                 <span v-if="item.edit === true">
                   <button class="btn btn-primary pull-left" style="margin-top:5px;" v-if="data[index].type === 'multiple_answers'" v-on:click="add(index)"><i class="fa fa-plus"></i>Add Answer</button>
                   <button class="btn btn-primary pull-left" style="margin-top:5px;" v-if="data[index].type === 'multiple_choice'" v-on:click="add(index)"><i class="fa fa-plus"></i>Add Choice</button>
-                  <button class="btn btn-primary pull-right" style="margin-left: 10px; margin-top:5px;"><i class="fa fa-sync"></i>Update</button>
+                  <button class="btn btn-primary pull-right" style="margin-left: 10px; margin-top:5px;" v-on:click="update(data[index], index)"><i class="fa fa-sync"></i>Update</button>
                   <button class="btn btn-danger pull-right" style="margin-top:5px;" v-on:click="cancel(index)"><i class="fa fa-ban"></i>Cancel</button>
                 </span>
 
@@ -463,6 +463,33 @@ export default {
     cancel(index){
       this.data[index].edit = false
       this.prevEditIndex = null
+    },
+    update(data, index){
+      let parameter = {
+        'data': data
+      }
+      this.APIRequest(this.method + '/update', parameter).then(response => {
+        if(data.type === 'short_answer' || data.type === 'long_answer'){
+          this.data[index].edit = false
+          this.prevEditIndex = null
+          this.createParameter(this.parameter)
+        }
+      }).done(() => {
+        // Multiple Answers and Multiple Choice Template
+        if(data.type === 'multiple_answers' || data.type === 'multiple_choice'){
+          this.APIRequest('question_options/update', data).done(response => {
+            if(response.data === true){
+              this.data[index].edit = false
+              this.prevEditIndex = null
+              this.createParameter(this.parameter)
+            }else{
+              //
+            }
+          })
+        }else{
+          // other tempalte
+        }
+      })
     },
     toggle(index, order){
       if(this.data[index].type === 'multiple_answers'){
