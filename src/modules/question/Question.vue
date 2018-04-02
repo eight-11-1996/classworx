@@ -428,7 +428,9 @@ export default {
     },
     deleteRequest(index){
       let parameter = {
-        id: index
+        id: index,
+        'value': this.parameter,
+        'column': this.methodId
       }
       this.APIRequest(this.method + '/delete', parameter).then(response => {
         if(response.data === null){

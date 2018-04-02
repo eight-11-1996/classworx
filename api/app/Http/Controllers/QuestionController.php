@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Question;
 use App\QuestionOption;
+use Carbon\Carbon;
 class QuestionController extends ClassWorxController
 {
     function __construct(){
@@ -69,6 +70,37 @@ class QuestionController extends ClassWorxController
       }
     }
 
+    public function delete(Request $request){
+      $data = $request->all();
+      $id = $data['value'];
+      $column = $data['column'];
+      $questionId = $data['id'];
+      $response = array(
+        "data"  => null,
+        "message" => null
+      );
+      $deleteData = array(
+        "deleted_at" => Carbon::now()
+      );
+      Question::where('id', '=', $questionId)->update($deleteData);
+      $result = Question::where($column, '=', $id)->orderBy('order', 'ASC')->get();
+      if(sizeof($result) > 0){
+        $i = 0;
+        foreach ($result as $key) {
+          $updateData = array(
+            "order" => $i + 1,
+            "updated_at" => Carbon::now()
+          );
+          Question::where('id', '=', $key->id)->update($updateData);
+          $i++;
+        }
+        $response["data"] = true;
+      }else{
+        $response["message"] = "Error";
+      }
+      return response()->json($response);
+    }
+
     public function update(Request $request){
       $data = $request->all();
       $response = array(
@@ -81,7 +113,8 @@ class QuestionController extends ClassWorxController
         $questionData = array(
           "question" => $data['data']['question'],
           "answer"   => $data['data']['answer'],
-          "order"    => $data['data']['order']
+          "order"    => $data['data']['order'],
+          "updated_at" => Carbon::now()
         );
         $result = Question::where('id', '=', $data['data']['id'])->update($questionData);
         $response["data"] = true;

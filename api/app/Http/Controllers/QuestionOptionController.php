@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\QuestionOption;
-
+use Carbon\Carbon;
 class QuestionOptionController extends ClassWorxController
 {
 	function __construct(){
@@ -70,7 +70,8 @@ class QuestionOptionController extends ClassWorxController
 					$qOptionData = array(
 						"description" => $questionOptions[$i]['description'],
 						"order" => $questionOptions[$i]['order'],
-						"question_id" => $data['id']
+						"question_id" => $data['id'],
+						"updated_at" => Carbon::now()
 					);
 					$result = QuestionOption::where('id', '=', $questionOptions[$i]['id'])->update($qOptionData);
 				}else{
