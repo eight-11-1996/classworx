@@ -31,7 +31,7 @@
             </tr>
           </thead>
           <tbody v-if="data.length > 0">
-            <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)" class="editable-tr" v-on:dblclick="edit(index)" data-hover="tooltip" data-placement="top" title="Double Click to edit">
+            <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)" v-bind:class="{'editable-tr': data[index].edit === false}" v-on:dblclick="edit(index)" v-bind:data-hover="{'tooltip': data[index].edit === false}" v-bind:data-placement="{'top': data[index].edit === false}" v-bind:title="{'Double Click to edit': data[index].edit === false}">
               
               <!--
 
