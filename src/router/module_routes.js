@@ -21,7 +21,9 @@ let beforeEnter = (to, from, next) => {
 }
 var devRoutes = []
 let canales = require('./dev_routes/canales.js')
+let magUsara = require('./dev_routes/mag_usara.js')
 devRoutes = devRoutes.concat(canales.default.routes)
+devRoutes = devRoutes.concat(magUsara.default.routes)
 for(let x = 0; x < devRoutes.length; x++){
   devRoutes[x]['beforeEnter'] = beforeEnter
 }
