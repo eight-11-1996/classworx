@@ -2,7 +2,7 @@
   <div>
       <div class="module-header">
         <div class="title">
-          <label class="text-warning">My <b>Quizzes</b></label>
+          <label class="text-warning">My <b>Exams</b></label>
         </div>
         <div class="items-display">
           <label v-if="semesters.length > 0">Semesters</label>
@@ -56,7 +56,7 @@
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Quiz Now!</td>     
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Exam Now!</td>     
               <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
             </tr>
           </tbody>
@@ -185,14 +185,14 @@ export default {
     return {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      modalTitle: 'Add Quiz',
+      modalTitle: 'Add Exam',
       parameter: this.$route.params.courseId,
       data: [],
       semesters: [],
       semesterId: null,
       courses: [],
       courseId: this.$route.params.courseId,
-      method: 'quizzes',
+      method: 'exams',
       methodId: 'course_id',
       quizzes: [],
       errorMessage: null,

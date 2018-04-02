@@ -57,6 +57,14 @@ export default{
     }
   },
   {
+    path: '/exams/:courseId',
+    name: 'exams',
+    component: resolve => require(['modules/exam/Exam.vue'], resolve),
+    meta: {
+      tokenRequired: true
+    }
+  },
+  {
     path: '/quizzes/:courseId',
     name: 'quizzes',
     component: resolve => require(['modules/quiz/Quiz.vue'], resolve),
@@ -74,7 +82,15 @@ export default{
   },
   {
     path: '/quizzes/questions/:id',
-    name: 'questions',
+    name: 'quizzesQuestions',
+    component: resolve => require(['modules/question/Question.vue'], resolve),
+    meta: {
+      tokenRequired: true
+    }
+  },
+  {
+    path: '/exams/questions/:id/',
+    name: 'examsQuestions',
     component: resolve => require(['modules/question/Question.vue'], resolve),
     meta: {
       tokenRequired: true

@@ -46,7 +46,7 @@ class QuestionController extends ClassWorxController
       );
       $result = null;
       if(isset($data['condition'])){
-        $result = ($data['condition'][0]['column'] == 'quiz_id') ? Question::where('quiz_id', '=', $data['condition'][0]['value'])->orderBy('order', 'ASC')->get() : Question::where('exam_id', '=', $data['condition'][0]['value'])->orderBy('order', 'ASC')->get();
+        $result = Question::where($data['condition'][0]['column'], '=', $data['condition'][0]['value'])->orderBy('order', 'ASC')->get();
         if(sizeof($result) > 0){
           $i = 0;
           foreach ($result as $key) {

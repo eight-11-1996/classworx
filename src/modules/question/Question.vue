@@ -1,10 +1,10 @@
 <template>
   <div>
       <div class="module-header">
-        <div class="title text-warning">
-          <label v-on:click="redirect('/quizzes/' + parameter)" class="text-underline"><b>Quizzes</b></label><label v-if="quiz !== null">/{{quiz.description}}</label>
+        <div class="title text-warning" style="width: 100%">
+          <label v-on:click="redirect('/' + headerMethod + '/' + parameter)" class="text-underline"><b>{{headerTitle}}</b></label><label v-if="header !== null">/{{header.description}}</label>
         </div>
-        <div class="items-display pull-right">
+        <div class="items-display pull-right" style="width: 90%">
           <label>Show</label>
           <select v-model="selectedTotalItems" v-on:change="filter()">
             <option value="5">5</option>
@@ -17,7 +17,7 @@
   <!--       <div class="3">
           <input type="text" name="search" class="table-search">
         </div> -->
-        <div class="add">
+        <div class="add" style="width: 10%">
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
         </div>
       </div>
@@ -80,8 +80,8 @@
                  -->
 
                <span v-if="item.type === 'multiple_choice'">
-                 <label>Choices:</label>
                  <span class="options" v-if="data[index].edit === false">
+                 <label>Choices:</label>
                   <span class="option-item" v-for="itemOption, indexOption in data[index].question_options" v-if="data[index].question_options.length > 0">
                     <i class="fa-dot-circle action-link" v-bind:class="{'far': itemOption.order !== parseInt(item.answer), 'fas': itemOption.order === parseInt(item.answer)}"></i>
                     {{itemOption.description}}
@@ -99,8 +99,8 @@
                 
 
                 <span v-if="item.type === 'multiple_answers'">
-                  <label>Choices:</label>
                   <span class="options" v-if="data[index].edit === false">
+                  <label>Choices:</label>
                     <span class="option-item" v-for="itemOption, indexOption in data[index].question_options" v-if="data[index].question_options.length > 0">
                       <i class="fa-square action-link" v-bind:class="{'far': item.answer.includes(',' + itemOption.order + ',') === false, 'fas': item.answer.includes(',' + itemOption.order + ',') === true}"></i>
                       {{itemOption.description}}
@@ -248,8 +248,8 @@ import axios from 'axios'
 import CONFIG from '../../config.js'
 export default {
   mounted(){
+    this.retrieveHeader()
     this.defaultParameter()
-    this.retrieveQuiz()
   },
   data(){
     return {
@@ -258,7 +258,9 @@ export default {
       modalTitle: 'Add Question',
       parameter: this.$route.params.id,
       data: [],
-      quiz: null,
+      header: null,
+      headerTitle: null,
+      headerMethod: null,
       method: 'questions',
       methodId: 'quiz_id',
       errorMessage: null,
@@ -291,7 +293,11 @@ export default {
     redirect(parameter){
       ROUTER.push(parameter)
     },
-    retrieveQuiz(value){
+    retrieveHeader(value){
+      let method = window.location.href.split('/')[4]
+      this.headerMethod = (method === 'exams') ? 'exams' : 'quizzes'
+      this.headerTitle = (method === 'exams') ? 'Exams' : 'Quizzes'
+      this.methodId = (method === 'exams') ? 'exam_id' : 'quiz_id'
       let parameter = {
         'condition': [{
           'value': this.parameter,
@@ -299,8 +305,8 @@ export default {
           'clause': '='
         }]
       }
-      this.APIRequest('quizzes/retrieve', parameter).then(response => {
-        this.quiz = response.data[0]
+      this.APIRequest(this.headerMethod + '/retrieve', parameter).then(response => {
+        this.header = response.data[0]
       })
     },
     filterCourses(){

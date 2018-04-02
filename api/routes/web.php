@@ -151,6 +151,12 @@ Route::post('/grade_settings/update', "GradeSettingsController@update");
 Route::post('/grade_settings/delete', "GradeSettingsController@delete");
 Route::get('/grade_settings/test', 'GradeSettingsController@test');
 
+//Exams
+Route::post('/exams/create', "ExamController@create");
+Route::post('/exams/retrieve', "ExamController@retrieve");
+Route::post('/exams/update', "ExamController@update");
+Route::post('/exams/delete', "ExamController@delete");
+Route::get('/exams/test', 'ExamController@test');
 
 //Quizes
 Route::post('/quizzes/create', "QuizController@create");
