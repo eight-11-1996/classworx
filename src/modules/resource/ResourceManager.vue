@@ -2,7 +2,7 @@
   <div>
       <div class="module-header">
         <div class="title">
-          <label class="text-warning">My <b>Quizzes</b></label>
+          <label class="text-warning">My <b>Resources</b></label>
         </div>
         <div class="items-display">
           <label v-if="semesters.length > 0">Semesters</label>
@@ -29,7 +29,17 @@
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
         </div>
       </div>
-      <div class="table-result">
+      <div class="table-result row">
+        <div v-for="item in loop" class="files-card">
+          <div class="card-container">
+
+          </div>
+          <div class="card-footer">
+            File Name {{item}}
+          </div>
+        </div>
+      </div>
+      <!-- <div class="table-result">
         <table class="table table-responsive table-bordered">
           <thead>
             <tr>
@@ -61,7 +71,7 @@
             </tr>
           </tbody>
         </table>
-      </div>
+      </div> -->
       <div class="table-footer">
         <div class="items-total pull-left">
           <label>Showing <b>{{display.current}}</b> out of <b>{{display.total}}</b> entries</label>
@@ -138,29 +148,12 @@
             </button>
           </div>
           <div class="modal-body">
-            <span v-if="errorMessage !== null" class="text-danger text-center">
-                <label><b>Opps! </b>{{errorMessage}}</label>
-            </span>
-            <br v-if="errorMessage !== null">
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" placeholder="Exam Description" v-model="description">
-            <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-model="type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-model="timer">
+            <div class="upload-body">
+              <form class="upload-form">
+                <i class="fa fa-upload"></i>
+                <input name="myFile" type="file" multiple="">
+              </form>
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -223,7 +216,8 @@ export default {
         nextFlag: true,
         currentPager: 1,
         pagerActive: null
-      }
+      },
+      loop: ['1', '2', '3']
     }
   },
   methods: {
@@ -509,12 +503,42 @@ form input{
   opacity: 0;
 }
 
+.card-container{
+  height: 70%;
+}
+.files-card{
+  width: 10em;
+  box-shadow: 0 4px 8px 0 #3f0040;
+  height: 12em;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+.files-card:hover{
+  box-shadow: 2px 4px 8px 2px #3f0050;
+  font-weight: bold;
+}
+
+.card-footer{
+  text-align: center;
+}
+.upload-body{
+  margin-top: 15em;
+}
+
 .modal-title i{
   padding-right: 10px;
 }
 
 .form-control{
   height: 45px !important;
+}
+
+.fa-upload{
+  font-size: 50px;
+  color: #3f0050;
+  padding-left: 230px;
+  padding-top: 30px;
 }
 
 td button i{
