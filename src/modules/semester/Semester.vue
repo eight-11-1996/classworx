@@ -35,7 +35,61 @@
           <tbody v-if="data.length > 0">
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
               <td>{{item.description}}</td>
-              <td>All Courses / Per Courses</td>
+              <td>
+                <label v-if="parseInt(item.grade_setting) === 0">Grade Setting is the same all Courses 
+                </label>
+                <label v-else>Grade Setting is different per Course</label>
+                <i class="fa fa-cog pull-right action-link text-primary" v-if="parseInt(item.grade_setting) === 0" v-on:click="editGradeSettings(index)" data-hover="tooltip" data-placement="top" title="Edit Grade Settings"></i>
+                <br v-if="parseInt(item.grade_setting) === 0">
+                <label v-if="parseInt(item.grade_setting) === 0 && item.grade_flag === false">
+                  <label><b>General Settings (100%)</b></label>
+                  <br>
+                  <label v-if="parseInt(item.grade_setting) === 0"> 
+                    Attendance: {{item.grade_settings_content[0].attendance_rate + '%'}}  
+                    Exams: {{item.grade_settings_content[0].exams_rate + '%'}}  
+                    Quizzes: {{item.grade_settings_content[0].quizzes_rate + '%'}} 
+                    Projects: {{item.grade_settings_content[0].projects_rate + '%'}}
+                  </label>
+                  <br>
+                    <label><b>Passing Percentage Settings</b></label>
+                  <br>
+                  <label v-if="parseInt(item.grade_setting) === 0">
+                    Exams: {{item.grade_settings_content[0].passing_percentage_quizzes + '%'}}  
+                    Quizzes: {{item.grade_settings_content[0].passing_percentage_exams + '%'}}
+                  </label>
+                </label>
+                <span v-if="parseInt(item.grade_setting) === 0 && item.grade_flag === true">
+                    <br>
+                    <label><b>General Settings(Total of 100%)</b></label>
+                    <div class="input-group">
+                      <span class="input-group-addon">Attendance</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].attendance_rate">
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-addon">Exams</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].exams_rate">
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-addon">Quizzes</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].quizzes_rate">
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-addon">Projects</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].projects_rate">
+                    </div>
+                    <br>
+                    <label><b>Passing Percentage Settings</b></label>
+                    <div class="input-group">
+                      <span class="input-group-addon input-group-addon2">Exams Passing Rate</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].passing_percentage_exams">
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-addon input-group-addon2">Quizzes Passing Rate</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].passing_percentage_quizzes">
+                    </div>
+                    <button class="btn btn-primary pull-right" style="margin-top:5px;" v-on:click="save(index)"><i class="fa fa-sync"></i>Save</button>
+                </span>
+              </td>
               <td>{{item.start_date}}</td>
               <td>{{item.end_date}}</td>
               <td>
@@ -96,6 +150,13 @@
             <label>End Date</label>
             <br>
             <input type="date" class="form-control" v-bind:placeholder="modalView.end_date" v-model="modalInput.endDate">
+            <br>
+            <label>Grades Settings</label>
+            <br>
+            <select class="form-control" v-model="modalInput.gradeSetting">
+              <option value="0">Grade Setting is the same all Courses</option>
+              <option value="1">Grade Setting is different per Course</option>
+            </select>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
@@ -140,9 +201,9 @@
             <br>
             <label>Grades Settings</label>
             <br>
-            <select class="form-control">
-              <option value="1">The same grades settings of all courses</option>
-              <option value="2">Grade setting is different per courses</option>
+            <select class="form-control" v-model="gradeSetting">
+              <option value="0">Grade Setting is the same all Courses</option>
+              <option value="1">Grade Setting is different per Course</option>
             </select>
           </div>
           <div class="modal-footer">
@@ -177,12 +238,14 @@ export default {
       description: null,
       startDate: null,
       endDate: null,
+      gradeSetting: null,
       modalView: null,
       modalInput: {
         id: null,
         description: null,
         startDate: null,
-        endDate: null
+        endDate: null,
+        gradeSetting: null
       },
       selectedTotalItems: null,
       totalDisplay: 5,
@@ -196,6 +259,15 @@ export default {
         nextFlag: true,
         currentPager: 1,
         pagerActive: null
+      },
+      prevGradeSettingIndex: null,
+      grade: {
+        genAttendance: null,
+        genExams: null,
+        genQuizzes: null,
+        genProjects: null,
+        examsRate: null,
+        quizzesRate: null
       }
     }
   },
@@ -263,6 +335,7 @@ export default {
       formData.append('description', this.description)
       formData.append('start_date', this.startDate)
       formData.append('end_date', this.endDate)
+      formData.append('grade_setting', this.gradeSetting)
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
@@ -306,6 +379,9 @@ export default {
       }
       if(this.modalInput.endDate !== null){
         formData.append('end_date', this.modalInput.endDate)
+      }
+      if(this.modalInput.gradeSetting !== null){
+        formData.append('grade_setting', this.modalInput.gradeSetting)
       }else{
         //
       }
@@ -390,6 +466,34 @@ export default {
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
       }
+    },
+    editGradeSettings(index){
+      if(this.prevGradeSettingIndex === null){
+        this.data[index].grade_flag = true
+        this.prevGradeSettingIndex = index
+      }else{
+        if(this.prevGradeSettingIndex === index){
+          this.data[index].grade_flag = false
+          this.prevGradeSettingIndex = null
+        }else{
+          this.data[index].grade_flag = true
+          this.data[this.prevGradeSettingIndex].grade_flag = false
+          this.prevGradeSettingIndex = index
+        }
+      }
+    },
+    save(index){
+      let parameter = {
+        'data': this.data[index].grade_settings_content[0],
+        'semester_id': this.data[index].id
+      }
+      this.APIRequest('grade_settings/update', parameter).then(response => {
+        if(response.data === true){
+          this.retrieveRequest(false)
+        }else{
+          //
+        }
+      })
     }
   }
 }
@@ -439,6 +543,19 @@ td button i{
 }
 thead{
   font-weight: 700;
+}
+.input-group{
+  margin-top: 5px;
+  font-size: 13px !important;
+}
+.input-group-addon{
+  width: 125px;
+  font-size: 13px !important;
+  background: #3f0050;
+  color: #fff;
+}
+.input-group-addon2{
+  width: 150px;
 }
 
 </style>

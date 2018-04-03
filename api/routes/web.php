@@ -145,11 +145,11 @@ Route::post('/courses/delete', "CourseController@delete");
 Route::get('/courses/test', 'CourseController@test');
 
 //Grades Settings
-Route::post('/grade_settings/create', "GradeSettingsController@create");
-Route::post('/grade_settings/retrieve', "GradeSettingsController@retrieve");
-Route::post('/grade_settings/update', "GradeSettingsController@update");
-Route::post('/grade_settings/delete', "GradeSettingsController@delete");
-Route::get('/grade_settings/test', 'GradeSettingsController@test');
+Route::post('/grade_settings/create', "GradeSettingController@create");
+Route::post('/grade_settings/retrieve', "GradeSettingController@retrieve");
+Route::post('/grade_settings/update', "GradeSettingController@update");
+Route::post('/grade_settings/delete', "GradeSettingController@delete");
+Route::get('/grade_settings/test', 'GradeSettingController@test');
 
 //Exams
 Route::post('/exams/create', "ExamController@create");

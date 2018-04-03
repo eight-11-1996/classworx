@@ -137,6 +137,9 @@ export default {
   color: #009900 !important;
 }
 
+.input-group-addon{
+  width: 50px;
+}
 /*----------------------------------------
 
             Forms
