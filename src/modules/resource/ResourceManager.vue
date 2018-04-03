@@ -2,7 +2,7 @@
   <div>
       <div class="module-header">
         <div class="title">
-          <label class="text-warning">My <b>Quizzes</b></label>
+          <label class="text-warning">My <b>Resources</b></label>
         </div>
         <div class="items-display">
           <label v-if="semesters.length > 0">Semesters</label>
@@ -22,45 +22,23 @@
             <option value="25">25</option>
           </select>
         </div>
-  <!--       <div class="3">
-          <input type="text" name="search" class="table-search">
-        </div> -->
         <div class="add">
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
         </div>
       </div>
-      <div class="table-result">
-        <table class="table table-responsive table-bordered">
-          <thead>
-            <tr>
-              <td>Description</td>
-              <td>Type</td>
-              <td>Date</td>
-              <td>Timer</td>
-              <td>Actions</td>
-            </tr>
-          </thead>
-          <tbody v-if="data.length > 0">
-            <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td>{{item.description}}</td>
-              <td>{{item.type}}</td>
-              <td>{{item.start + ' - ' + item.end}}</td>
-              <td>{{item.timer}}</td>
-              <td class="text-center">
-                <b class="text-primary action-link" v-on:click="redirect('questions/' + item.id)" data-hover="tooltip" data-placement="top" title="View Questions">{{item.total_questions}}</b>
-                <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Quiz">
-                </i>
-                <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)" data-hover="tooltip" data-placement="top" title="Delete Quiz"></i>
-              </td>
-            </tr>
-          </tbody>
-          <tbody v-else>
-            <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Quiz Now!</td>     
-              <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="table-result row">
+        <div v-for="item in loop" class="files-card">
+          <div class="card-container">
+            <div class="center-area">
+              <i class="fa fa-file-word-o" v-if="item === '1'"></i>
+              <i class="fa fa-file-powerpoint-o" v-if="item === '2'"></i>
+              <i class="fa fa-file-excel-o" v-if="item === '3'"></i>
+            </div>
+          </div>
+          <div class="card-footer">
+            <i class="fa fa-eye" v-on:click="" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Viewers"></i> File Name {{item}} 
+          </div>
+        </div>
       </div>
       <div class="table-footer">
         <div class="items-total pull-left">
@@ -80,39 +58,20 @@
 
       EDIT
     -->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="modalView !== null">
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
           <div class="modal-header bg-primary">
-            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Update Semester</h5>
+            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Viewed by:</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true" class="text-white">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            <span v-if="errorMessage !== null" class="text-danger text-center">
-                <label><b>Opps! </b>{{errorMessage}}</label>
-            </span>
-            <br v-if="errorMessage !== null">
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.description" v-model="modalInput.description">
-            <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.type" v-model="modalInput.type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.start" v-model="modalInput.start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.end" v-model="modalInput.end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-bind:placeholder="modalView.timer" v-model="modalInput.timer">
+          <div class="table-result">
+              <ul v-for="item in viewers">
+                {{item}}
+              </ul>
+            </table>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
@@ -133,34 +92,22 @@
         <div class="modal-content">
           <div class="modal-header bg-primary">
             <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>{{modalTitle}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="fileCount = 0">
               <span aria-hidden="true" class="text-white">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-            <span v-if="errorMessage !== null" class="text-danger text-center">
-                <label><b>Opps! </b>{{errorMessage}}</label>
-            </span>
-            <br v-if="errorMessage !== null">
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" placeholder="Exam Description" v-model="description">
-            <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-model="type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-model="timer">
+            <div class="upload-body">
+              <form>
+                 <div class="upload-form">
+                    <input type="file" multiple class="btn" @change="fileCount = $event.target.files.length, add($event.target.files)" >
+                    <div v-if="fileCount === 0" class="center-area"><i class="fa fa-upload"></i> Drag and Drop Files</div>
+                    <div v-else class="center-area">{{fileCount}}</div>
+                  </div>
+                  <div class="btn-area">
+                 </div>
+               </form>
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -223,7 +170,10 @@ export default {
         nextFlag: true,
         currentPager: 1,
         pagerActive: null
-      }
+      },
+      loop: ['1', '2', '3'],
+      fileCount: 0,
+      viewers: ['Kennette Canales', 'June Ray Mag-usara', 'Fretzel Sanchez']
     }
   },
   methods: {
@@ -509,12 +459,50 @@ form input{
   opacity: 0;
 }
 
+.center-area{
+  text-align: center;
+  padding-top: 10%;
+}
+.card-container{
+  height: 70%;
+  text-align: center;
+  font-size: 60px;
+}
+.files-card{
+  width: 10em;
+  box-shadow: 0 4px 8px 0 #3f0040;
+  height: 12em;
+  margin: 10px;
+  border-radius: 5px;
+}
+
+.files-card:hover{
+  box-shadow: 2px 4px 8px 2px #3f0050;
+  font-weight: bold;
+}
+
+.card-footer{
+  text-align: center;
+}
+.upload-body{
+  margin-top: 15em;
+}
+
 .modal-title i{
   padding-right: 10px;
 }
 
 .form-control{
   height: 45px !important;
+}
+
+.fa-eye:hover{
+  font-weight: bold;
+  color: #3f0050;
+}
+.fa-upload{
+  font-size: 50px;
+  color: #3f0050;
 }
 
 td button i{
