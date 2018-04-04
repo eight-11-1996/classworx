@@ -20,6 +20,7 @@ class SemesterController extends ClassWorxController
         $i = 0;
         foreach ($result as $key) {
           $this->response["data"][$i]['grade_flag'] = false;
+          $this->response["data"][$i]['error_message'] = null;
           if(intval($result[$i]['grade_setting']) == 0){
             $gradeSetting = GradeSetting::where('semester_id', '=', $result[$i]['id'])->get();
             if(sizeof($gradeSetting) > 0){

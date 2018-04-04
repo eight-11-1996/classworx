@@ -36,10 +36,15 @@
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
               <td>{{item.description}}</td>
               <td>
-                <label v-if="parseInt(item.grade_setting) === 0">Grade Setting is the same all Courses 
-                </label>
-                <label v-else>Grade Setting is different per Course</label>
-                <i class="fa fa-cog pull-right action-link text-primary" v-if="parseInt(item.grade_setting) === 0" v-on:click="editGradeSettings(index)" data-hover="tooltip" data-placement="top" title="Edit Grade Settings"></i>
+                <span v-if="parseInt(item.grade_setting) === 0">
+                  <label>Grade Setting is the same all Courses</label>
+                  <i class="fa fa-cog pull-right action-link text-primary" v-if="parseInt(item.grade_setting) === 0" v-on:click="editGradeSettings(index)" data-hover="tooltip" data-placement="top" title="Edit Grade Settings"></i>
+                </span>
+                <span v-else>
+                  <label>Grade Setting is different per Course</label>
+                  <i class="fa fa-eye pull-right action-link text-primary" data-hover="tooltip" data-placement="top" title="Edit Grade Settings" v-on:click="redirect('/courses/' + item.id)"></i>
+                </span>
+               
                 <br v-if="parseInt(item.grade_setting) === 0">
                 <label v-if="parseInt(item.grade_setting) === 0 && item.grade_flag === false">
                   <label><b>General Settings (100%)</b></label>
@@ -61,6 +66,8 @@
                 <span v-if="parseInt(item.grade_setting) === 0 && item.grade_flag === true">
                     <br>
                     <label><b>General Settings(Total of 100%)</b></label>
+                    <br>
+                    <label class="text-danger" v-if="item.error_message !== null"><b>Opps!</b> {{item.error_message}}</label>
                     <div class="input-group">
                       <span class="input-group-addon">Attendance</span>
                       <input type="text" class="form-control" v-model="item.grade_settings_content[0].attendance_rate">
@@ -260,15 +267,7 @@ export default {
         currentPager: 1,
         pagerActive: null
       },
-      prevGradeSettingIndex: null,
-      grade: {
-        genAttendance: null,
-        genExams: null,
-        genQuizzes: null,
-        genProjects: null,
-        examsRate: null,
-        quizzesRate: null
-      }
+      prevGradeSettingIndex: null
     }
   },
   methods: {
@@ -483,17 +482,34 @@ export default {
       }
     },
     save(index){
-      let parameter = {
-        'data': this.data[index].grade_settings_content[0],
-        'semester_id': this.data[index].id
-      }
-      this.APIRequest('grade_settings/update', parameter).then(response => {
-        if(response.data === true){
-          this.retrieveRequest(false)
-        }else{
-          //
+      if(this.gradeValidation(index) === true){
+        this.data[index].error_message = null
+        let parameter = {
+          'data': this.data[index].grade_settings_content[0],
+          'semester_id': this.data[index].id
         }
-      })
+        this.APIRequest('grade_settings/update', parameter).then(response => {
+          if(response.data === true || response.data !== null){
+            this.retrieveRequest(false)
+          }else{
+            //
+          }
+        })
+      }else{
+        this.data[index].error_message = 'General Settings must be equal to 100'
+      }
+    },
+    gradeValidation(index){
+      let quizzesRate = parseInt(this.data[index].grade_settings_content[0].quizzes_rate)
+      let attendanceRate = parseInt(this.data[index].grade_settings_content[0].attendance_rate)
+      let examsRate = parseInt(this.data[index].grade_settings_content[0].exams_rate)
+      let projectsRate = parseInt(this.data[index].grade_settings_content[0].projects_rate)
+      let totalGrade = quizzesRate + attendanceRate + projectsRate + examsRate
+      if(totalGrade === 100){
+        return true
+      }else{
+        return false
+      }
     }
   }
 }

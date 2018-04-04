@@ -6,8 +6,8 @@
         </div>
         <div class="items-display pull-right">
           <label v-if="semesters.length > 0">Semesters</label>
-          <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="parameter">
-            <option v-for="item, index in semesters"  v-bind:value="item.id">{{item.description}}</option>
+          <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="filterIndex">
+            <option v-for="item, index in semesters"  v-bind:value="index">{{item.description}}</option>
           </select>
           <label>Show</label>
           <select v-model="selectedTotalItems" v-on:change="filter()">
@@ -29,20 +29,76 @@
         <table class="table table-responsive table-bordered">
           <thead>
             <tr>
-              <td>Code</td>
-              <td>Description</td>
-              <td>Units</td>
-              <td>Schedule</td>
-              <td>Actions</td>
+              <td>Code / Units</td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">Description</td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">Grade Settings</td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">Schedule</td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">Actions</td>
             </tr>
           </thead>
           <tbody v-if="data.length > 0">
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td>{{item.code}}</td>
-              <td>{{item.description}}</td>
-              <td>{{item.units}}</td>
-              <td>{{item.time_start + '-' + item.time_end + ' (' + item.days + ')'}}</td>
-              <td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">{{item.code + '- (' + item.units + ')'}}</td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">{{item.description}}</td>
+              <td v-if="gradeSetting === 0">
+                <label>All Courses have the same Grade Settings</label>
+                <i class="fa fa-eye pull-right action-link text-primary" data-hover="tooltip" data-placement="top" title="Edit Grade Settings" v-on:click="redirect('/semesters')"></i>
+              </td>
+              <td v-if="gradeSetting === 1">
+                <i class="fa fa-cog pull-right action-link text-primary" data-hover="tooltip" data-placement="top" title="Edit Grade Settings" v-on:click="editGradeSettings(index)"></i>
+                <label v-if="item.grade_setting_flag === false"><b>General Settings (100%)</b>
+                  <br>
+                  <label> 
+                    Attendance: {{item.grade_settings_content[0].attendance_rate + '%'}}  
+                    Exams: {{item.grade_settings_content[0].exams_rate + '%'}}  
+                    Quizzes: {{item.grade_settings_content[0].quizzes_rate + '%'}} 
+                    Projects: {{item.grade_settings_content[0].projects_rate + '%'}}
+                  </label>
+                  <br>
+                    <label><b>Passing Percentage Settings</b></label>
+                  <br>
+                  <label>
+                   Exams: {{item.grade_settings_content[0].passing_percentage_quizzes + '%'}}  
+                   Quizzes: {{item.grade_settings_content[0].passing_percentage_exams + '%'}}
+                  </label>
+                </label>
+                <span v-if="item.grade_setting_flag === true">
+                    <br>
+                    <label><b>General Settings(Total of 100%)</b></label>
+                    <br>
+                    <label class="text-danger" v-if="item.error_message !== null"><b>Opps!</b> {{item.error_message}}</label>
+                    <div class="input-group">
+                      <span class="input-group-addon">Attendance</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].attendance_rate">
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-addon">Exams</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].exams_rate">
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-addon">Quizzes</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].quizzes_rate">
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-addon">Projects</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].projects_rate">
+                    </div>
+                    <br>
+                    <label><b>Passing Percentage Settings</b></label>
+                    <div class="input-group">
+                      <span class="input-group-addon input-group-addon2">Exams Passing Rate</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].passing_percentage_exams">
+                    </div>
+                    <div class="input-group">
+                      <span class="input-group-addon input-group-addon2">Quizzes Passing Rate</span>
+                      <input type="text" class="form-control" v-model="item.grade_settings_content[0].passing_percentage_quizzes">
+                    </div>
+                    <button class="btn btn-primary pull-right" style="margin-top:5px;" v-on:click="save(index)"><i class="fa fa-sync"></i>Save</button>
+                </span>
+              </td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">{{item.time_start + '-' + item.time_end + ' (' + item.days + ')'}}</td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">
+                <i class="fas fa-file-alt text-primary action-link" v-on:click="redirect('/exams/' + item.id)" data-hover="tooltip" data-placement="top" title="View Exams"></i>
                 <i class="fa fa-file-text-o text-primary action-link" v-on:click="redirect('/quizzes/' + item.id)" data-hover="tooltip" data-placement="top" title="View Quizzes"></i>
                 <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Course">
                 </i>
@@ -191,7 +247,9 @@ export default {
       tokenData: AUTH.tokenData,
       modalTitle: 'Add Course',
       parameter: this.$route.params.id,
+      filterIndex: null,
       data: [],
+      gradeSetting: 0,
       semesters: [],
       semesterId: this.$route.params.id,
       courses: [],
@@ -227,7 +285,8 @@ export default {
         nextFlag: true,
         currentPager: 1,
         pagerActive: null
-      }
+      },
+      prevGradeSettingIndex: null
     }
   },
   methods: {
@@ -246,8 +305,24 @@ export default {
         this.semesters = response.data
       })
     },
+    retrieveRequestSemesterByParameter(id){
+      let parameter = {
+        'condition': [{
+          'value': id,
+          'column': 'id',
+          'clause': '='
+        }]
+      }
+      this.APIRequest('semesters/retrieve', parameter).then(response => {
+        if(response.data !== null || response.data.length > 0){
+          this.gradeSetting = response.data[0].grade_setting
+        }
+      })
+    },
     filterSemester(){
-      this.createParameter(this.parameter)
+      this.gradeSetting = parseInt(this.semesters[this.filterIndex].grade_setting)
+      this.createParameter(this.semesters[this.filterIndex].id)
+      this.parameter = this.semesters[this.filterIndex].id
     },
     createParameter(value){
       let parameter = {
@@ -269,6 +344,7 @@ export default {
             'column': this.methodId
           }]
         }
+        this.retrieveRequestSemesterByParameter(this.parameter)
         this.retrieveRequest(true, param)
       }else if(parseInt(this.parameter) > 0){
         alert('Incorrect Parameter Supplied')
@@ -347,7 +423,7 @@ export default {
         if(response.data === null){
           // Error Message
         }else{
-          this.createParameter(this.semesterId)
+          this.createParameter(this.parameter)
         }
       })
     },
@@ -388,7 +464,7 @@ export default {
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
         if(response.data.data === true){
           $('#editModal').modal('hide')
-          this.createParameter(this.semesterId)
+          this.createParameter(this.parameter)
         }
       })
     },
@@ -466,6 +542,51 @@ export default {
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
       }
+    },
+    editGradeSettings(index){
+      if(this.prevGradeSettingIndex === null){
+        this.data[index].grade_setting_flag = true
+        this.prevGradeSettingIndex = index
+      }else{
+        if(this.prevGradeSettingIndex === index){
+          this.data[index].grade_setting_flag = false
+          this.prevGradeSettingIndex = null
+        }else{
+          this.data[index].grade_setting_flag = true
+          this.data[this.prevGradeSettingIndex].grade_setting_flag = false
+          this.prevGradeSettingIndex = index
+        }
+      }
+    },
+    save(index){
+      if(this.gradeValidation(index) === true){
+        this.data[index].error_message = null
+        let parameter = {
+          'data': this.data[index].grade_settings_content[0],
+          'course_id': this.data[index].id
+        }
+        this.APIRequest('grade_settings/update', parameter).then(response => {
+          if(response.data === true || response.data !== null){
+            this.createParameter(this.parameter)
+          }else{
+            //
+          }
+        })
+      }else{
+        this.data[index].error_message = 'General Settings must be equal to 100'
+      }
+    },
+    gradeValidation(index){
+      let quizzesRate = parseInt(this.data[index].grade_settings_content[0].quizzes_rate)
+      let attendanceRate = parseInt(this.data[index].grade_settings_content[0].attendance_rate)
+      let examsRate = parseInt(this.data[index].grade_settings_content[0].exams_rate)
+      let projectsRate = parseInt(this.data[index].grade_settings_content[0].projects_rate)
+      let totalGrade = quizzesRate + attendanceRate + projectsRate + examsRate
+      if(totalGrade === 100){
+        return true
+      }else{
+        return false
+      }
     }
   }
 }
@@ -516,5 +637,19 @@ td button i{
 thead{
   font-weight: 700;
 }
+.input-group{
+  margin-top: 5px;
+  font-size: 13px !important;
+}
+.input-group-addon{
+  width: 125px;
+  font-size: 13px !important;
+  background: #3f0050;
+  color: #fff;
+}
+.input-group-addon2{
+  width: 150px;
+}
+
 
 </style>

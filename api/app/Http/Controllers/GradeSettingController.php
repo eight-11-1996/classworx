@@ -35,7 +35,23 @@ class GradeSettingController extends ClassWorxController
           $this->insertDB($updateData);
         }
       }else{
-        //
+        if($this->checkIfExistCourseId($data['course_id']) == true){
+          $updateData = array();
+          $updateData['quizzes_rate'] = $data["data"]['quizzes_rate'];
+          $updateData['exams_rate'] = $data["data"]['exams_rate'];
+          $updateData['attendance_rate'] = $data["data"]['attendance_rate'];
+          $updateData['projects_rate'] = $data["data"]['projects_rate'];
+          $updateData['passing_percentage_quizzes'] = $data["data"]['passing_percentage_quizzes'];
+          $updateData['passing_percentage_exams'] = $data['data']['passing_percentage_exams'];
+          $updateData['id'] = $data['data']['id'];
+          $this->model = new GradeSetting();
+          $this->updateDB($updateData);
+        }else{
+          $updateData = $data["data"];
+          $updateData['course_id'] = $data['course_id'];
+          $this->model = new GradeSetting();
+          $this->insertDB($updateData);
+        }
       } 
       return $this->response();
     }
