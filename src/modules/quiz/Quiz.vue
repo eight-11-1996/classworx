@@ -47,7 +47,7 @@
               <td>{{item.start + ' - ' + item.end}}</td>
               <td>{{item.timer}}</td>
               <td class="text-center">
-                <b class="text-primary action-link" v-on:click="redirect('questions/' + item.id)" data-hover="tooltip" data-placement="top" title="View Questions">{{item.total_questions}}</b>
+                <b class="text-primary action-link" v-on:click="redirect('questions/' + item.id)" data-hover="tooltip" data-placement="top" title="View Questions">{{item.total_questions}}</b> &nbsp;&nbsp;
                 <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Quiz">
                 </i>
                 <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)" data-hover="tooltip" data-placement="top" title="Delete Quiz"></i>
