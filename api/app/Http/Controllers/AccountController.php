@@ -20,7 +20,6 @@ class AccountController extends ClassWorxController
     public function create(Request $request){
      $request = $request->all();
      $request['password'] = Hash::make($request['password']);
-     $request['account_type'] = "USER";
      $this->insertDB($request);
      return $this->response();
     }

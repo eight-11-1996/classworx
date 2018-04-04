@@ -42,7 +42,7 @@
                 </span>
                 <span v-else>
                   <label>Grade Setting is different per Course</label>
-                  <i class="fa fa-eye pull-right action-link text-primary" data-hover="tooltip" data-placement="top" title="Edit Grade Settings" v-on:click="redirect('/courses/' + item.id)"></i>
+                  <i class="fa fa-eye pull-right action-link text-primary" data-hover="tooltip" data-placement="top" title="View Grade Settings" v-on:click="redirect('/courses/' + item.id)"></i>
                 </span>
                
                 <br v-if="parseInt(item.grade_setting) === 0">

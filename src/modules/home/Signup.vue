@@ -28,6 +28,13 @@
               <span class="input-group-addon" id="addon-2"><i class="fa fa-key"></i></span>
               <input type="password" class="form-control form-control-login" placeholder="Confirm Password" aria-describedby="addon-2" v-model="cpassword">
             </div>
+            <div class="input-group login-spacer">
+              <span class="input-group-addon" id="addon-1" style="width: 70px;">I am a</span>
+              <select class="form-control form-control-login" v-model="type">
+                <option value="STUDENT">Student</option>
+                <option value="TEACHER">Teacher</option>
+              </select>
+            </div>
 <!--              <div class="form-check">
               <label class="form-check-label">
                 <input type="checkbox" class="form-check-input">
@@ -54,6 +61,7 @@ export default {
       email: '',
       password: '',
       cpassword: '',
+      type: null,
       errorMessage: '',
       user: AUTH.user,
       tokenData: AUTH.tokenData,
@@ -64,9 +72,10 @@ export default {
     signUp(){
       this.validate()
       let parameter = {
-        username: this.username,
-        email: this.email,
-        password: this.password
+        'username': this.username,
+        'email': this.email,
+        'password': this.password,
+        'account_type': this.type
       }
       if(this.flag === true){
         this.APIRequest('accounts/create', parameter).then(response => {
