@@ -180,4 +180,19 @@ Route::post('/question_options/delete', "QuestionOptionController@delete");
 Route::get('/question_options/test', 'QuestionOptionController@test');
 
 
+//Resources
+Route::post('/resources/create', "ResourceController@create");
+Route::post('/resources/retrieve', "ResourceController@retrieve");
+Route::post('/resources/update', "ResourceController@update");
+Route::post('/resources/delete', "ResourceController@delete");
+Route::get('/resources/test', 'ResourceController@test');
+
+//Resource Viewers
+Route::post('/resource_viewers/create', "ResourceViewerController@create");
+Route::post('/resource_viewers/retrieve', "ResourceViewerController@retrieve");
+Route::post('/resource_viewers/update', "ResourceViewerController@update");
+Route::post('/resource_viewers/delete', "ResourceViewerController@delete");
+Route::get('/resource_viewers/test', 'ResourceViewerController@test');
+
+
 
