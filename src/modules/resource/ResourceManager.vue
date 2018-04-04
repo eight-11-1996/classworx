@@ -459,6 +459,18 @@ form input{
   opacity: 0;
 }
 
+.fa-file-excel-o{
+  color: #028170;
+}
+
+.fa-file-powerpoint-o{
+  color: #dc4c4c;
+}
+
+.fa-file-word-o{
+  color: #4c4cff;
+}
+
 .center-area{
   text-align: center;
   padding-top: 10%;
