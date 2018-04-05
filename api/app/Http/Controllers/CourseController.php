@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Course;
+use App\EnrolledAccount;
 use App\GradeSetting;
+use App\Account;
+use App\AccountInformation;
+use App\AccountProfile;
 class CourseController extends ClassWorxController
 {
     function __construct(){
@@ -56,6 +60,26 @@ class CourseController extends ClassWorxController
         $this->generateCode();
       }else{
         return $code;
+      }
+    }
+
+    public function accounts(Request $request){
+      $data = $request->all();
+      $result = EnrolledAccount::where('course_id', '=', $data['course_id'])->get();
+      if(sizeof($result) > 0){
+        $i = 0;
+        foreach ($result as $key) {
+          $accountResult = Account::where('id', '=', $result[$i]['account_id'])->get();
+          $accountInfoResult = AccountInformation::where('account_id', '=', $result[$i]['account_id'])->get();
+          $accountProfileResult = AccountProfile::where('account_id', '=', $result[$i]['account_id'])->get();
+          $result[$i]['account'] = (sizeof($accountResult) > 0) ? $accountResult[0] : null;
+          $result[$i]['acccount_informartion'] = (sizeof($accountInfoResult) > 0) ? $accountInfoResult[0] : null;
+          $result[$i]['account_profile'] = (sizeof($accountProfileResult) > 0) ? $accountProfileResult[0] : null;
+          $i++;
+        }
+        return response()->json(array('data' => $result));
+      }else{
+        return response()->json(array('data' => null));
       }
     }
 }

@@ -142,6 +142,7 @@ Route::post('/courses/create', "CourseController@create");
 Route::post('/courses/retrieve', "CourseController@retrieve");
 Route::post('/courses/update', "CourseController@update");
 Route::post('/courses/delete', "CourseController@delete");
+Route::post('/courses/accounts', "CourseController@accounts");
 Route::get('/courses/test', 'CourseController@test');
 
 //Courses

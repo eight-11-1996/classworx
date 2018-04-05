@@ -17,9 +17,9 @@
   <!--       <div class="3">
           <input type="text" name="search" class="table-search">
         </div> -->
-        <div class="add" style="width: 10%">
+<!--         <div class="add" style="width: 10%">
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
-        </div>
+        </div> -->
       </div>
       <div class="table-result">
         <table class="table table-responsive table-bordered">
@@ -32,9 +32,17 @@
           </thead>
           <tbody v-if="data.length > 0">
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td></td>
-              <td></td>
-              <td></td>
+              <td>{{item.account.username}}</td>
+              <td>
+                <span v-if="item.account_information !== null">
+                  Firstname: {{item.account_information.first_name}} 
+                  Lastname: {{item.account_information.last_name}}
+                </span>
+              </td>
+              <td>
+                <button class="btn btn-primary"><i class="fa fa-check"></i> Confirm</button>
+                <button class="btn btn-danger"><i class="fa fa-ban"></i> Decline</button>
+              </td>
             </tr>
           </tbody>
           <tbody v-else>
@@ -79,8 +87,8 @@ export default {
       header: null,
       headerTitle: null,
       headerMethod: null,
-      method: 'questions',
-      methodId: 'quiz_id',
+      method: 'courses',
+      methodId: 'id',
       errorMessage: null,
       closeFag: false,
       type: null,
@@ -101,19 +109,13 @@ export default {
       }
     }
   },
-  components: {
-    'multiple-choice': require('modules/question/MultipleChoice.vue'),
-    'multiple-answers': require('modules/question/MultipleAnswers.vue'),
-    'short-answer': require('modules/question/ShortAnswer.vue'),
-    'long-answer': require('modules/question/LongAnswer.vue')
-  },
   methods: {
     redirect(parameter){
       ROUTER.push(parameter)
     },
     retrieveHeader(value){
       let method = window.location.href.split('/')[4]
-      this.headerMethod = ''
+      this.headerMethod = 'courses'
       this.headerTitle = 'Enrolled Accounts'
       this.methodId = 'quiz_id'
       let parameter = {
@@ -144,11 +146,7 @@ export default {
       let param = null
       if(this.parameter !== 'default'){
         param = {
-          'condition': [{
-            'value': this.parameter,
-            'clause': '=',
-            'column': this.methodId
-          }]
+          'course_id': this.parameter
         }
         this.retrieveRequest(true, param)
       }else if(parseInt(this.parameter) > 0){
@@ -156,7 +154,8 @@ export default {
       }
     },
     retrieveRequest(flag, parameter){
-      this.APIRequest(this.method + '/retrieve', parameter).then(response => {
+      this.APIRequest(this.method + '/accounts', parameter).then(response => {
+        console.log(response.data)
         if(response.data === null){
           this.data = []
         }else{
