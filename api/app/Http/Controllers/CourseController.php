@@ -11,6 +11,14 @@ class CourseController extends ClassWorxController
       $this->model = new Course();
     }
 
+    public function create(Request $request){
+      $data = $request->all();
+      $data["enrolment_code"] = $this->generateCode();
+      $this->model = new Course();
+      $this->insertDB($data);
+      return $this->response();
+    }
+
     public function retrieve(Request $request){
       $data = $request->all();
       $result = $this->retrieveDB($data);
@@ -39,6 +47,15 @@ class CourseController extends ClassWorxController
         return $this->response();
       }else{
         return $this->response();
+      }
+    }    
+    public function generateCode(){
+      $code = substr(str_shuffle("0123456789abcdefghijklmnopqrstvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, 12);
+      $codeExist = Course::where('enrolment_code', '=', $code)->get();
+      if(sizeof($codeExist) > 0){
+        $this->generateCode();
+      }else{
+        return $code;
       }
     }
 }

@@ -21,7 +21,7 @@
   <!--       <div class="3">
           <input type="text" name="search" class="table-search">
         </div> -->
-        <div class="add">
+        <div class="add" v-if="parameter !== 'default'">
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
         </div>
       </div>
@@ -38,7 +38,11 @@
           </thead>
           <tbody v-if="data.length > 0">
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td v-if="gradeSetting === 0 || gradeSetting === 1">{{item.code + '- (' + item.units + ')'}}</td>
+              <td v-if="gradeSetting === 0 || gradeSetting === 1">
+                <label>{{item.code + '- (' + item.units + ')'}}</label>
+                <br>
+                <label><b>Enrolment Code:</b> <label class="text-primary">{{item.enrolment_code}}</label></label>
+              </td>
               <td v-if="gradeSetting === 0 || gradeSetting === 1">{{item.description}}</td>
               <td v-if="gradeSetting === 0">
                 <label>All Courses have the same Grade Settings</label>
@@ -98,6 +102,7 @@
               </td>
               <td v-if="gradeSetting === 0 || gradeSetting === 1">{{item.time_start + '-' + item.time_end + ' (' + item.days + ')'}}</td>
               <td v-if="gradeSetting === 0 || gradeSetting === 1">
+                <i class="fa fa-users text-primary action-link" v-on:click="redirect('/courses/accounts/' + item.id)" data-hover="tooltip" data-placement="top" title="View Enrolled Students"></i>
                 <i class="fas fa-file-alt text-primary action-link" v-on:click="redirect('/exams/' + item.id)" data-hover="tooltip" data-placement="top" title="View Exams"></i>
                 <i class="fa fa-file-text-o text-primary action-link" v-on:click="redirect('/quizzes/' + item.id)" data-hover="tooltip" data-placement="top" title="View Quizzes"></i>
                 <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Course">
@@ -399,7 +404,7 @@ export default {
     },
     createRequest(){
       let formData = new FormData()
-      formData.append(this.methodId, this.semesterId)
+      formData.append(this.methodId, this.parameter)
       formData.append('code', this.code)
       formData.append('description', this.description)
       formData.append('units', this.units)
@@ -407,9 +412,10 @@ export default {
       formData.append('time_end', this.timeEnd)
       formData.append('days', this.days)
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
-        if(response.data.data !== null){
+        console.log(response.data)
+        if(response.data.data !== null || response.data.data > 0){
           $('#myModal').modal('hide')
-          this.createParameter(this.semesterId)
+          this.createParameter(this.parameter)
         }else{
           this.errorMessage = response.error.message
         }

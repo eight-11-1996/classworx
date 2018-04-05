@@ -144,6 +144,14 @@ Route::post('/courses/update', "CourseController@update");
 Route::post('/courses/delete', "CourseController@delete");
 Route::get('/courses/test', 'CourseController@test');
 
+//Courses
+Route::post('/enrolled_courses/create', "EnrolledAccountController@create");
+Route::post('/enrolled_courses/retrieve', "EnrolledAccountController@retrieve");
+Route::post('/enrolled_courses/update', "EnrolledAccountController@update");
+Route::post('/enrolled_courses/delete', "EnrolledAccountController@delete");
+Route::get('/enrolled_courses/test', 'EnrolledAccountController@test');
+
+
 //Grades Settings
 Route::post('/grade_settings/create', "GradeSettingController@create");
 Route::post('/grade_settings/retrieve', "GradeSettingController@retrieve");

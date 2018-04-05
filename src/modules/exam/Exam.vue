@@ -25,7 +25,7 @@
   <!--       <div class="3">
           <input type="text" name="search" class="table-search">
         </div> -->
-        <div class="add">
+        <div class="add" v-if="parameter !== 'default'">
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
         </div>
       </div>

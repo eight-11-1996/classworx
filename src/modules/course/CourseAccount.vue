@@ -1,31 +1,23 @@
 <template>
   <div>
       <div class="module-header">
-        <div class="title">
-          <label class="text-warning">My <b>Quizzes</b></label>
+        <div class="title text-warning" style="width: 100%">
+          <label v-on:click="redirect('/' + headerMethod + '/' + parameter)" class="text-underline"><b>{{headerTitle}}</b></label><label v-if="header !== null">/{{header.description}}</label>
         </div>
-        <div class="items-display">
-          <label v-if="semesters.length > 0">Semesters</label>
-          <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="semesterId">
-            <option v-for="item, index in semesters"  v-bind:value="item.id">{{item.description}}</option>
-          </select>
-          <label v-if="courses.length > 0">Courses</label>
-          <select v-if="courses.length > 0" v-on:change="filterCourses()" v-model="parameter">
-            <option v-for="item, index in courses"  v-bind:value="item.id">{{item.description}}</option>
-          </select>
+        <div class="items-display pull-right" style="width: 90%">
           <label>Show</label>
           <select v-model="selectedTotalItems" v-on:change="filter()">
             <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
             <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
           </select>
         </div>
   <!--       <div class="3">
           <input type="text" name="search" class="table-search">
         </div> -->
-        <div class="add" v-if="parameter !== 'default'">
+        <div class="add" style="width: 10%">
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
         </div>
       </div>
@@ -33,30 +25,21 @@
         <table class="table table-responsive table-bordered">
           <thead>
             <tr>
-              <td>Description</td>
-              <td>Type</td>
-              <td>Date</td>
-              <td>Timer</td>
+              <td>Account</td>
+              <td>Account Informations</td>
               <td>Actions</td>
             </tr>
           </thead>
           <tbody v-if="data.length > 0">
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td>{{item.description}}</td>
-              <td>{{item.type}}</td>
-              <td>{{item.start + ' - ' + item.end}}</td>
-              <td>{{item.timer}}</td>
-              <td class="text-center">
-                <b class="text-primary action-link" v-on:click="redirect('questions/' + item.id)" data-hover="tooltip" data-placement="top" title="View Questions">{{item.total_questions}}</b> &nbsp;&nbsp;
-                <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Quiz">
-                </i>
-                <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)" data-hover="tooltip" data-placement="top" title="Delete Quiz"></i>
-              </td>
+              <td></td>
+              <td></td>
+              <td></td>
             </tr>
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Quiz Now!</td>     
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Question Now!</td>     
               <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
             </tr>
           </tbody>
@@ -74,101 +57,6 @@
           </ul>
        </div>
       </div>
-     
-
-    <!-- Modal 
-
-      EDIT
-    -->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="modalView !== null">
-      <div class="modal-dialog modal-md" role="document">
-        <div class="modal-content">
-          <div class="modal-header bg-primary">
-            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Update Semester</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true" class="text-white">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <span v-if="errorMessage !== null" class="text-danger text-center">
-                <label><b>Opps! </b>{{errorMessage}}</label>
-            </span>
-            <br v-if="errorMessage !== null">
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.description" v-model="modalInput.description">
-            <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.type" v-model="modalInput.type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.start" v-model="modalInput.start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.end" v-model="modalInput.end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-bind:placeholder="modalView.timer" v-model="modalInput.timer">
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
-              <button type="button" class="btn btn-danger" v-else  data-dismiss="modal" aria-label="Close">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-
-    <!-- Modal 
-
-      ADD
-    -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-md" role="document">
-        <div class="modal-content">
-          <div class="modal-header bg-primary">
-            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>{{modalTitle}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true" class="text-white">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <span v-if="errorMessage !== null" class="text-danger text-center">
-                <label><b>Opps! </b>{{errorMessage}}</label>
-            </span>
-            <br v-if="errorMessage !== null">
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" placeholder="Exam Description" v-model="description">
-            <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-model="type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-model="timer">
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
-              <button type="button" class="btn btn-danger" v-else  data-dismiss="modal" aria-label="Close">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script>
@@ -178,39 +66,26 @@ import axios from 'axios'
 import CONFIG from '../../config.js'
 export default {
   mounted(){
-    this.retrieveRequestSemester()
+    this.retrieveHeader()
     this.defaultParameter()
   },
   data(){
     return {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      modalTitle: 'Add Quiz',
-      parameter: this.$route.params.courseId,
+      modalTitle: 'Add Question',
+      parameter: this.$route.params.id,
       data: [],
-      semesters: [],
-      semesterId: null,
-      courses: [],
-      courseId: this.$route.params.courseId,
-      method: 'quizzes',
-      methodId: 'course_id',
-      quizzes: [],
+      header: null,
+      headerTitle: null,
+      headerMethod: null,
+      method: 'questions',
+      methodId: 'quiz_id',
       errorMessage: null,
       closeFag: false,
-      description: null,
       type: null,
-      start: null,
-      end: null,
-      timer: null,
-      modalView: null,
-      modalInput: {
-        id: null,
-        description: null,
-        type: null,
-        start: null,
-        end: null,
-        timer: null
-      },
+      question: null,
+      prevEditIndex: null,
       selectedTotalItems: null,
       totalDisplay: 5,
       currentTotalIndex: 0,
@@ -226,35 +101,30 @@ export default {
       }
     }
   },
+  components: {
+    'multiple-choice': require('modules/question/MultipleChoice.vue'),
+    'multiple-answers': require('modules/question/MultipleAnswers.vue'),
+    'short-answer': require('modules/question/ShortAnswer.vue'),
+    'long-answer': require('modules/question/LongAnswer.vue')
+  },
   methods: {
     redirect(parameter){
       ROUTER.push(parameter)
     },
-    retrieveRequestSemester(){
+    retrieveHeader(value){
+      let method = window.location.href.split('/')[4]
+      this.headerMethod = ''
+      this.headerTitle = 'Enrolled Accounts'
+      this.methodId = 'quiz_id'
       let parameter = {
         'condition': [{
-          'value': this.user.userID,
-          'column': 'account_id',
+          'value': this.parameter,
+          'column': 'id',
           'clause': '='
         }]
       }
-      this.APIRequest('semesters/retrieve', parameter).then(response => {
-        this.semesters = response.data
-      })
-    },
-    filterSemester(){
-      this.retrieveCourse(this.semesterId)
-    },
-    retrieveCourse(value){
-      let parameter = {
-        'condition': [{
-          'value': value,
-          'column': 'semester_id',
-          'clause': '='
-        }]
-      }
-      this.APIRequest('courses/retrieve', parameter).then(response => {
-        this.courses = response.data
+      this.APIRequest(this.headerMethod + '/retrieve', parameter).then(response => {
+        this.header = response.data[0]
       })
     },
     filterCourses(){
@@ -288,11 +158,10 @@ export default {
     retrieveRequest(flag, parameter){
       this.APIRequest(this.method + '/retrieve', parameter).then(response => {
         if(response.data === null){
-          this.quizzes = []
+          this.data = []
         }else{
-          this.quizzes = response.data
+          this.data = response.data
         }
-        this.data = this.quizzes
       }).done(() => {
         if(flag === true){
           this.initDisplayer()
@@ -325,33 +194,67 @@ export default {
       this.display.pager = new Array(pagerSize)
     },
     submit(){
-      if(this.validation() === true){
-        this.errorMessage = null
-        this.createRequest()
+      if(this.$children.length > 0){
+        this.$children[0].getAnswer()
+        if(this.validation() === true){
+          this.errorMessage = null
+          this.createRequest()
+        }else{
+          if(this.$children[0].answer === null){
+            this.errorMessage = this.$children[0].errorMessage
+          }else if(this.$children[0].validation() === false){
+            this.errorMessage = this.$children[0].errorMessage
+          }else{
+            this.errorMessage = 'Please FILLUP the required informations'
+          }
+        }
       }else{
-        this.errorMessage = 'Please fillup the required information'
+        this.errorMessage = 'Please SELECT the type of the  question'
       }
     },
     createRequest(){
       let formData = new FormData()
       formData.append(this.methodId, this.parameter)
-      formData.append('description', this.description)
+      formData.append('question', this.question)
       formData.append('type', this.type)
-      formData.append('start', this.start)
-      formData.append('end', this.end)
-      formData.append('timer', this.timer)
+      formData.append('answer', this.$children[0].answer)
+      let newId = null
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
-          this.createParameter(this.parameter)
+          newId = response.data.data
+          if(this.type === 'multiple_choice' || this.type === 'multiple_answers'){
+            this.createRequestQuestionOptions(newId)
+          }else{
+            this.createParameter(this.parameter)
+          }
         }else{
           this.errorMessage = response.error.message
         }
       })
     },
+    createRequestQuestionOptions(newId){
+      let parameter = {
+        'question_id': newId,
+        'options': this.$children[0].data
+      }
+      this.APIRequest('question_options/create', parameter).then(response => {
+        if(response.data.data !== null){
+          this.$children[0].message = 'Successfully Added!'
+          this.$children[0].errorMessage = null
+        }else{
+          this.$children[0].message = null
+          this.$children[0].errorMessage = response.data.message
+        }
+      }).done(() => {
+        this.createParameter(this.parameter)
+      })
+    },
     deleteRequest(index){
       let parameter = {
-        id: index
+        id: index,
+        'value': this.parameter,
+        'column': this.methodId
       }
       this.APIRequest(this.method + '/delete', parameter).then(response => {
         if(response.data === null){
@@ -362,15 +265,93 @@ export default {
       })
     },
     validation(){
-      if(this.description === null || this.type === null || this.start === null || this.end === null || this.timer === null){
+      if(this.question === null || this.type === null || this.$children[0].answer === null || this.$children[0].validation() === false){
         return false
       }else{
         return true
       }
     },
-    editModalView(index){
-      this.modalView = this.data[index]
-      this.modalInput.id = this.modalView.id
+    edit(index){
+      if(this.prevEditIndex === null){
+        this.data[index].edit = true
+        this.prevEditIndex = index
+      }else{
+        if(index === this.prevEditIndex){
+          this.data[index].edit = false
+          this.prevEditIndex = null
+        }else{
+          this.data[index].edit = true
+          this.data[this.prevEditIndex].edit = false
+          this.prevEditIndex = index
+        }
+      }
+    },
+    cancel(index){
+      this.data[index].edit = false
+      this.prevEditIndex = null
+    },
+    update(data, index){
+      let parameter = {
+        'data': data
+      }
+      this.APIRequest(this.method + '/update', parameter).then(response => {
+        if(data.type === 'short_answer' || data.type === 'long_answer'){
+          this.data[index].edit = false
+          this.prevEditIndex = null
+          this.createParameter(this.parameter)
+        }
+      }).done(() => {
+        // Multiple Answers and Multiple Choice Template
+        if(data.type === 'multiple_answers' || data.type === 'multiple_choice'){
+          this.APIRequest('question_options/update', data).done(response => {
+            if(response.data === true){
+              this.data[index].edit = false
+              this.prevEditIndex = null
+              this.createParameter(this.parameter)
+            }else{
+              //
+            }
+          })
+        }else{
+          // other tempalte
+        }
+      })
+    },
+    toggle(index, order){
+      if(this.data[index].type === 'multiple_answers'){
+        if(this.data[index].answer.includes(',' + order + ',')){
+          let text = ',' + order + ','
+          let newAnswer = this.data[index].answer.replace(text, ',')
+          this.data[index].answer = newAnswer
+        }else{
+          this.data[index].answer += order + ','
+        }
+      }else if(this.data[index].type === 'multiple_choice'){
+        this.data[index].answer = order
+      }else{
+        //
+      }
+    },
+    remove(index, indexOption){
+      this.data[index].question_options.splice(indexOption, 1)
+    },
+    add(index){
+      if(this.data[index].question_options.length > 0){
+        let parameter = {
+          'question_id': this.data[index].id,
+          'description': null,
+          'order': this.data[index].question_options.length + 1
+        }
+        this.data[index].question_options.push(parameter)
+      }else{
+        this.data[index].question_options = []
+        let parameter = {
+          'question_id': this.data[index].id,
+          'description': null,
+          'order': 1
+        }
+        this.data[index].question_options.push(parameter)
+      }
     },
     updateRequest(){
       let formData = new FormData()
@@ -522,6 +503,34 @@ td button i{
 }
 thead{
   font-weight: 700;
+}
+td .question, td .answer, td .options, .options .option-item{
+  float: left;
+  width: 100%;
+}
+.editable-tr{
+  cursor: pointer;
+}
+.question{
+  font-size: 14px !important;
+  margin-bottom: 10px;
+}
+.option-item{
+  margin-bottom: 10px;
+}
+.option-item i{
+  font-size: 24px !important;
+}
+.edit-option i{
+  width: 5%;
+  text-align: center;
+  float: left;
+  padding-top: 10px;
+}
+.edit-option input{
+  width: 86%;
+  margin: 0 2% 0 2%;
+  float: left;
 }
 
 </style>

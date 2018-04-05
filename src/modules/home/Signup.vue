@@ -107,7 +107,7 @@ export default {
       AUTH.authenticate(this.username, this.password, (response) => {
         ROUTER.push('dashboard')
       }, (response, status) => {
-        this.errorMessage = (status === 401) ? 'Your Username and password didnot matched.' : 'Cannot log in? Contact us through email: support@talkfluent.com'
+        this.errorMessage = (status === 401) ? 'Your Username and password did not matched.' : 'Cannot log in? Contact us through email: support@classworx.ph'
       })
     }
   }

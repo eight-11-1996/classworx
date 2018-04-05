@@ -2,17 +2,9 @@
   <div>
       <div class="module-header">
         <div class="title">
-          <label class="text-warning">My <b>Quizzes</b></label>
+          <label class="text-warning">My <b>Enrolled Courses</b></label>
         </div>
-        <div class="items-display">
-          <label v-if="semesters.length > 0">Semesters</label>
-          <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="semesterId">
-            <option v-for="item, index in semesters"  v-bind:value="item.id">{{item.description}}</option>
-          </select>
-          <label v-if="courses.length > 0">Courses</label>
-          <select v-if="courses.length > 0" v-on:change="filterCourses()" v-model="parameter">
-            <option v-for="item, index in courses"  v-bind:value="item.id">{{item.description}}</option>
-          </select>
+        <div class="items-display pull-right">
           <label>Show</label>
           <select v-model="selectedTotalItems" v-on:change="filter()">
             <option value="5">5</option>
@@ -25,39 +17,43 @@
   <!--       <div class="3">
           <input type="text" name="search" class="table-search">
         </div> -->
-        <div class="add" v-if="parameter !== 'default'">
-          <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
+        <div class="add">
+          <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Enroll New Course</button>
         </div>
       </div>
       <div class="table-result">
         <table class="table table-responsive table-bordered">
           <thead>
             <tr>
+              <td>Code / Units</td>
               <td>Description</td>
-              <td>Type</td>
-              <td>Date</td>
-              <td>Timer</td>
+              <td>Schedule</td>
+              <td>Grade Settings</td>
               <td>Actions</td>
             </tr>
           </thead>
           <tbody v-if="data.length > 0">
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td>{{item.description}}</td>
-              <td>{{item.type}}</td>
-              <td>{{item.start + ' - ' + item.end}}</td>
-              <td>{{item.timer}}</td>
-              <td class="text-center">
-                <b class="text-primary action-link" v-on:click="redirect('questions/' + item.id)" data-hover="tooltip" data-placement="top" title="View Questions">{{item.total_questions}}</b> &nbsp;&nbsp;
-                <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Quiz">
+              <td>
+                {{item.course_details.code + '- (' + item.course_details.units + ')'}}
+                <br>
+                <label><b>Enrolment Code:</b> <label class="text-primary">{{item.course_details.enrolment_code}}</label></label>
+              </td>
+              <td v-if="item.status_description === null">{{item.course_details.description}}</td>
+              <td v-else>{{item.course_details.description + ' - ' + item.status_description}}</td>
+              <td>{{item.course_details.time_start + ' - ' + item.course_details.time_end + ' ' + item.course_details.days}}</td>
+              <td></td>
+              <td>
+                <i class="fa fa-clipboard text-primary action-link" v-on:click="redirect('courses/' + item.id)" data-hover="tooltip" data-placement="top" title="View Courses"></i>
+                <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Semester">
                 </i>
-                <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)" data-hover="tooltip" data-placement="top" title="Delete Quiz"></i>
+                <i class="fa fa-trash text-danger action-link" v-on:click="deleteRequest(item.id)" data-hover="tooltip" data-placement="top" title="Delete Semester"></i>
               </td>
             </tr>
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Quiz Now!</td>     
-              <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal">Click Add Semester Now!</td>
             </tr>
           </tbody>
         </table>
@@ -94,25 +90,13 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Description</label>
             <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.description" v-model="modalInput.description">
+            <label>Status</label>
             <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.type" v-model="modalInput.type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.start" v-model="modalInput.start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.end" v-model="modalInput.end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-bind:placeholder="modalView.timer" v-model="modalInput.timer">
+            <select class="form-control" v-model="modalInput.status">
+              <option value="0">Grade Setting is the same all Courses</option>
+              <option value="1">Grade Setting is different per Course</option>
+            </select>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
@@ -142,28 +126,13 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Description</label>
             <br>
-            <input type="text" class="form-control" placeholder="Exam Description" v-model="description">
+            <label>Course Enrolment Code</label>
             <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-model="type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-model="timer">
+            <input type="text" class="form-control" placeholder="12 Digit Code" v-model="enrolmentCode">
           </div>
           <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
+              <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Send Request</button>
               <button type="button" class="btn btn-danger" v-else  data-dismiss="modal" aria-label="Close">Close</button>
           </div>
         </div>
@@ -178,38 +147,23 @@ import axios from 'axios'
 import CONFIG from '../../config.js'
 export default {
   mounted(){
-    this.retrieveRequestSemester()
-    this.defaultParameter()
+    this.retrieveRequest(true)
   },
   data(){
     return {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      modalTitle: 'Add Quiz',
-      parameter: this.$route.params.courseId,
+      modalTitle: 'Add New Course',
       data: [],
-      semesters: [],
-      semesterId: null,
-      courses: [],
-      courseId: this.$route.params.courseId,
-      method: 'quizzes',
-      methodId: 'course_id',
-      quizzes: [],
+      method: 'enrolled_courses',
+      methodId: 'account_id',
       errorMessage: null,
       closeFag: false,
-      description: null,
-      type: null,
-      start: null,
-      end: null,
-      timer: null,
+      enrolmentCode: null,
       modalView: null,
       modalInput: {
         id: null,
-        description: null,
-        type: null,
-        start: null,
-        end: null,
-        timer: null
+        status: null
       },
       selectedTotalItems: null,
       totalDisplay: 5,
@@ -223,76 +177,28 @@ export default {
         nextFlag: true,
         currentPager: 1,
         pagerActive: null
-      }
+      },
+      prevGradeSettingIndex: null
     }
   },
   methods: {
     redirect(parameter){
       ROUTER.push(parameter)
     },
-    retrieveRequestSemester(){
+    retrieveRequest(flag){
       let parameter = {
         'condition': [{
           'value': this.user.userID,
-          'column': 'account_id',
-          'clause': '='
+          'clause': '=',
+          'column': 'account_id'
         }]
       }
-      this.APIRequest('semesters/retrieve', parameter).then(response => {
-        this.semesters = response.data
-      })
-    },
-    filterSemester(){
-      this.retrieveCourse(this.semesterId)
-    },
-    retrieveCourse(value){
-      let parameter = {
-        'condition': [{
-          'value': value,
-          'column': 'semester_id',
-          'clause': '='
-        }]
-      }
-      this.APIRequest('courses/retrieve', parameter).then(response => {
-        this.courses = response.data
-      })
-    },
-    filterCourses(){
-      this.createParameter(this.parameter)
-    },
-    createParameter(value){
-      let parameter = {
-        'condition': [{
-          'value': value,
-          'column': this.methodId,
-          'clause': '='
-        }]
-      }
-      this.retrieveRequest(true, parameter)
-    },
-    defaultParameter(){
-      let param = null
-      if(this.parameter !== 'default'){
-        param = {
-          'condition': [{
-            'value': this.parameter,
-            'clause': '=',
-            'column': this.methodId
-          }]
-        }
-        this.retrieveRequest(true, param)
-      }else if(parseInt(this.parameter) > 0){
-        alert('Incorrect Parameter Supplied')
-      }
-    },
-    retrieveRequest(flag, parameter){
       this.APIRequest(this.method + '/retrieve', parameter).then(response => {
         if(response.data === null){
-          this.quizzes = []
+          this.data = []
         }else{
-          this.quizzes = response.data
+          this.data = response.data
         }
-        this.data = this.quizzes
       }).done(() => {
         if(flag === true){
           this.initDisplayer()
@@ -334,18 +240,14 @@ export default {
     },
     createRequest(){
       let formData = new FormData()
-      formData.append(this.methodId, this.parameter)
-      formData.append('description', this.description)
-      formData.append('type', this.type)
-      formData.append('start', this.start)
-      formData.append('end', this.end)
-      formData.append('timer', this.timer)
+      formData.append(this.methodId, this.user.userID)
+      formData.append('enrolment_code', this.enrolmentCode)
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
-        if(response.data.data !== null){
+        if(response.data.data !== null || response.data.data > 0){
           $('#myModal').modal('hide')
-          this.createParameter(this.parameter)
+          this.retrieveRequest(false)
         }else{
-          this.errorMessage = response.error.message
+          this.errorMessage = response.data.message
         }
       })
     },
@@ -357,12 +259,12 @@ export default {
         if(response.data === null){
           // Error Message
         }else{
-          this.createParameter(this.parameter)
+          this.retrieveRequest(true)
         }
       })
     },
     validation(){
-      if(this.description === null || this.type === null || this.start === null || this.end === null || this.timer === null){
+      if(this.description === null || this.startDate === null || this.endDate === null){
         return false
       }else{
         return true
@@ -378,24 +280,21 @@ export default {
       if(this.modalInput.description !== null){
         formData.append('description', this.modalInput.description)
       }
-      if(this.modalInput.type !== null){
-        formData.append('type', this.modalInput.type)
+      if(this.modalInput.startDate !== null){
+        formData.append('start_date', this.modalInput.startDate)
       }
-      if(this.modalInput.start !== null){
-        formData.append('start', this.modalInput.start)
+      if(this.modalInput.endDate !== null){
+        formData.append('end_date', this.modalInput.endDate)
       }
-      if(this.modalInput.end !== null){
-        formData.append('end', this.modalInput.end)
-      }
-      if(this.modalInput.timer !== null){
-        formData.append('timer', this.modalInput.timer)
+      if(this.modalInput.gradeSetting !== null){
+        formData.append('grade_setting', this.modalInput.gradeSetting)
       }else{
         //
       }
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
         if(response.data.data === true){
           $('#editModal').modal('hide')
-          this.createParameter(this.parameter)
+          this.retrieveRequest(false)
         }
       })
     },
@@ -473,6 +372,51 @@ export default {
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
       }
+    },
+    editGradeSettings(index){
+      if(this.prevGradeSettingIndex === null){
+        this.data[index].grade_flag = true
+        this.prevGradeSettingIndex = index
+      }else{
+        if(this.prevGradeSettingIndex === index){
+          this.data[index].grade_flag = false
+          this.prevGradeSettingIndex = null
+        }else{
+          this.data[index].grade_flag = true
+          this.data[this.prevGradeSettingIndex].grade_flag = false
+          this.prevGradeSettingIndex = index
+        }
+      }
+    },
+    save(index){
+      if(this.gradeValidation(index) === true){
+        this.data[index].error_message = null
+        let parameter = {
+          'data': this.data[index].grade_settings_content[0],
+          'semester_id': this.data[index].id
+        }
+        this.APIRequest('grade_settings/update', parameter).then(response => {
+          if(response.data === true || response.data !== null){
+            this.retrieveRequest(false)
+          }else{
+            //
+          }
+        })
+      }else{
+        this.data[index].error_message = 'General Settings must be equal to 100'
+      }
+    },
+    gradeValidation(index){
+      let quizzesRate = parseInt(this.data[index].grade_settings_content[0].quizzes_rate)
+      let attendanceRate = parseInt(this.data[index].grade_settings_content[0].attendance_rate)
+      let examsRate = parseInt(this.data[index].grade_settings_content[0].exams_rate)
+      let projectsRate = parseInt(this.data[index].grade_settings_content[0].projects_rate)
+      let totalGrade = quizzesRate + attendanceRate + projectsRate + examsRate
+      if(totalGrade === 100){
+        return true
+      }else{
+        return false
+      }
     }
   }
 }
@@ -522,6 +466,19 @@ td button i{
 }
 thead{
   font-weight: 700;
+}
+.input-group{
+  margin-top: 5px;
+  font-size: 13px !important;
+}
+.input-group-addon{
+  width: 125px;
+  font-size: 13px !important;
+  background: #3f0050;
+  color: #fff;
+}
+.input-group-addon2{
+  width: 150px;
 }
 
 </style>
