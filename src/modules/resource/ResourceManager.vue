@@ -35,10 +35,10 @@
               <i class="fa fa-file-excel-o" v-if="index%3 === 2"></i>
             </div>
           </div>
-          <div class="card-footer" v-on:mouseover="setActiveIndex(index)">
+          <div class="card-footer">
             <span v-show="filename.edit == false"><i class="fa fa-eye" data-toggle="modal" data-target="#viewerModal" data-hover="tooltip" data-placement="top" title="Viewers"></i></span>
             <span v-show = "filename.edit == false">
-              <label @dblclick = "filename.edit = true" class="file-name"> &nbsp;{{filename.title}} </label>
+              <label @dblclick = "filename.edit = true, disableEdit(index)" class="file-name"> &nbsp;{{filename.title}} </label>
             </span>
             <span>
               <input class="card-form" v-show = "filename.edit == true" v-model = "filename.title"
@@ -106,7 +106,7 @@
           </div>
           <div class="modal-body">
             <div class="upload-body">
-             <!--  <form>
+              <!-- <form>
                  <div class="upload-form">
                     <input type="file" multiple class="btn" @change="fileCount = $event.target.files.length, add($event.target.files)" >
                     <div v-if="fileCount === 0" class="center-area"><i class="fa fa-upload"></i> Drag and Drop Files</div>
@@ -115,9 +115,9 @@
                </form> -->
                 <div>
                   <span>Resource Type</span>
-                  <input type="text" name="type" class="form-control" placeholder="Type"></br>
+                  <input type="text" name="type" class="form-control" placeholder="Type" v-model="type"></br>
                   <span>Resource Title</span>
-                  <input type="text" name="type" class="form-control" placeholder="Title">
+                  <input type="text" name="type" class="form-control" placeholder="Title" v-model="title">
                 </div>
             </div>
           </div>
@@ -139,6 +139,7 @@ export default {
   mounted(){
     this.retrieveRequestSemester()
     this.defaultParameter()
+    this.disableEdit()
   },
   data(){
     return {
@@ -158,9 +159,7 @@ export default {
       closeFag: false,
       description: null,
       type: null,
-      start: null,
-      end: null,
-      timer: null,
+      title: null,
       modalView: null,
       modalInput: {
         id: null,
@@ -306,14 +305,12 @@ export default {
     createRequest(){
       let formData = new FormData()
       formData.append(this.methodId, this.parameter)
-      formData.append('description', this.description)
       formData.append('type', this.type)
-      formData.append('start', this.start)
-      formData.append('end', this.end)
-      formData.append('timer', this.timer)
+      formData.append('title', this.title)
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
+          console.log('in')
           this.createParameter(this.parameter)
         }else{
           this.errorMessage = response.error.message
@@ -448,8 +445,12 @@ export default {
     editName(name){
       this.editLoop = name
     },
-    setActiveIndex(index){
-      this.activeIndex = index
+    disableEdit(active){
+      for(var i = 0; i < this.filenames.length; i++){
+        if(i !== active){
+          this.filenames[i].edit = false
+        }
+      }
     },
     log(){
       console.log(this.activeIndex)
@@ -499,7 +500,7 @@ form input{
   height: 25px !important;
   width: 100%;
   padding-left: 10px;
-  border: 1px solid #ccc;
+  border: none;
   border-radius: 4px;
 }
 
