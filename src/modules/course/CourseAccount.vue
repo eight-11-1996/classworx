@@ -21,37 +21,37 @@
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
         </div> -->
       </div>
-      <div class="table-result">
-        <table class="table table-responsive table-bordered">
-          <thead>
-            <tr>
-              <td>Account</td>
-              <td>Account Informations</td>
-              <td>Actions</td>
-            </tr>
-          </thead>
-          <tbody v-if="data.length > 0">
-            <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
-              <td>{{item.account.username}}</td>
-              <td>
-                <span v-if="item.account_information !== null">
-                  Firstname: {{item.account_information.first_name}} 
-                  Lastname: {{item.account_information.last_name}}
-                </span>
-              </td>
-              <td>
-                <button class="btn btn-primary"><i class="fa fa-check"></i> Confirm</button>
-                <button class="btn btn-danger"><i class="fa fa-ban"></i> Decline</button>
-              </td>
-            </tr>
-          </tbody>
-          <tbody v-else>
-            <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Question Now!</td>     
-              <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="table-result" v-if="data.length > 0">
+        <span class="account-info-holder" v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
+          <span class="profile-picture">
+            <span v-if="item.account_profile !== null" class="profile-image">
+              <img v-bind:src="config.BACKEND_URL + item.account_profile.profile_url" width="100%" height="100%">
+            </span>
+            <span class="profile-image"  v-else>
+              <i class="fa fa-user-circle-o"></i>  
+            </span>
+            <span class="account-id text-center" v-if="item.account_degree !== null">
+              <label>ID: {{item.account_degree.school_id_number}}</label>
+            </span>
+          </span>
+          <span class="personal-information">
+            <span class="account-name" v-if="item.account_information !== null">
+              {{item.account_information.first_name + ' ' + item.account_information.last_name}}
+            </span>
+            <span class="account-item" v-if="item.account_degree !== null">{{item.account_degree.course_code}}</span>
+            <span class="account-item" v-if="item.account_degree !== null"><i class="fas fa-university text-warning"></i> {{item.account_degree.school}}</span>
+            <span class="account-item" v-if="item.account_degree !== null"><i class="fas fa-map-marker-alt text-warning"></i> {{item.account_degree.address}}</span>
+            <span class="account-item" style="margin-top:5px;" v-if="parseInt(item.status) === 0 || data[index].edit_status_flag === true">
+              <button class="btn btn-primary" v-on:click="accept(index)"><i class="fa fa-check"></i> Confirm</button>
+              <button class="btn btn-danger" v-on:click="decline(index)"><i class="fa fa-ban"></i> Decline</button>
+            </span>
+            <span class="account-item" v-else>
+              <i class="fa fa-cog text-primary action-link" data-hover="tooltip" data-placement="top" title="Edit Status" v-on:click="editStatus(index)"></i>
+              <label v-if="parseInt(item.status) === 1"> Enrolled</label>
+              <label v-if="parseInt(item.status) === 2" v-bind:class="{'text-danger': parseInt(item.status) === 2}"> Declined</label>
+            </span>
+          </span>
+        </span>
       </div>
       <div class="table-footer">
         <div class="items-total pull-left">
@@ -81,6 +81,7 @@ export default {
     return {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
+      config: CONFIG,
       modalTitle: 'Add Question',
       parameter: this.$route.params.id,
       data: [],
@@ -106,7 +107,8 @@ export default {
         nextFlag: true,
         currentPager: 1,
         pagerActive: null
-      }
+      },
+      editStatusPrevIndex: null
     }
   },
   methods: {
@@ -134,11 +136,7 @@ export default {
     },
     createParameter(value){
       let parameter = {
-        'condition': [{
-          'value': value,
-          'column': this.methodId,
-          'clause': '='
-        }]
+        'course_id': this.parameter
       }
       this.retrieveRequest(true, parameter)
     },
@@ -155,7 +153,6 @@ export default {
     },
     retrieveRequest(flag, parameter){
       this.APIRequest(this.method + '/accounts', parameter).then(response => {
-        console.log(response.data)
         if(response.data === null){
           this.data = []
         }else{
@@ -270,88 +267,6 @@ export default {
         return true
       }
     },
-    edit(index){
-      if(this.prevEditIndex === null){
-        this.data[index].edit = true
-        this.prevEditIndex = index
-      }else{
-        if(index === this.prevEditIndex){
-          this.data[index].edit = false
-          this.prevEditIndex = null
-        }else{
-          this.data[index].edit = true
-          this.data[this.prevEditIndex].edit = false
-          this.prevEditIndex = index
-        }
-      }
-    },
-    cancel(index){
-      this.data[index].edit = false
-      this.prevEditIndex = null
-    },
-    update(data, index){
-      let parameter = {
-        'data': data
-      }
-      this.APIRequest(this.method + '/update', parameter).then(response => {
-        if(data.type === 'short_answer' || data.type === 'long_answer'){
-          this.data[index].edit = false
-          this.prevEditIndex = null
-          this.createParameter(this.parameter)
-        }
-      }).done(() => {
-        // Multiple Answers and Multiple Choice Template
-        if(data.type === 'multiple_answers' || data.type === 'multiple_choice'){
-          this.APIRequest('question_options/update', data).done(response => {
-            if(response.data === true){
-              this.data[index].edit = false
-              this.prevEditIndex = null
-              this.createParameter(this.parameter)
-            }else{
-              //
-            }
-          })
-        }else{
-          // other tempalte
-        }
-      })
-    },
-    toggle(index, order){
-      if(this.data[index].type === 'multiple_answers'){
-        if(this.data[index].answer.includes(',' + order + ',')){
-          let text = ',' + order + ','
-          let newAnswer = this.data[index].answer.replace(text, ',')
-          this.data[index].answer = newAnswer
-        }else{
-          this.data[index].answer += order + ','
-        }
-      }else if(this.data[index].type === 'multiple_choice'){
-        this.data[index].answer = order
-      }else{
-        //
-      }
-    },
-    remove(index, indexOption){
-      this.data[index].question_options.splice(indexOption, 1)
-    },
-    add(index){
-      if(this.data[index].question_options.length > 0){
-        let parameter = {
-          'question_id': this.data[index].id,
-          'description': null,
-          'order': this.data[index].question_options.length + 1
-        }
-        this.data[index].question_options.push(parameter)
-      }else{
-        this.data[index].question_options = []
-        let parameter = {
-          'question_id': this.data[index].id,
-          'description': null,
-          'order': 1
-        }
-        this.data[index].question_options.push(parameter)
-      }
-    },
     updateRequest(){
       let formData = new FormData()
       formData.append('id', this.modalInput.id)
@@ -453,83 +368,121 @@ export default {
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
       }
+    },
+    accept(index){
+      let parameter = {
+        'id': this.data[index].id,
+        'status': 1
+      }
+      this.updateRequestEnrolledAccount(parameter)
+    },
+    decline(index){
+      let parameter = {
+        'id': this.data[index].id,
+        'status': 2
+      }
+      this.updateRequestEnrolledAccount(parameter)
+    },
+    updateRequestEnrolledAccount(parameter){
+      this.APIRequest('enrolled_courses/update', parameter).then(response => {
+        if(response.data === true){
+          this.createParameter(this.parameter)
+          this.data[this.editStatusPrevIndex].edit_status_flag = false
+          this.editStatusPrevIndex = null
+        }
+      })
+    },
+    editStatus(index){
+      if(this.editStatusPrevIndex === null){
+        this.editStatusPrevIndex = index
+        this.data[index].edit_status_flag = true
+      }else{
+        if(this.editStatusPrevIndex === index){
+          this.data[index].edit_status_flag = false
+          this.editStatusPrevIndex = null
+        }else{
+          this.data[this.editStatusPrevIndex].edit_status_flag = false
+          this.data[index].edit_status_flag = true
+          this.editStatusPrevIndex = index
+        }
+      }
     }
   }
 }
 </script>
 <style>
+  .account-info-holder{
+    min-height: 125px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+    width: 48%;
+    float: left;
+    margin: 10px 0% 0 2%;
+    overflow-y: hidden;
+    border: solid 1px #eee;
+  }
+  .profile-picture{
+    width: 40%;
+    float: left;
+    height: 100%;
+    text-align: center;
+  }
+  .profile-picture .profile-image{
+    width: 100%;
+    height:80%;
+    float: left;
+    padding-top: 10px;
+  }
+  .profile-image i{
+    font-size: 100px;
+    color: #3f0050;
+  }
+  .profile-image img{
+    height: 100px;
+    width: 100px;
+    border-radius: 25px;
+  }
+  .personal-information{
+    width: 60%;
+    float: left;
+    min-height: 125px;
+    overflow-y: hidden;
+    margin-bottom: 10px;
+  }
 
-mark{
-  background: none;
-}
-form{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin-top: -100px;
-  margin-left: -250px;
-  width: 500px;
-  height: 120px;
-  border: 4px dashed;
-  border-radius: 3px;
-}
-form p{
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  line-height: 120px;
-}
-form input{
-  position: absolute;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  outline: none;
-  opacity: 0;
-}
+  .account-name{
+    height: 35px;
+    width: 100%;
+    float: left;
+    font-weight: 600;
+    padding-top: 10px;
+    font-size: 18px;
+    color: #028170;
+  }
 
-.modal-title i{
-  padding-right: 10px;
-}
-
-.form-control{
-  height: 45px !important;
-}
-
-td button i{
-  padding-right: 10px;
-}
-thead{
-  font-weight: 700;
-}
-td .question, td .answer, td .options, .options .option-item{
-  float: left;
-  width: 100%;
-}
-.editable-tr{
-  cursor: pointer;
-}
-.question{
-  font-size: 14px !important;
-  margin-bottom: 10px;
-}
-.option-item{
-  margin-bottom: 10px;
-}
-.option-item i{
-  font-size: 24px !important;
-}
-.edit-option i{
-  width: 5%;
-  text-align: center;
-  float: left;
-  padding-top: 10px;
-}
-.edit-option input{
-  width: 86%;
-  margin: 0 2% 0 2%;
-  float: left;
-}
-
+  .account-id{
+    min-height: 20px;
+    width: 100%;
+    float: left;
+    margin-top: -15px;
+    overflow-y: hidden;
+    font-weight: 600;
+  }
+  .account-id label{
+    background: #028170;
+    color: #fff;
+    padding: 5px 7px 5px 7px;
+  }
+  .account-item{
+    min-height: 20px;
+    width: 100%;
+    float: left;
+    overflow-y: hidden;
+  }
+   @media screen (min-width: 200px), screen and (max-width: 991px){
+    .account-info-holder{
+      width: 100%;
+      margin: 10px 0% 0 0%;
+    }
+   }
 </style>

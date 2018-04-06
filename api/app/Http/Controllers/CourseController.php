@@ -9,6 +9,7 @@ use App\GradeSetting;
 use App\Account;
 use App\AccountInformation;
 use App\AccountProfile;
+use App\AccountDegree;
 class CourseController extends ClassWorxController
 {
     function __construct(){
@@ -69,12 +70,15 @@ class CourseController extends ClassWorxController
       if(sizeof($result) > 0){
         $i = 0;
         foreach ($result as $key) {
+          $result[$i]['edit_status_flag'] = false;
           $accountResult = Account::where('id', '=', $result[$i]['account_id'])->get();
           $accountInfoResult = AccountInformation::where('account_id', '=', $result[$i]['account_id'])->get();
           $accountProfileResult = AccountProfile::where('account_id', '=', $result[$i]['account_id'])->get();
+          $accountDegreeResult = AccountDegree::where('account_id', '=', $result[$i]['account_id'])->get();
           $result[$i]['account'] = (sizeof($accountResult) > 0) ? $accountResult[0] : null;
-          $result[$i]['acccount_informartion'] = (sizeof($accountInfoResult) > 0) ? $accountInfoResult[0] : null;
+          $result[$i]['account_information'] = (sizeof($accountInfoResult) > 0) ? $accountInfoResult[0] : null;
           $result[$i]['account_profile'] = (sizeof($accountProfileResult) > 0) ? $accountProfileResult[0] : null;
+          $result[$i]['account_degree'] = (sizeof($accountDegreeResult) > 0) ? $accountDegreeResult[0] : null;
           $i++;
         }
         return response()->json(array('data' => $result));
