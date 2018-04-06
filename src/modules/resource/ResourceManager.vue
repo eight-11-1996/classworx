@@ -27,16 +27,24 @@
         </div>
       </div>
       <div class="table-result row">
-        <div v-for="item in loop" class="files-card">
+        <div v-for="filename, index in filenames" class="files-card">
           <div class="card-container">
             <div class="center-area">
-              <i class="fa fa-file-word-o" v-if="item === '1'"></i>
-              <i class="fa fa-file-powerpoint-o" v-if="item === '2'"></i>
-              <i class="fa fa-file-excel-o" v-if="item === '3'"></i>
+              <i class="fa fa-file-word-o" v-if="index%3 === 0"></i>
+              <i class="fa fa-file-powerpoint-o" v-if="index%3=== 1"></i>
+              <i class="fa fa-file-excel-o" v-if="index%3 === 2"></i>
             </div>
           </div>
-          <div class="card-footer">
-            <i class="fa fa-eye" v-on:click="" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Viewers"></i> File Name {{item}} 
+          <div class="card-footer" v-on:mouseover="setActiveIndex(index)">
+            <span v-show="filename.edit == false"><i class="fa fa-eye" data-toggle="modal" data-target="#viewerModal" data-hover="tooltip" data-placement="top" title="Viewers"></i></span>
+            <span v-show = "filename.edit == false">
+              <label @dblclick = "filename.edit = true" class="file-name"> &nbsp;{{filename.title}} </label>
+            </span>
+            <span>
+              <input class="card-form" v-show = "filename.edit == true" v-model = "filename.title"
+                v-on:blur= "filename.edit=false; $emit('update')"
+                @keyup.enter = "filename.edit=false; $emit('update')">
+            </span>
           </div>
         </div>
       </div>
@@ -58,7 +66,7 @@
 
       EDIT
     -->
-    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="viewerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
           <div class="modal-header bg-primary">
@@ -68,13 +76,13 @@
             </button>
           </div>
           <div class="table-result">
-              <ul v-for="item in viewers">
+              <ul v-for="item, index in viewers">
                 {{item}}
               </ul>
             </table>
           </div>
           <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
+              <button type="button" class="btn btn-primary" @click="Submit()" v-if="closeFag == false">update</button>
               <button type="button" class="btn btn-danger" v-else  data-dismiss="modal" aria-label="Close">Close</button>
           </div>
         </div>
@@ -98,15 +106,19 @@
           </div>
           <div class="modal-body">
             <div class="upload-body">
-              <form>
+             <!--  <form>
                  <div class="upload-form">
                     <input type="file" multiple class="btn" @change="fileCount = $event.target.files.length, add($event.target.files)" >
                     <div v-if="fileCount === 0" class="center-area"><i class="fa fa-upload"></i> Drag and Drop Files</div>
                     <div v-else class="center-area">{{fileCount}}</div>
                   </div>
-                  <div class="btn-area">
-                 </div>
-               </form>
+               </form> -->
+                <div>
+                  <span>Resource Type</span>
+                  <input type="text" name="type" class="form-control" placeholder="Type"></br>
+                  <span>Resource Title</span>
+                  <input type="text" name="type" class="form-control" placeholder="Title">
+                </div>
             </div>
           </div>
           <div class="modal-footer">
@@ -132,14 +144,14 @@ export default {
     return {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      modalTitle: 'Add Course',
+      modalTitle: 'Add Resource',
       parameter: this.$route.params.courseId,
       data: [],
       semesters: [],
       semesterId: null,
       courses: [],
       courseId: this.$route.params.courseId,
-      method: 'quizzes',
+      method: 'resources',
       methodId: 'course_id',
       quizzes: [],
       errorMessage: null,
@@ -171,7 +183,16 @@ export default {
         currentPager: 1,
         pagerActive: null
       },
-      loop: ['1', '2', '3'],
+      filenames: [{'title': 'one value', 'edit': false},
+            {'title': 'one value', 'edit': false},
+            {'title': 'one value', 'edit': false},
+            {'title': 'one value', 'edit': false},
+            {'title': 'one value', 'edit': false},
+            {'title': 'one value', 'edit': false},
+            {'title': 'one value', 'edit': false},
+            {'title': 'otro titulo', 'edit': false}],
+      editedTodo: null,
+      activeIndex: null,
       fileCount: 0,
       viewers: ['Kennette Canales', 'June Ray Mag-usara', 'Fretzel Sanchez']
     }
@@ -423,6 +444,18 @@ export default {
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
       }
+    },
+    editName(name){
+      this.editLoop = name
+    },
+    setActiveIndex(index){
+      this.activeIndex = index
+    },
+    log(){
+      console.log(this.activeIndex)
+    },
+    editTodo(todo){
+      this.editedTodo = todo
     }
   }
 }
@@ -458,6 +491,17 @@ form input{
   outline: none;
   opacity: 0;
 }
+.file-name{
+  cursor: text;
+}
+.card-form{
+  margin-top: 0 !important;
+  height: 25px !important;
+  width: 100%;
+  padding-left: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
 
 .fa-file-excel-o{
   color: #028170;
@@ -478,12 +522,12 @@ form input{
 .card-container{
   height: 70%;
   text-align: center;
-  font-size: 60px;
+  font-size: 100px;
 }
 .files-card{
-  width: 10em;
+  width: 15em;
   box-shadow: 0 4px 8px 0 #3f0040;
-  height: 12em;
+  height: 18em;
   margin: 10px;
   border-radius: 5px;
 }
@@ -491,13 +535,15 @@ form input{
 .files-card:hover{
   box-shadow: 2px 4px 8px 2px #3f0050;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .card-footer{
   text-align: center;
+  margin-top: 20px;
 }
 .upload-body{
-  margin-top: 15em;
+  margin-top: 5em;
 }
 
 .modal-title i{
@@ -510,6 +556,9 @@ form input{
 
 .fa-eye:hover{
   font-weight: bold;
+  color: #028170;
+}
+.fa-eye{
   color: #3f0050;
 }
 .fa-upload{
