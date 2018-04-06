@@ -66,7 +66,7 @@ export default{
   },
   {
     path: '/courses/accounts/:id',
-    name: 'courses',
+    name: 'courseAccounts',
     component: resolve => require(['modules/course/CourseAccount.vue'], resolve),
     meta: {
       tokenRequired: true

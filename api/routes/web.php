@@ -17,45 +17,9 @@ Route::get('/', function () {
 /*
   Accessing uploaded files
 */
-Route::get('file/icon/{filename}', function ($filename)
+Route::get('storage/profile/{filename}', function ($filename)
 {
-  $path = storage_path('/icons/' . $filename);
-  if (!File::exists($path)) {
-      abort(404);
-  }
-  $file = File::get($path);
-  $type = File::mimeType($path);
-  $response = Response::make($file, 200);
-  $response->header("Content-Type", $type);
-  return $response;
-});
-Route::get('file/company/{filename}', function ($filename)
-{
-  $path = storage_path('/company/' . $filename);
-  if (!File::exists($path)) {
-      abort(404);
-  }
-  $file = File::get($path);
-  $type = File::mimeType($path);
-  $response = Response::make($file, 200);
-  $response->header("Content-Type", $type);
-  return $response;
-});
-Route::get('file/q_card/{filename}', function ($filename)
-{
-  $path = storage_path('/qcards/' . $filename);
-  if (!File::exists($path)) {
-      abort(404);
-  }
-  $file = File::get($path);
-  $type = File::mimeType($path);
-  $response = Response::make($file, 200);
-  $response->header("Content-Type", $type);
-  return $response;
-});
-Route::get('storage/audio_files/{filename}', function ($filename)
-{
-    $path = storage_path('/app/audioFiles/' . $filename);
+    $path = storage_path('/app/profiles/' . $filename);
 
     if (!File::exists($path)) {
         abort(404);
@@ -110,6 +74,15 @@ Route::post('/account_informations/retrieve', "AccountInformationController@retr
 Route::post('/account_informations/update', "AccountInformationController@update");
 Route::post('/account_informations/delete', "AccountInformationController@delete");
 Route::get('/account_informations/test', 'AccountInformationController@test');
+
+
+
+//Account Degrees
+Route::post('/account_degrees/create', "AccountDegreeController@create");
+Route::post('/account_degrees/retrieve', "AccountDegreeController@retrieve");
+Route::post('/account_degrees/update', "AccountDegreeController@update");
+Route::post('/account_degrees/delete', "AccountDegreeController@delete");
+Route::get('/account_degrees/test', 'AccountDegreeController@test');
 
 
 //Account Profiles
