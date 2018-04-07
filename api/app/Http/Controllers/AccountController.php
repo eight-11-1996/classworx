@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Account;
+use App\AccountDegree;
+use App\AccountInformation;
+use App\AccountProfile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -67,5 +70,27 @@ class AccountController extends ClassWorxController
       }
       else
         return true;
+    }
+
+    public function retrieve(Request $request){
+      $data = $request->all();
+      $this->model = new Account();
+      $result = $this->retrieveDB($data);
+
+      if(sizeof($result) > 0){
+        $i = 0;
+        foreach ($result as $key) {
+          $accountInfoResult = AccountInformation::where('account_id', '=', $result[$i]['id'])->get();
+          $accountProfileResult = AccountProfile::where('account_id', '=', $result[$i]['id'])->get();
+          $accountDegreeResult = AccountDegree::where('account_id', '=', $result[$i]['id'])->get();
+          $result[$i]['account_information'] = (sizeof($accountInfoResult) > 0) ? $accountInfoResult[0] : null;
+          $result[$i]['account_profile'] = (sizeof($accountProfileResult) > 0) ? $accountProfileResult[0] : null;
+          $result[$i]['account_degree'] = (sizeof($accountDegreeResult) > 0) ? $accountDegreeResult[0] : null;
+          $i++;
+        }
+        return response()->json(array('data' => $result));
+      }else{
+        return $this->response();
+      }
     }
 }
