@@ -111,6 +111,14 @@ export default{
     meta: {
       tokenRequired: true
     }
+  },
+  {
+    path: '/account_settings',
+    name: 'accountSettings',
+    component: resolve => require(['modules/account/AccountSettings.vue'], resolve),
+    meta: {
+      tokenRequired: true
+    }
   }
   ]
 }
