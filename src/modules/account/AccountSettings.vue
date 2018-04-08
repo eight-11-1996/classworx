@@ -53,7 +53,7 @@
         <i class="fa fa-university"></i>Educational Background 
       </span>
       <span class="degree-holder" v-if="data.account_degree !== null && data.account_degree.length > 0" v-for="item, index in data.account_degree">
-        <span v-if="item.edit_flag === false" data-hover="tooltip" data-placement="top" title="Double Click to Edit">
+        <span v-if="item.edit_flag === false">
           <span class="item-half course">
             <label>{{item.course}}</label>
             <i class="fa fa-pencil text-primary pull-right action-link" v-on:click="edit(index)"></i>
@@ -102,6 +102,7 @@
             </select>
           </div>
           <button class="btn btn-primary pull-right" style="margin-top:5px; margin-bottom:5px;" v-on:click="updateDegree(index)"><i class="fa fa-sync"></i> Update</button>
+          <button class="btn btn-danger pull-right" style="margin-top:5px; margin-bottom:5px; margin-right: 5px;" v-on:click="edit(index)"><i class="fa fa-ban"></i> Cancel</button>
         </span>
       </span>
     </div>
@@ -182,7 +183,7 @@ export default {
         this.prevDegreeEditIndex = index
       }else{
         if(this.prevDegreeEditIndex === index){
-          this.data.account_degree[index] = false
+          this.data.account_degree[index].edit_flag = false
           this.prevDegreeEditIndex = null
         }else{
           this.data.account_degree[this.prevDegreeEditIndex].edit_flag = false
