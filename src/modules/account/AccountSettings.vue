@@ -4,10 +4,10 @@
       <span class="profile-image" v-if="data.account_profile !== null">
         <img v-bind:src="config.BACKEND_URL + data.account_profile.profile_url" width="100%" height="100%">
       </span>
-      <span class="profile-image" v-else>
+      <span class="profile-image-settings" v-else>
         <i class="fa fa-user-circle-o"></i>
       </span>
-      <span class="account-name">
+      <span class="account-name-settings">
         {{data.account_information.first_name + ' ' + data.account_information.last_name}}
       </span>
     </div>
@@ -217,12 +217,12 @@ export default {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
   }
-  .profile-image i{
+  .profile-image-settings i{
     font-size: 150px;
     color: #3f0050;
     padding-top: 50px;
   }
-  .profile-image img{
+  .profile-image-settings img{
     height: 150px;
     width: 150px;
     border-radius: 25px;
