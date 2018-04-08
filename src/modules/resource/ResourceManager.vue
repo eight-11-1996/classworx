@@ -44,7 +44,7 @@
             <span>
               <input class="card-form" v-show = "filename.edit == true" v-model = "editedFileName"
                 v-on:blur= "filename.edit=false; editFileName(index); $emit('update')"
-                @keyup.enter = "filename.edit=false; editFileName(index); $emit('update'); updateTitle(filename.id)">
+                @keyup.enter = "filename.edit=false; editFileName(index); $emit('update')">
             </span>
           </div>
         </div>
@@ -133,7 +133,6 @@ export default {
   mounted(){
     this.retrieveRequestSemester()
     this.defaultParameter()
-    this.getSize()
   },
   data(){
     return {
@@ -342,6 +341,7 @@ export default {
     },
     updateTitle(id){
       let formData = new FormData()
+      this.filenames = []
       formData.append('id', id)
       formData.append('title', this.editedFileName)
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
@@ -469,6 +469,7 @@ export default {
     editFileName(index){
       if(this.editedFileName.length > 0){
         this.filenames[index].title = this.editedFileName
+        this.updateTitle(this.filenames[index].id)
       } else {
         this.filenames[index].title = this.currentFile
       }
