@@ -31,7 +31,7 @@
               <i class="fa fa-user-circle-o"></i>  
             </span>
             <span class="account-id text-center" v-if="item.account_degree !== null">
-              <label>ID: {{item.account_degree.school_id_number}}</label>
+              <label>ID: {{item.account_degree.school_identification}}</label>
             </span>
           </span>
           <span class="personal-information">

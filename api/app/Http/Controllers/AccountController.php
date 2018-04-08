@@ -80,17 +80,27 @@ class AccountController extends ClassWorxController
       if(sizeof($result) > 0){
         $i = 0;
         foreach ($result as $key) {
+          $result[$i]['account_information_flag'] = false;
+          $result[$i]['account_profile_flag'] = false;
           $accountInfoResult = AccountInformation::where('account_id', '=', $result[$i]['id'])->get();
           $accountProfileResult = AccountProfile::where('account_id', '=', $result[$i]['id'])->get();
-          $accountDegreeResult = AccountDegree::where('account_id', '=', $result[$i]['id'])->get();
+          $accountDegreeResult = AccountDegree::where('account_id', '=', $result[$i]['id'])->orderBy('year_started', 'DESC')->get();
           $result[$i]['account_information'] = (sizeof($accountInfoResult) > 0) ? $accountInfoResult[0] : null;
           $result[$i]['account_profile'] = (sizeof($accountProfileResult) > 0) ? $accountProfileResult[0] : null;
-          $result[$i]['account_degree'] = (sizeof($accountDegreeResult) > 0) ? $accountDegreeResult[0] : null;
+          $result[$i]['account_degree'] = (sizeof($accountDegreeResult) > 0) ? $this->insertFlagToResult($accountDegreeResult) : null;
           $i++;
         }
         return response()->json(array('data' => $result));
       }else{
         return $this->response();
       }
+    }
+    public function insertFlagToResult($result){
+      $i = 0;
+      foreach ($result as $key) {
+        $result[$i]['edit_flag'] = false;
+        $i++;
+      }
+      return $result;
     }
 }

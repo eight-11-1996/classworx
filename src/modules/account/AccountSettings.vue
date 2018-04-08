@@ -50,13 +50,64 @@
     </div>
     <div class="information-holder"  style="margin-left: 1%;">
       <span class="header">
-        <i class="fa fa-user"></i>Educational Background <i class="fa fa-pencil pull-right action-link"></i>
+        <i class="fa fa-university"></i>Educational Background 
       </span>
-      <span class="item"></span>
+      <span class="degree-holder" v-if="data.account_degree !== null && data.account_degree.length > 0" v-for="item, index in data.account_degree">
+        <span v-if="item.edit_flag === false" data-hover="tooltip" data-placement="top" title="Double Click to Edit">
+          <span class="item-half course">
+            <label>{{item.course}}</label>
+            <i class="fa fa-pencil text-primary pull-right action-link" v-on:click="edit(index)"></i>
+          </span>
+          <span class="item-half details">
+            <label><i class="fa fa-university"></i>{{item.school}}</label>
+          </span>
+          <span class="item-half details">
+            <label><i class="fas fa-map-marker-alt"></i>{{item.address}}</label>
+          </span>
+          <span class="item-half details">
+            <label><i class="fa fa-calendar"></i>{{item.month_started + ' ' + item.year_started + ' - ' + item.month_end + ' ' + item.year_end}}</label>
+          </span>
+        </span>
+        <span v-else>
+          <label>Update: Educational Background</label>
+          <div class="input-group">
+            <span class="input-group-addon">Course</span>
+            <input type="text" v-model="data.account_degree[index].course" class="form-control">
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">School</span>
+            <input type="text" v-model="data.account_degree[index].school" class="form-control">
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Address</span>
+            <input type="text" v-model="data.account_degree[index].address" class="form-control">
+          </div>
+
+          <div class="input-group">
+            <span class="input-group-addon">Started</span>
+            <select class="form-control" v-model="data.account_degree[index].year_started">
+              <option v-for="i in 50" v-bind:value="2010 - i">{{2010 - i}}</option>
+            </select>
+            <select class="form-control" v-model="data.account_degree[index].month_started">
+              <option v-for="i in months" v-bind:value="i">{{i}}</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Ended</span>
+            <select class="form-control" v-model="data.account_degree[index].year_end">
+              <option v-for="i in 50" v-bind:value="2010 - i">{{2010 - i}}</option>
+            </select>
+            <select class="form-control" v-model="data.account_degree[index].month_end">
+              <option v-for="i in months" v-bind:value="i">{{i}}</option>
+            </select>
+          </div>
+          <button class="btn btn-primary pull-right" style="margin-top:5px; margin-bottom:5px;" v-on:click="updateDegree(index)"><i class="fa fa-sync"></i> Update</button>
+        </span>
+      </span>
     </div>
     <div class="information-holder information-holder-whole">
       <span class="header">
-        <i class="fa fa-user"></i>Account<i class="fa fa-pencil pull-right action-link"></i>
+        <i class="fa fa-user"></i>Account Information
       </span>
       <span class="item">
         <span class="content">
@@ -71,6 +122,14 @@
           <label>
             <i class="fa fa-envelope"></i>
             Email: {{data.email}}
+          </label>
+        </span>
+      </span>
+      <span class="item">
+        <span class="content">
+          <label>
+            <i class="fa fa-calendar"></i>
+            Date Registered: {{data.created_at}}
           </label>
         </span>
       </span>
@@ -90,7 +149,11 @@ export default {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
       config: CONFIG,
-      data: null
+      data: null,
+      prevDegreeEditIndex: null,
+      months: [
+        'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
+      ]
     }
   },
   methods: {
@@ -110,6 +173,30 @@ export default {
           this.data = response.data[0]
         }else{
           this.data = null
+        }
+      })
+    },
+    edit(index){
+      if(this.prevDegreeEditIndex === null){
+        this.data.account_degree[index].edit_flag = true
+        this.prevDegreeEditIndex = index
+      }else{
+        if(this.prevDegreeEditIndex === index){
+          this.data.account_degree[index] = false
+          this.prevDegreeEditIndex = null
+        }else{
+          this.data.account_degree[this.prevDegreeEditIndex].edit_flag = false
+          this.data.account_degree[index].edit_flag = true
+          this.prevDegreeEditIndex = index
+        }
+      }
+    },
+    updateDegree(index){
+      this.APIRequest('account_degrees/update', this.data.account_degree[index]).then(response => {
+        if(response.data === true){
+          this.data.account_degree[index].edit_flag = false
+          this.prevDegreeEditIndex = null
+          this.retrieveRequest()
         }
       })
     }
@@ -160,17 +247,17 @@ export default {
   }
 
   .information-holder .header{
+    /*FCCD04*/
     height: 50px;
     width: 100%;
     float: left;
-    background: #FCCD04;
-    color: #fff;
+    background: #eee;
+    color: #333;
     font-size: 18px;
-    font-weight: 600;
+    font-weight: 500;
     text-transform: uppercase;
   }
   .header i{
-    color: #fff !important;
     padding-left: 10px;
     padding-right: 10px;
     padding-top: 10px;
@@ -187,9 +274,63 @@ export default {
   .content label{
     padding-top: 15px;
   }
-  .content label i{
+  .content label i, .item-half label i{
     padding-right: 10px;
     padding-left: 10px;
+    color: #FCCD04;
+  }
+  .degree-holder{
+    width: 100%;
+    float: left;
+    min-height: 100px;
+    overflow-y: hidden;
+    margin-top: 5px;
+  }
+  .degree-holder:hover{
+    cursor: pointer;
+    border-bottom: solid 1px #028170;
+  }
+  .degree-icon{
+    width: 30%;
+    float: left;
+    min-height: 100px;
+    text-align: center;
+    overflow-y: hidden;
+  }
+  .degree-icon i{
+    font-size: 16px;
+  }
+  .item-half{
+    width: 100%;
+    float: left;
+    min-height: 20px;
+    overflow-y: hidden;
+  }
+  .course{
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .details{
+    width: 98%;
+    margin-left: 2%;
+  }
+  .date{
+    width: 20%;
+    margin-right: 1%;
+    float: left;
+  }
+  .input-group{
+    margin-top: 5px;
+    font-size: 13px !important;
+  }
+  .input-group-addon{
+    width: 125px;
+    font-size: 13px !important;
+    background: #3f0050;
+    color: #fff;
+  }
+  .input-group-addon2{
+    width: 150px;
   }
   @media screen (min-width: 200px), screen and (max-width: 991px){
     .information-holder{
