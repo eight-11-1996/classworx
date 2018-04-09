@@ -1,13 +1,13 @@
 <template>
   <div class="account-settings-holder" v-if="data !== null">
     <div class="account-header text-center">
-      <span class="profile-image" v-if="data.account_profile !== null">
+      <span class="profile-image-settings" v-if="data.account_profile !== null">
         <img v-bind:src="config.BACKEND_URL + data.account_profile.profile_url" width="100%" height="100%">
       </span>
       <span class="profile-image-settings" v-else>
         <i class="fa fa-user-circle-o"></i>
       </span>
-      <span class="account-name-settings">
+      <span class="account-name">
         {{data.account_information.first_name + ' ' + data.account_information.last_name}}
       </span>
     </div>
@@ -51,6 +51,7 @@
     <div class="information-holder"  style="margin-left: 1%;">
       <span class="header">
         <i class="fa fa-university"></i>Educational Background 
+        <i class="fa fa-plus pull-right action-link" v-on:click="addBackgroundFlag()"></i>
       </span>
       <span class="degree-holder" v-if="data.account_degree !== null && data.account_degree.length > 0" v-for="item, index in data.account_degree">
         <span v-if="item.edit_flag === false">
@@ -69,7 +70,6 @@
           </span>
         </span>
         <span v-else>
-          <label>Update: Educational Background</label>
           <div class="input-group">
             <span class="input-group-addon">Course</span>
             <input type="text" v-model="data.account_degree[index].course" class="form-control">
@@ -105,6 +105,42 @@
           <button class="btn btn-danger pull-right" style="margin-top:5px; margin-bottom:5px; margin-right: 5px;" v-on:click="edit(index)"><i class="fa fa-ban"></i> Cancel</button>
         </span>
       </span>
+      <span v-if="addFlag === true">
+          <label><b>Add New</b></label>
+          <div class="input-group">
+            <span class="input-group-addon">Course</span>
+            <input type="text" v-model="newBackground.course" class="form-control">
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">School</span>
+            <input type="text" v-model="newBackground.school" class="form-control">
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Address</span>
+            <input type="text" v-model="newBackground.address" class="form-control">
+          </div>
+
+          <div class="input-group">
+            <span class="input-group-addon">Started</span>
+            <select class="form-control" v-model="newBackground.year_started">
+              <option v-for="i in 50" v-bind:value="2010 - i">{{2010 - i}}</option>
+            </select>
+            <select class="form-control" v-model="newBackground.month_started">
+              <option v-for="i in months" v-bind:value="i">{{i}}</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon">Ended</span>
+            <select class="form-control" v-model="newBackground.year_end">
+              <option v-for="i in 50" v-bind:value="2010 - i">{{2010 - i}}</option>
+            </select>
+            <select class="form-control" v-model="newBackground.month_end">
+              <option v-for="i in months" v-bind:value="i">{{i}}</option>
+            </select>
+          </div>
+          <button class="btn btn-primary pull-right" style="margin-top:5px; margin-bottom:5px;" v-on:click="addDegree()"><i class="fa fa-plus"></i> Add</button>
+          <button class="btn btn-danger pull-right" style="margin-top:5px; margin-bottom:5px; margin-right: 5px;" v-on:click="addBackgroundFlag()"><i class="fa fa-ban"></i> Cancel</button>
+        </span>
     </div>
     <div class="information-holder information-holder-whole">
       <span class="header">
@@ -152,6 +188,17 @@ export default {
       config: CONFIG,
       data: null,
       prevDegreeEditIndex: null,
+      addFlag: false,
+      newBackground: {
+        account_id: null,
+        course: null,
+        school: null,
+        address: null,
+        year_started: null,
+        month_started: null,
+        year_end: null,
+        month_end: null
+      },
       months: [
         'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
       ]
@@ -178,6 +225,7 @@ export default {
       })
     },
     edit(index){
+      this.addFlag = false
       if(this.prevDegreeEditIndex === null){
         this.data.account_degree[index].edit_flag = true
         this.prevDegreeEditIndex = index
@@ -199,6 +247,16 @@ export default {
           this.prevDegreeEditIndex = null
           this.retrieveRequest()
         }
+      })
+    },
+    addBackgroundFlag(){
+      this.addFlag = !this.addFlag
+    },
+    addDegree(){
+      this.newBackground.account_id = this.user.userID
+      this.APIRequest('account_degrees/create', this.newBackground).then(response => {
+        this.addBackgroundFlag()
+        this.retrieveRequest()
       })
     }
   }
