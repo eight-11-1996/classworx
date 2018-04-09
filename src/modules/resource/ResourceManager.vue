@@ -27,7 +27,8 @@
         </div>
       </div>
       <div class="table-result row">
-        <div v-for="filename, index in filenames" class="files-card">
+        <div class="text-danger col-12 text-center" v-if="filenames === null">No Resources Found</div>
+        <div v-for="filename, index in filenames" class="files-card" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
           <div class="card-container">
             <div class="center-area">
               <i class="fa fa-file-word-o" v-if="index%3 === 0"></i>
@@ -38,12 +39,12 @@
           <div class="card-footer">
             <span v-show="filename.edit == false"><i class="fa fa-eye" data-toggle="modal" data-target="#viewerModal" data-hover="tooltip" data-placement="top" title="Viewers"></i></span>
             <span v-show = "filename.edit == false">
-              <label @dblclick = "filename.edit = true, disableEdit(index)" class="file-name"> &nbsp;{{filename.title}} </label>
+              <label @dblclick = "filename.edit = true, disableEdit(index), editedFileName = filename.title, currentFile = filename.title" class="file-name"> &nbsp;{{filename.title}} </label>
             </span>
             <span>
-              <input class="card-form" v-show = "filename.edit == true" v-model = "filename.title"
-                v-on:blur= "filename.edit=false; $emit('update')"
-                @keyup.enter = "filename.edit=false; $emit('update')">
+              <input class="card-form" v-show = "filename.edit == true" v-model = "editedFileName"
+                v-on:blur= "filename.edit=false; editFileName(index); $emit('update')"
+                @keyup.enter = "filename.edit=false; editFileName(index); $emit('update')">
             </span>
           </div>
         </div>
@@ -105,21 +106,14 @@
             </button>
           </div>
           <div class="modal-body">
-            <div class="upload-body">
-              <!-- <form>
-                 <div class="upload-form">
-                    <input type="file" multiple class="btn" @change="fileCount = $event.target.files.length, add($event.target.files)" >
-                    <div v-if="fileCount === 0" class="center-area"><i class="fa fa-upload"></i> Drag and Drop Files</div>
-                    <div v-else class="center-area">{{fileCount}}</div>
-                  </div>
-               </form> -->
-                <div>
-                  <span>Resource Type</span>
-                  <input type="text" name="type" class="form-control" placeholder="Type" v-model="type"></br>
-                  <span>Resource Title</span>
-                  <input type="text" name="type" class="form-control" placeholder="Title" v-model="title">
-                </div>
-            </div>
+              <div>
+                <span>Resource Type</span>
+                <input type="text" name="type" class="form-control" placeholder="Type" v-model="type"></br>
+                <span>Resource Title</span>
+                <input type="text" name="type" class="form-control" placeholder="Title" v-model="title"></br>
+                <span>Resource URL</span>
+                <input type="text" name="type" class="form-control" placeholder="Source" v-model="url">
+              </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -139,7 +133,6 @@ export default {
   mounted(){
     this.retrieveRequestSemester()
     this.defaultParameter()
-    this.disableEdit()
   },
   data(){
     return {
@@ -182,17 +175,15 @@ export default {
         currentPager: 1,
         pagerActive: null
       },
-      filenames: [{'title': 'one value', 'edit': false},
-            {'title': 'one value', 'edit': false},
-            {'title': 'one value', 'edit': false},
-            {'title': 'one value', 'edit': false},
-            {'title': 'one value', 'edit': false},
-            {'title': 'one value', 'edit': false},
-            {'title': 'one value', 'edit': false},
-            {'title': 'otro titulo', 'edit': false}],
-      editedTodo: null,
+      filenames: [],
+      editedFileName: null,
+      currentFile: null,
+      retrievedTitle: [],
+      retrievedID: [],
       activeIndex: null,
       fileCount: 0,
+      url: null,
+      size: null,
       viewers: ['Kennette Canales', 'June Ray Mag-usara', 'Fretzel Sanchez']
     }
   },
@@ -256,11 +247,19 @@ export default {
       }
     },
     retrieveRequest(flag, parameter){
+      this.filenames = []
       this.APIRequest(this.method + '/retrieve', parameter).then(response => {
         if(response.data === null){
           this.quizzes = []
         }else{
           this.quizzes = response.data
+        }
+        for(var i = 0; i < response.data.length; i++){
+          this.filenames.push({
+            id: response.data[i].id,
+            title: response.data[i].title,
+            edit: false
+          })
         }
         this.data = this.quizzes
       }).done(() => {
@@ -307,13 +306,13 @@ export default {
       formData.append(this.methodId, this.parameter)
       formData.append('type', this.type)
       formData.append('title', this.title)
+      formData.append('url', this.url)
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
-          console.log('in')
           this.createParameter(this.parameter)
         }else{
-          this.errorMessage = response.error.message
+          this.errorMessage = 'Unable to create'
         }
       })
     },
@@ -330,7 +329,7 @@ export default {
       })
     },
     validation(){
-      if(this.description === null || this.type === null || this.start === null || this.end === null || this.timer === null){
+      if(this.type === null || this.title === null){
         return false
       }else{
         return true
@@ -339,6 +338,18 @@ export default {
     editModalView(index){
       this.modalView = this.data[index]
       this.modalInput.id = this.modalView.id
+    },
+    updateTitle(id){
+      let formData = new FormData()
+      this.filenames = []
+      formData.append('id', id)
+      formData.append('title', this.editedFileName)
+      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
+        if(response.data.data === true){
+          $('#editModal').modal('hide')
+          this.createParameter(this.parameter)
+        }
+      })
     },
     updateRequest(){
       let formData = new FormData()
@@ -452,11 +463,19 @@ export default {
         }
       }
     },
-    log(){
-      console.log(this.activeIndex)
+    getSize(){
+      this.size = this.filenames.length
     },
-    editTodo(todo){
-      this.editedTodo = todo
+    editFileName(index){
+      if(this.editedFileName.length > 0){
+        this.filenames[index].title = this.editedFileName
+        this.updateTitle(this.filenames[index].id)
+      } else {
+        this.filenames[index].title = this.currentFile
+      }
+    },
+    log(data){
+      console.log(data)
     }
   }
 }
