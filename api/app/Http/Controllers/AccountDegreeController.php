@@ -11,8 +11,9 @@ class AccountDegreeController extends ClassWorxController
       $this->notRequired = array(
         'school',
         'address',
-        'school_id_number',
+        'school_number',
         'course',
+        'course_code',
         'year_started',
         'year_end'
       );
