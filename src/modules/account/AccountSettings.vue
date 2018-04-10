@@ -2,10 +2,16 @@
   <div class="account-settings-holder" v-if="data !== null">
     <div class="account-header text-center">
       <span class="profile-image-settings" v-if="data.account_profile !== null">
-        <img v-bind:src="config.BACKEND_URL + data.account_profile.profile_url" width="100%" height="100%">
+        <img v-bind:src="config.BACKEND_URL + data.account_profile.profile_url" width="100%" height="100%" class="profile-image-content">
+        <div class="middle">
+          <i class="fa fa-plus"></i>
+        </div>
       </span>
       <span class="profile-image-settings" v-else>
-        <i class="fa fa-user-circle-o"></i>
+        <i class="fa fa-user-circle-o profile-image-content"></i>
+        <div class="middle">
+          <i class="fa fa-plus"></i>
+        </div>
       </span>
       <span class="account-name">
         {{data.account_information.first_name + ' ' + data.account_information.last_name}}
@@ -13,39 +19,85 @@
     </div>
     <div class="information-holder" style="margin-right: 1%;">
       <span class="header">
-        <i class="fa fa-user"></i>Personal Information <i class="fa fa-pencil pull-right action-link"></i>
+        <i class="fa fa-user"></i>Personal Information <i class="fa fa-pencil pull-right action-link" v-on:click="editPersonalInformation()"></i>
       </span>
-      <span class="item">
-        <span class="content">
-          <label>
-            <i class="fa fa-calendar"></i>
-            Birthdate: {{data.account_information.birthdate}}
-          </label>
+      <span v-if="personalInfoFlag === false">
+        <span class="item">
+          <span class="content">
+            <label>
+              <i class="fa fa-user"></i>
+              {{data.account_information.first_name + ' ' + data.account_information.middle_name + ' ' + data.account_information.last_name}}
+            </label>
+          </span>
+        </span>
+        <span class="item">
+          <span class="content">
+            <label>
+              <i class="fa fa-calendar"></i>
+              {{data.account_information.birth_date}}
+            </label>
+          </span>
+        </span>
+        <span class="item">
+          <span class="content">
+            <label>
+              <i class="fas fa-transgender"></i>
+              {{data.account_information.sex}}
+            </label>
+          </span>
+        </span>
+        <span class="item">
+          <span class="content">
+            <label>
+              <i class="fa fa-phone"></i>
+              {{data.account_information.cellular_number}}
+            </label>
+          </span>
+        </span>
+        <span class="item">
+          <span class="content">
+            <label>
+              <i class="fas fa-map-marker-alt"></i>
+              {{data.account_information.address}}
+            </label>
+          </span>
         </span>
       </span>
-      <span class="item">
-        <span class="content">
-          <label>
-            <i class="fas fa-transgender"></i>
-            Sex: {{data.account_information.sex}}
-          </label>
-        </span>
-      </span>
-      <span class="item">
-        <span class="content">
-          <label>
-            <i class="fa fa-phone"></i>
-            Cellular Number: {{data.account_information.cellular_number}}
-          </label>
-        </span>
-      </span>
-      <span class="item">
-        <span class="content">
-          <label>
-            <i class="fas fa-map-marker-alt"></i>
-            Address: {{data.account_information.address}}
-          </label>
-        </span>
+      <span v-else>
+        <div class="input-group">
+          <span class="input-group-addon">First Name</span>
+          <input type="text" v-model="data.account_information.first_name" class="form-control">
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon">Middle Name</span>
+          <input type="text" v-model="data.account_information.middle_name" class="form-control">
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon">Last Name</span>
+          <input type="text" v-model="data.account_information.last_name" class="form-control">
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon">Birthdate</span>
+          <input type="date" v-model="data.account_information.birth_date" class="form-control">
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon">Sex</span>
+          <select class="form-control" v-model="data.account_information.sex">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon">Cellular Number</span>
+          <input type="text" v-model="data.account_information.cellular_number" class="form-control">
+        </div>
+        <div class="input-group">
+          <span class="input-group-addon">Address</span>
+          <input type="text" v-model="data.account_information.address" class="form-control">
+        </div>
+        <button class="btn btn-primary pull-right" style="margin-top:5px; margin-bottom:5px;" v-on:click="updatePersonalInformation()"><i class="fa fa-sync"></i> Update</button>
+          <button class="btn btn-danger pull-right" style="margin-top:5px; margin-bottom:5px; margin-right: 5px;" v-on:click="editPersonalInformation()"><i class="fa fa-ban"></i> Cancel</button>
       </span>
     </div>
     <div class="information-holder"  style="margin-left: 1%;">
@@ -150,7 +202,7 @@
         <span class="content">
           <label>
             <i class="fa fa-user"></i>
-            Username: {{data.username}}
+            @{{data.username}}
           </label>
         </span>
       </span>
@@ -158,7 +210,7 @@
         <span class="content">
           <label>
             <i class="fa fa-envelope"></i>
-            Email: {{data.email}}
+            {{data.email}}
           </label>
         </span>
       </span>
@@ -166,7 +218,7 @@
         <span class="content">
           <label>
             <i class="fa fa-calendar"></i>
-            Date Registered: {{data.created_at}}
+            {{data.created_at}}
           </label>
         </span>
       </span>
@@ -188,6 +240,7 @@ export default {
       config: CONFIG,
       data: null,
       prevDegreeEditIndex: null,
+      personalInfoFlag: false,
       addFlag: false,
       newBackground: {
         account_id: null,
@@ -258,6 +311,18 @@ export default {
         this.addBackgroundFlag()
         this.retrieveRequest()
       })
+    },
+    editPersonalInformation(){
+      this.personalInfoFlag = !this.personalInfoFlag
+    },
+    updatePersonalInformation(){
+      this.APIRequest('account_informations/update', this.data.account_information).then(response => {
+        if(response.data === true){
+          this.editPersonalInformation()
+        }else{
+          //
+        }
+      })
     }
   }
 }
@@ -275,6 +340,9 @@ export default {
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
   }
+  .profile-image-settings{
+    position: relative;
+  }
   .profile-image-settings i{
     font-size: 150px;
     color: #3f0050;
@@ -285,6 +353,43 @@ export default {
     width: 150px;
     border-radius: 25px;
   }
+  .profile-image-content {
+    opacity: 1;
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: .5s ease;
+    backface-visibility: hidden;
+  }
+
+  .middle {
+    transition: .5s ease;
+    opacity: 0;
+    position: absolute;
+    right: -40%;
+    top: -10%;
+    transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .profile-image-settings i:hover, .profile-image-settings img{
+    cursor: pointer;
+  }
+  .profile-image-settings:hover .image {
+    opacity: 0.3;
+    cursor: pointer;
+  }
+
+  .profile-image-settings:hover .middle {
+    opacity: 1;
+    cursor: pointer;
+  }
+
+  .middle i{
+    font-size: 16px !important;
+  }
+
   .account-name{
     height: 35px;
     width: 100%;
