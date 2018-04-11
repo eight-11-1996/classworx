@@ -8,12 +8,13 @@
       <div class="sidebar">
         <ul class="sidebar-menu">
             <li class="header">
-              <!-- <label class="sr-only " v-bind:class="hide" for="search">Search Module</label> -->
-              <!-- <div class="input-group">
-                <div class="input-group-addon"><i class="fa fa-search"></i></div>
-                <input type="text" class="form-control" id="search"  v-model="search" placeholder="Search Module">
-              </div> -->
-                Main Tasks
+                <span v-if="account !== null && toggleSidebarFlag === true" class="profile-photo">
+                  <span class="profile-image-holder"  v-if="account.account_profile !== null">
+                    <img v-bind:src="config.BACKEND_URL + account.account_profile.profile_url">
+                  </span>
+                  <i class="fa fa-user-circle-o" v-else></i>
+                  Hi {{user.username}}!
+                </span>
                 <i v-bind:class="toggleSidebar + ' pull-right'" aria-hidden="true" v-on:click="changeToggleSidebarIcon()" id="toggleIcon"></i>
             </li>
            <!--  <li v-for="(item,index) in menu" v-if="item.parent_id === 0 && search === ''" v-bind:class="{ appActive: isActive(item.id) }" v-on:click="setActive(item.id)">
@@ -38,21 +39,16 @@
                   </li>
                 </ul>
               </li> -->
-              <li v-for="(item,index) in menu" v-bind:class="{ appActive: isActive(item.id) }" v-on:click="setActive(item.id)" v-if="((item.users === user.type || item.users === 'ALL') && user.type !== 'ADMIN') || user.type === 'ADMIN'">
-                <a v-on:click="navigateTo(item.path, true)" data-toggle="collapse" :data-target="'#ClassWorx'" v-bind:class="hide">
+              <li v-for="(item,index) in menu" v-bind:class="{ appActive: isActive(item.id) }" v-on:click="setActive(item.id)" v-if="((item.users === user.type || item.users === 'ALL') && user.type !== 'ADMIN') || user.type === 'ADMIN'" data-toggle="collapse" data-target="#ClassWorx">
+                <a v-on:click="navigateTo(item.path, true)"  v-bind:class="hide">
                   <i></i> 
-                  <span v-bind:class="'sm-title'" >{{item.description}}
+                  <span v-bind:class="'sm-title'" >{{item.description}} <label v-if="user.type === 'ADMIN'">({{item.users}})</label>
                   </span>
                   <span v-bind:class="'pull-right-container'">  
                     <i v-bind:class="item.icon + ' pull-right'"></i>
                   </span>
                 </a>
               </li>
-              <!-- <li v-if="filteredModules.length === 0" class="text-center">
-                <a>
-                  <span class="text-danger">Opps! Module <b>{{search}}</b> was not found. :'( </span>
-                </a>
-              </li> -->
           </ul>
         </div>
       </div>
@@ -66,14 +62,19 @@
 </template>
 <script>
 import AUTH from '../../services/auth'
+import CONFIG from '../../config.js'
 export default {
   mounted(){
-    this.getMenu()
+    this.getAccountInfoSidebar()
+  },
+  created(){
+    this.getAccountInfoSidebar()
   },
   data(){
     return{
       user: AUTH.user,
       account: null,
+      config: CONFIG,
       activeItem: '',
       activeSubItem: '',
       menu: [],
@@ -82,11 +83,12 @@ export default {
       hide: '',
       toggleOnClick: '',
       alignAtHide: 'pull-right',
-      search: ''
+      search: '',
+      flag: false
     }
   },
   methods: {
-    getAccountInfo(){
+    getAccountInfoSidebar(){
       let parameter = {
         'condition': [{
           'value': this.user.userID,
@@ -95,13 +97,17 @@ export default {
         }]
       }
       this.APIRequest('accounts/retrieve', parameter).then(response => {
-        if(response.data !== null){
-          this.account = this.response.data[0]
-          this.getMenu(this.account)
+        if(response.data.length > 0){
+          this.account = response.data[0]
+          this.getMenu()
         }else{
           this.account = null
         }
       })
+      if(this.flag === false && this.account === null){
+        this.flag = true
+        this.getAccountInfoSidebar()
+      }
     },
     getMenu(){
       let parameter = {
@@ -156,6 +162,8 @@ export default {
   min-height: 84.5vh;
   overflow: hidden;
   transition: all 1s ease 0s;
+  z-index: 1;
+  margin-top: 50px;
 }
 .main-sidebar i{
   padding:0 10px 0 10px;
@@ -199,7 +207,36 @@ export default {
 .header i:hover{
   cursor: pointer;
   color: #6a0090;
-}/*-- .toggle-sidebar i:hover --*/
+}
+
+.profile-photo{
+  float: left;
+  width: 100%;
+  height: 100px;
+}
+.profile-image-holder{
+  width: 100%;
+  float: left;
+  height: 80px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.profile-image-holder img{
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+}
+
+.profile-photo i{
+  float: left;
+  font-size: 80px;
+  width: 100%;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
+
+/*-- .toggle-sidebar i:hover --*/
 .sidebar-menu li{
   min-height: 40px;
   overflow-x: hidden;
@@ -258,7 +295,7 @@ export default {
   }
   .content-holder{
     width: 79%;
-    margin: 20px 1% 0 1%;
+    margin: 60px 1% 0 1%;
     float: left;
   }
   /*  Change with Menu Toggled */
@@ -267,7 +304,7 @@ export default {
   }
   .content-holder.hidden{
     width: 94%;
-    margin: 20px 1% 0 1%;
+    margin: 60px 1% 0 1%;
     float: left;
   }
 }
@@ -280,7 +317,7 @@ export default {
   }
   .content-holder{
     width: 71%;
-    margin: 20px 2% 0 2%;
+    margin: 60px 2% 0 2%;
     float: left;
   }
   .main-sidebar.active{
@@ -299,12 +336,12 @@ export default {
   }
   .content-holder.hidden{
     width: 92%;
-    margin: 20px 2% 0 2%;
+    margin: 60px 2% 0 2%;
     float: left;
   }
 }
 /*-------------- Small Screen for Mobile Phones  --------------*/
-@media screen (min-width: 768px), screen and (max-width: 991px){
+/*@media screen (min-width: 768px), screen and (max-width: 991px){
   .main-sidebar{
     width: 90%;
     position: absolute;
@@ -315,7 +352,7 @@ export default {
   }
   .content-holder{
     width: 96%;
-    margin: 20px 2% 0 2%;
+    margin: 60px 2% 0 2%;
   }
   .sm-title{
     text-align: center;
@@ -336,10 +373,10 @@ export default {
   .force-collapse{
     display: none;
   }
-}
+}*/
 
 /*-------------- Extra Small Screen for Mobile Phones --------------*/
-@media (max-width: 767px){
+@media (max-width: 991px){
   .main-sidebar{
     width: 100%;
     position: absolute;
@@ -353,7 +390,7 @@ export default {
     width: 10px;
     min-width: 96%;
     overflow-y: hidden;
-    margin: 20px 2% 0 2%;
+    margin: 60px 2% 0 2%;
     float: left;
   }
   .main-sidebar ul{
@@ -396,7 +433,7 @@ export default {
 
   .content-holder{
     width: 96%;
-    margin: 20px 2% 0 2%;
+    margin: 60px 2% 0 2%;
     float: left;
   }
   .sm-title,.header{

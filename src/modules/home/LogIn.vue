@@ -66,7 +66,7 @@ export default {
   methods: {
     logIn(){
       AUTH.authenticate(this.username, this.password, (response) => {
-        ROUTER.push('dashboard')
+        ROUTER.go('/dashboard')
       }, (response, status) => {
         this.errorMessage = (status === 401) ? 'Your Username and password did not matched.' : 'Cannot log in? Contact us through email: support@classworx.ph'
       })
