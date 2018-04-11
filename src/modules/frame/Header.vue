@@ -35,14 +35,27 @@
           <span class="dropdown-menu dropdown-menu-right" aria-labelledby="settings">
             <span class="dropdown-item-profile">
               <span class="account-picture text-center">
-                <i class="fa fa-user-circle-o"></i>
+                <span v-if="account !== null" class="profile-photo">
+                  <span class="profile-image-holder"  v-if="account.account_profile !== null">
+                    <img v-bind:src="config.BACKEND_URL + account.account_profile.profile_url">
+                  </span>
+                  <i class="fa fa-user-circle-o" v-else></i>
+                </span>
               </span>
               <span class="account-info text-center">{{user.username}}</span>
             </span>
-<!--             <span class="dropdown-item" v-on:click="redirect('history')" v-if="user.type === 'ADMIN' || account.account_type === 'ADMIN'">Already Known</span> -->
-            <span class="dropdown-item" v-on:click="redirect('dashboard')">Settings</span>
-            <span class="dropdown-item" v-on:click="redirect('help')">Tutorials</span>
-            <span class="dropdown-item" v-on:click="logOut()">Logout</span>
+            <span class="dropdown-item" v-on:click="redirect('/account_settings')">
+              <i class="fa fa-cog"></i>
+              <label>Account Settings</label>
+            </span>
+            <span class="dropdown-item" v-on:click="redirect('/help')">
+              <i class="far fa-question-circle"></i>
+              <label>Help</label>
+            </span>
+            <span class="dropdown-item" v-on:click="logOut()">
+              <i class="fas fa-sign-out-alt"></i>
+                <label>Logout</label>
+              </span>
           </span>
         </span>
     </div>
@@ -64,7 +77,7 @@ export default {
     return{
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      account: [],
+      account: null,
       settingFlag: false,
       menuFlag: false
     }
@@ -88,7 +101,7 @@ export default {
       ROUTER.push('/login')
     },
     redirect(parameter){
-      ROUTER.push('/' + parameter)
+      ROUTER.push(parameter)
     },
     display(){
     },
@@ -101,7 +114,11 @@ export default {
         }]
       }
       this.APIRequest('accounts/retrieve', parameter).then(response => {
-        this.account = response.data[0]
+        if(response.data.length > 0){
+          this.account = response.data[0]
+        }else{
+          this.account = null
+        }
       })
     }
   }
@@ -157,12 +174,17 @@ body{
     width: 18%;
     background: #3f0050;
     text-align: center;
+    position: fixed;
+    z-index: 2;
   }
   .header-navbar{
     background: #6a0090;
     height: 50px;
     float: left;
     width: 82%;
+    position: fixed;
+    margin-left: 18%;
+    z-index: 2;
   }/*-- navbar --*/
   .system-header .navbar-brand{
     color: #fff;
@@ -254,6 +276,21 @@ body{
   float: left;
   background: #fff;
 }
+.dropdown-item:hover{
+  background: #ddd !important;
+}
+
+.dropdown-item i{
+  font-size: 14px !important;
+  padding-right: 10px !important;
+  color: #FCCD04 !important;
+}
+.dropdown-item label{
+  font-size: 14px !important;
+}
+.dropdown-item label:hover, .dropdown-item i:hover{
+  cursor: pointer;
+}
 .dropdown-header{
   padding: 5px 0 10px 0;
   width: 100%;
@@ -279,8 +316,8 @@ body{
   height: 50px;
   width: 100%;
   float: left;
-  color: #888;
   font-weight: 550;
+  color: #3f0050;
 }
 .dropdown-item-button{
   height: 50px;
@@ -326,6 +363,40 @@ body{
 }
 
 
+/*--------------------------------------
+
+          PROFILE PICTURE
+  
+---------------------------------------*/
+
+
+.profile-photo{
+  float: left;
+  width: 100%;
+  height: 100px;
+  color: #3f0050;
+}
+.profile-image-holder{
+  width: 100%;
+  float: left;
+  height: 80px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+.profile-image-holder img{
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+}
+
+.profile-photo i{
+  float: left;
+  font-size: 80px;
+  width: 100%;
+  height: 80px;
+  margin-bottom: 10px;
+}
+
 /*---------------------------------------------------------          
 
                   RESPONSIVE HANDLER
@@ -339,6 +410,7 @@ body{
     }
     .header-navbar{
       width: 77%;
+      margin-left: 23%;
     }
     .header-navbar-nav{
       width: 15% !important;
@@ -360,6 +432,7 @@ body{
     }
     .header-navbar{
       width: 77%;
+      margin-left: 23%;
     }
     .header-navbar-nav{
       width: 30%;
@@ -381,6 +454,7 @@ body{
     }
     .header-navbar{
       width: 70%;
+      margin-left: 30%;
     }
    .header-navbar-nav{
       width: 30%;
@@ -408,6 +482,7 @@ body{
     }
     .header-navbar{
       width: 60%;
+      margin-left: 40%;
     }
    .navbar-menu-toggler-md{
       width: 20%
