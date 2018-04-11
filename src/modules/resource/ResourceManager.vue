@@ -29,7 +29,7 @@
       <div class="table-result row">
         <div class="text-danger col-12 text-center" v-if="data.length === 0">No Resources Found</div>
         <div v-for="filename, index in filenames" class="files-card" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)" data-hover="tooltip" data-plaement="top" v-bind:title="data[index].url">
-          <div class="card-container">
+          <div class="card-container" @click="this.window.open(data[index].url,'_blank')" target="_blank">
             <div class="center-area">
               <i class="fa fa-file-pdf-o" v-if="filename.type === 'pdf'"></i>
               <i class="fa fa-file-powerpoint-o" v-if="filename.type === 'ppt'"></i>
@@ -41,7 +41,7 @@
             </div>
           </div>
           <div class="card-footer">
-            <span v-show="filename.edit == false"><i class="fa fa-eye" data-toggle="modal" data-target="#viewerModal" data-hover="tooltip" data-placement="top" title="Viewers"></i></span>
+            <span v-show="filename.edit == false"><i class="fa fa-eye" @click="redirect('resources_viewer')" data-hover="tooltip" data-placement="top" title="Viewers"></i></span>
             <span v-show = "filename.edit == false">
               <label @dblclick = "filename.edit = true, disableEdit(index), editedFileName = filename.title, currentFile = filename.title" class="file-name"> &nbsp;{{filename.title}} </label>
             </span>
@@ -486,6 +486,9 @@ export default {
       } else {
         this.filenames[index].title = this.currentFile
       }
+    },
+    navigateTo(nav) {
+      window.location.href = nav
     },
     log(data){
       console.log(data)
