@@ -6,7 +6,7 @@ export default {
   user: {
     userID: 0,
     username: '',
-    type: 0
+    type: null
   },
   tokenData: {
     token: null,
@@ -65,7 +65,7 @@ export default {
       this.setToken(token)
       let vue = new Vue()
       vue.APIRequest('authenticate/user', {}, (userInfo) => {
-        this.setUser(userInfo.id, userInfo.username, userInfo.user_type_id)
+        this.setUser(userInfo.id, userInfo.username, userInfo.account_type)
         this.tokenData.verifyingToken = false
         if(this.currentPath){
           ROUTER.push({
