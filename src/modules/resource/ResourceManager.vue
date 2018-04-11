@@ -41,7 +41,7 @@
             </div>
           </div>
           <div class="card-footer">
-            <span v-show="filename.edit == false"><i class="fa fa-eye" @click="redirect('resources_viewer')" data-hover="tooltip" data-placement="top" title="Viewers"></i></span>
+            <span v-show="filename.edit == false"><i class="fa fa-eye" @click="redirect('/resources_viewer')" data-hover="tooltip" data-placement="top" title="Viewers"></i></span>
             <span v-show = "filename.edit == false">
               <label @dblclick = "filename.edit = true, disableEdit(index), editedFileName = filename.title, currentFile = filename.title" class="file-name"> &nbsp;{{filename.title}} </label>
             </span>
