@@ -38,7 +38,7 @@
                   </li>
                 </ul>
               </li> -->
-              <li v-for="(item,index) in menu" v-bind:class="{ appActive: isActive(item.id) }" v-on:click="setActive(item.id)">
+              <li v-for="(item,index) in menu" v-bind:class="{ appActive: isActive(item.id) }" v-on:click="setActive(item.id)" v-if="((item.users === user.type || item.users === 'ALL') && user.type !== 'ADMIN') || user.type === 'ADMIN'">
                 <a v-on:click="navigateTo(item.path, true)" data-toggle="collapse" :data-target="'#ClassWorx'" v-bind:class="hide">
                   <i></i> 
                   <span v-bind:class="'sm-title'" >{{item.description}}
@@ -65,12 +65,15 @@
   </div>  
 </template>
 <script>
+import AUTH from '../../services/auth'
 export default {
   mounted(){
     this.getMenu()
   },
   data(){
     return{
+      user: AUTH.user,
+      account: null,
       activeItem: '',
       activeSubItem: '',
       menu: [],
@@ -83,8 +86,25 @@ export default {
     }
   },
   methods: {
-    getMenu (){
-      var parameter = {
+    getAccountInfo(){
+      let parameter = {
+        'condition': [{
+          'value': this.user.userID,
+          'column': 'id',
+          'clause': '='
+        }]
+      }
+      this.APIRequest('accounts/retrieve', parameter).then(response => {
+        if(response.data !== null){
+          this.account = this.response.data[0]
+          this.getMenu(this.account)
+        }else{
+          this.account = null
+        }
+      })
+    },
+    getMenu(){
+      let parameter = {
         'sort': {
           'id': 'asc'
         }
