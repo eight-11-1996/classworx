@@ -42,7 +42,7 @@
               <li v-for="(item,index) in menu" v-bind:class="{ appActive: isActive(item.id) }" v-on:click="setActive(item.id)" v-if="((item.users === user.type || item.users === 'ALL') && user.type !== 'ADMIN') || user.type === 'ADMIN'" data-toggle="collapse" data-target="#ClassWorx">
                 <a v-on:click="navigateTo(item.path, true)"  v-bind:class="hide">
                   <i></i> 
-                  <span v-bind:class="'sm-title'" >{{item.description}}
+                  <span v-bind:class="'sm-title'" >{{item.description}} <label v-if="user.type === 'ADMIN'">({{item.users}})</label>
                   </span>
                   <span v-bind:class="'pull-right-container'">  
                     <i v-bind:class="item.icon + ' pull-right'"></i>
