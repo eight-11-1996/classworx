@@ -9,7 +9,7 @@
       </span>
       <span class="profile-image-settings" v-else>
         <i class="fa fa-user-circle-o profile-image-content"></i>
-        <div class="middle">
+        <div class="middle" >
           <i class="fa fa-plus"></i>
         </div>
       </span>
@@ -222,6 +222,28 @@
           </label>
         </span>
       </span>
+    </div>
+    <div class="modal fade" id="viewerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-md" role="document">
+        <div class="modal-content">
+          <div class="modal-header bg-primary">
+            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Viewed by:</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true" class="text-white">&times;</span>
+            </button>
+          </div>
+          <div class="table-result">
+              <ul v-for="item, index in viewers">
+                {{item}}
+              </ul>
+            </table>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-primary" @click="Submit()" v-if="closeFag == false">update</button>
+              <button type="button" class="btn btn-danger" v-else  data-dismiss="modal" aria-label="Close">Close</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template><script>
