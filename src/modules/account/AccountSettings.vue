@@ -3,13 +3,13 @@
     <div class="account-header text-center">
       <span class="profile-image-settings" v-if="data.account_profile !== null">
         <img v-bind:src="config.BACKEND_URL + data.account_profile.profile_url" width="100%" height="100%" class="profile-image-content">
-        <div class="middle">
+        <div class="middle" data-toggle="modal" data-target="#uploadModal">
           <i class="fa fa-plus"></i>
         </div>
       </span>
       <span class="profile-image-settings" v-else>
         <i class="fa fa-user-circle-o profile-image-content"></i>
-        <div class="middle" >
+        <div class="middle" data-toggle="modal" data-target="#uploadModal">
           <i class="fa fa-plus"></i>
         </div>
       </span>
@@ -223,7 +223,7 @@
         </span>
       </span>
     </div>
-    <div class="modal fade" id="viewerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
           <div class="modal-header bg-primary">
@@ -233,14 +233,16 @@
             </button>
           </div>
           <div class="table-result">
-              <ul v-for="item, index in viewers">
-                {{item}}
-              </ul>
-            </table>
+            <form>
+             <div class="input-area">
+                <input type="file" name="audio" accept="image" @change="fileCount = $event.target.files.length, readURL" class="btn">
+                <img id="profile_picture" src="#" alt="your image" />
+              </div>
+            </form>
           </div>
           <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="Submit()" v-if="closeFag == false">update</button>
-              <button type="button" class="btn btn-danger" v-else  data-dismiss="modal" aria-label="Close">Close</button>
+              <!-- <button type="button" class="btn btn-primary" @click="Submit()" v-if="closeFag == false">update</button> -->
+              <button type="button" class="btn btn-danger" data-dismiss="modal" aria-label="Close">Close</button>
           </div>
         </div>
       </div>
@@ -276,7 +278,8 @@ export default {
       },
       months: [
         'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'
-      ]
+      ],
+      profilePic: null
     }
   },
   methods: {
@@ -345,6 +348,18 @@ export default {
           //
         }
       })
+    },
+    readURL(input){
+      if (input.files && input.files[0]){
+        var reader = new FileReader()
+        reader.onload = function (e) {
+          $('#profile_picture')
+          .attr('src', e.target.result)
+          .width(150)
+          .height(200)
+        }
+        reader.readAsDataURL(input.files[0])
+      }
     }
   }
 }
