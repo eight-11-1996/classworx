@@ -27,13 +27,17 @@
         </div>
       </div>
       <div class="table-result row">
-        <div class="text-danger col-12 text-center" v-if="filenames === null">No Resources Found</div>
-        <div v-for="filename, index in filenames" class="files-card" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
+        <div class="text-danger col-12 text-center" v-if="data.length === 0">No Resources Found</div>
+        <div v-for="filename, index in filenames" class="files-card" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)" data-hover="tooltip" data-plaement="top" v-bind:title="data[index].url">
           <div class="card-container">
             <div class="center-area">
-              <i class="fa fa-file-word-o" v-if="index%3 === 0"></i>
-              <i class="fa fa-file-powerpoint-o" v-if="index%3=== 1"></i>
-              <i class="fa fa-file-excel-o" v-if="index%3 === 2"></i>
+              <i class="fa fa-file-pdf-o" v-if="filename.type === 'pdf'"></i>
+              <i class="fa fa-file-powerpoint-o" v-if="filename.type === 'ppt'"></i>
+              <i class="fa fa-file-excel-o" v-if="filename.type === 'excel'"></i>
+              <i class="fa fa-file-word-o" v-if="filename.type === 'word'"></i>
+              <i class="fa fa-file-image-o" v-if="filename.type === 'img'"></i>
+              <i class="fa fa-file-movie-o" v-if="filename.type === 'vid'"></i>
+              <i class="fa fa-file" v-if="filename.type === 'others'"></i>
             </div>
           </div>
           <div class="card-footer">
@@ -107,11 +111,19 @@
           </div>
           <div class="modal-body">
               <div>
-                <span>Resource Type</span>
-                <input type="text" name="type" class="form-control" placeholder="Type" v-model="type"></br>
-                <span>Resource Title</span>
+                <span><b>Resource Type</b></span>
+                <div style="margin-left: 15px;">
+                  <input type="radio" name="type" placeholder="Type" v-model="type" value="pdf">PDF</br>
+                  <input type="radio" name="type" placeholder="Type" v-model="type" value="word">Word</br>
+                  <input type="radio" name="type" placeholder="Type" v-model="type" value="excel">Excel</br>
+                  <input type="radio" name="type" placeholder="Type" v-model="type" value="ppt">Powerpoint</br>
+                  <input type="radio" name="type" placeholder="Type" v-model="type" value="vid">Video</br>
+                  Other File Type
+                  <input type="text" name="type" placeholder="Please specifiy" v-model="type" value="others"></br>
+                </div>
+                <span><b>Resource Title</b></span>
                 <input type="text" name="type" class="form-control" placeholder="Title" v-model="title"></br>
-                <span>Resource URL</span>
+                <span><b>Resource URL</b></span>
                 <input type="text" name="type" class="form-control" placeholder="Source" v-model="url">
               </div>
           </div>
@@ -257,6 +269,7 @@ export default {
         for(var i = 0; i < response.data.length; i++){
           this.filenames.push({
             id: response.data[i].id,
+            type: response.data[i].type,
             title: response.data[i].title,
             edit: false
           })
