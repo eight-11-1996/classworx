@@ -2,9 +2,9 @@
   <div>
       <div class="module-header">
         <div class="title">
-          <label class="text-warning">My <b>Resources</b></label>
+          <label class="text-warning">Resource <b>Viewers</b></label>
         </div>
-        <div class="items-display">
+        <!-- <div class="items-display">
           <label v-if="semesters.length > 0">Semesters</label>
           <select v-if="semesters.length > 0" v-on:change="filterSemester()" v-model="semesterId">
             <option v-for="item, index in semesters"  v-bind:value="item.id">{{item.description}}</option>
@@ -22,36 +22,34 @@
             <option value="25">25</option>
           </select>
         </div>
-        <div class="add">
+  <!--       <div class="3">
+          <input type="text" name="search" class="table-search">
+        </div> -->
+        <!-- div class="add" v-if="parameter !== 'default'">
           <button class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i> Add New</button>
-        </div>
+        </div>-->
       </div>
-      <div class="table-result row">
-        <div class="text-danger col-12 text-center" v-if="data.length === 0">No Resources Found</div>
-        <div v-for="filename, index in filenames" class="files-card" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)" data-hover="tooltip" data-plaement="top" v-bind:title="data[index].url">
-          <div class="card-container" @click="this.window.open(data[index].url,'_blank')" target="_blank">
-            <div class="center-area">
-              <i class="fa fa-file-pdf-o" v-if="filename.type === 'pdf'"></i>
-              <i class="fa fa-file-powerpoint-o" v-if="filename.type === 'ppt'"></i>
-              <i class="fa fa-file-excel-o" v-if="filename.type === 'excel'"></i>
-              <i class="fa fa-file-word-o" v-if="filename.type === 'word'"></i>
-              <i class="fa fa-file-image-o" v-if="filename.type === 'img'"></i>
-              <i class="fa fa-file-movie-o" v-if="filename.type === 'vid'"></i>
-              <i class="fa fa-file" v-if="filename.type === 'others'"></i>
-            </div>
-          </div>
-          <div class="card-footer">
-            <span v-show="filename.edit == false"><i class="fa fa-eye" @click="redirect('/resources_viewer')" data-hover="tooltip" data-placement="top" title="Viewers"></i></span>
-            <span v-show = "filename.edit == false">
-              <label @dblclick = "filename.edit = true, disableEdit(index), editedFileName = filename.title, currentFile = filename.title" class="file-name"> &nbsp;{{filename.title}} </label>
-            </span>
-            <span>
-              <input class="card-form" v-show = "filename.edit == true" v-model = "editedFileName"
-                v-on:blur= "filename.edit=false; editFileName(index); $emit('update')"
-                @keyup.enter = "filename.edit=false; editFileName(index); $emit('update')">
-            </span>
-          </div>
-        </div>
+      <div class="table-result">
+        <table class="table table-responsive table-bordered">
+          <thead>
+            <tr>
+              <td>Viewer</td>
+              <td>Action</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>test Name</td>
+              <td>test Action</td>
+            </tr>
+          </tbody>
+          <!-- <tbody v-else>
+            <tr>
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Quiz Now!</td>     
+              <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
+            </tr>
+          </tbody> -->
+        </table>
       </div>
       <div class="table-footer">
         <div class="items-total pull-left">
@@ -71,23 +69,42 @@
 
       EDIT
     -->
-    <div class="modal fade" id="viewerModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" v-if="modalView !== null">
       <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
           <div class="modal-header bg-primary">
-            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Viewed by:</h5>
+            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Update Semester</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true" class="text-white">&times;</span>
             </button>
           </div>
-          <div class="table-result">
-              <ul v-for="item, index in viewers">
-                {{item}}
-              </ul>
-            </table>
+          <div class="modal-body">
+            <span v-if="errorMessage !== null" class="text-danger text-center">
+                <label><b>Opps! </b>{{errorMessage}}</label>
+            </span>
+            <br v-if="errorMessage !== null">
+            <label>Description</label>
+            <br>
+            <input type="text" class="form-control" v-bind:placeholder="modalView.description" v-model="modalInput.description">
+            <br>
+            <label>Type</label>
+            <br>
+            <input type="text" class="form-control" v-bind:placeholder="modalView.type" v-model="modalInput.type">
+            <br>
+            <label>Start Date and Time</label>
+            <br>
+            <input type="date" class="form-control" v-bind:placeholder="modalView.start" v-model="modalInput.start">
+            <br>
+            <label>End Date and Time</label>
+            <br>
+            <input type="date" class="form-control" v-bind:placeholder="modalView.end" v-model="modalInput.end">
+            <br>
+            <label>Timer</label>
+            <br>
+            <input type="time" class="form-control" v-bind:placeholder="modalView.timer" v-model="modalInput.timer">
           </div>
           <div class="modal-footer">
-              <button type="button" class="btn btn-primary" @click="Submit()" v-if="closeFag == false">update</button>
+              <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
               <button type="button" class="btn btn-danger" v-else  data-dismiss="modal" aria-label="Close">Close</button>
           </div>
         </div>
@@ -105,27 +122,34 @@
         <div class="modal-content">
           <div class="modal-header bg-primary">
             <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>{{modalTitle}}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close" @click="fileCount = 0">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true" class="text-white">&times;</span>
             </button>
           </div>
           <div class="modal-body">
-              <div>
-                <span><b>Resource Type</b></span>
-                <div style="margin-left: 15px;">
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="pdf">PDF</br>
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="word">Word</br>
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="excel">Excel</br>
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="ppt">Powerpoint</br>
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="vid">Video</br>
-                  Other File Type
-                  <input type="text" name="type" placeholder="Please specifiy" v-model="type" value="others"></br>
-                </div>
-                <span><b>Resource Title</b></span>
-                <input type="text" name="type" class="form-control" placeholder="Title" v-model="title"></br>
-                <span><b>Resource URL</b></span>
-                <input type="text" name="type" class="form-control" placeholder="Source" v-model="url">
-              </div>
+            <span v-if="errorMessage !== null" class="text-danger text-center">
+                <label><b>Opps! </b>{{errorMessage}}</label>
+            </span>
+            <br v-if="errorMessage !== null">
+            <label>Description</label>
+            <br>
+            <input type="text" class="form-control" placeholder="Exam Description" v-model="description">
+            <br>
+            <label>Type</label>
+            <br>
+            <input type="text" class="form-control" v-model="type">
+            <br>
+            <label>Start Date and Time</label>
+            <br>
+            <input type="date" class="form-control" v-model="start">
+            <br>
+            <label>End Date and Time</label>
+            <br>
+            <input type="date" class="form-control" v-model="end">
+            <br>
+            <label>Timer</label>
+            <br>
+            <input type="time" class="form-control" v-model="timer">
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -150,21 +174,23 @@ export default {
     return {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      modalTitle: 'Add Resource',
+      modalTitle: 'Add Quiz',
       parameter: this.$route.params.courseId,
       data: [],
       semesters: [],
       semesterId: null,
       courses: [],
       courseId: this.$route.params.courseId,
-      method: 'resources',
+      method: 'quizzes',
       methodId: 'course_id',
       quizzes: [],
       errorMessage: null,
       closeFag: false,
       description: null,
       type: null,
-      title: null,
+      start: null,
+      end: null,
+      timer: null,
       modalView: null,
       modalInput: {
         id: null,
@@ -186,17 +212,7 @@ export default {
         nextFlag: true,
         currentPager: 1,
         pagerActive: null
-      },
-      filenames: [],
-      editedFileName: null,
-      currentFile: null,
-      retrievedTitle: [],
-      retrievedID: [],
-      activeIndex: null,
-      fileCount: 0,
-      url: null,
-      size: null,
-      viewers: ['Kennette Canales', 'June Ray Mag-usara', 'Fretzel Sanchez']
+      }
     }
   },
   methods: {
@@ -259,20 +275,11 @@ export default {
       }
     },
     retrieveRequest(flag, parameter){
-      this.filenames = []
       this.APIRequest(this.method + '/retrieve', parameter).then(response => {
         if(response.data === null){
           this.quizzes = []
         }else{
           this.quizzes = response.data
-        }
-        for(var i = 0; i < response.data.length; i++){
-          this.filenames.push({
-            id: response.data[i].id,
-            type: response.data[i].type,
-            title: response.data[i].title,
-            edit: false
-          })
         }
         this.data = this.quizzes
       }).done(() => {
@@ -317,15 +324,17 @@ export default {
     createRequest(){
       let formData = new FormData()
       formData.append(this.methodId, this.parameter)
+      formData.append('description', this.description)
       formData.append('type', this.type)
-      formData.append('title', this.title)
-      formData.append('url', this.url)
+      formData.append('start', this.start)
+      formData.append('end', this.end)
+      formData.append('timer', this.timer)
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
           this.createParameter(this.parameter)
         }else{
-          this.errorMessage = 'Unable to create'
+          this.errorMessage = response.error.message
         }
       })
     },
@@ -342,7 +351,7 @@ export default {
       })
     },
     validation(){
-      if(this.type === null || this.title === null){
+      if(this.description === null || this.type === null || this.start === null || this.end === null || this.timer === null){
         return false
       }else{
         return true
@@ -351,18 +360,6 @@ export default {
     editModalView(index){
       this.modalView = this.data[index]
       this.modalInput.id = this.modalView.id
-    },
-    updateTitle(id){
-      let formData = new FormData()
-      this.filenames = []
-      formData.append('id', id)
-      formData.append('title', this.editedFileName)
-      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
-        if(response.data.data === true){
-          $('#editModal').modal('hide')
-          this.createParameter(this.parameter)
-        }
-      })
     },
     updateRequest(){
       let formData = new FormData()
@@ -465,33 +462,6 @@ export default {
       }else if(this.display.pagerActive === null){
         this.display.pagerActive = index
       }
-    },
-    editName(name){
-      this.editLoop = name
-    },
-    disableEdit(active){
-      for(var i = 0; i < this.filenames.length; i++){
-        if(i !== active){
-          this.filenames[i].edit = false
-        }
-      }
-    },
-    getSize(){
-      this.size = this.filenames.length
-    },
-    editFileName(index){
-      if(this.editedFileName.length > 0){
-        this.filenames[index].title = this.editedFileName
-        this.updateTitle(this.filenames[index].id)
-      } else {
-        this.filenames[index].title = this.currentFile
-      }
-    },
-    navigateTo(nav) {
-      window.location.href = nav
-    },
-    log(data){
-      console.log(data)
     }
   }
 }
@@ -527,60 +497,6 @@ form input{
   outline: none;
   opacity: 0;
 }
-.file-name{
-  cursor: text;
-}
-.card-form{
-  margin-top: 0 !important;
-  height: 25px !important;
-  width: 100%;
-  padding-left: 10px;
-  border: none;
-  border-radius: 4px;
-}
-
-.fa-file-excel-o{
-  color: #028170;
-}
-
-.fa-file-powerpoint-o{
-  color: #dc4c4c;
-}
-
-.fa-file-word-o{
-  color: #4c4cff;
-}
-
-.center-area{
-  text-align: center;
-  padding-top: 10%;
-}
-.card-container{
-  height: 70%;
-  text-align: center;
-  font-size: 100px;
-}
-.files-card{
-  width: 15em;
-  box-shadow: 0 4px 8px 0 #3f0040;
-  height: 18em;
-  margin: 10px;
-  border-radius: 5px;
-}
-
-.files-card:hover{
-  box-shadow: 2px 4px 8px 2px #3f0050;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.card-footer{
-  text-align: center;
-  margin-top: 20px;
-}
-.upload-body{
-  margin-top: 5em;
-}
 
 .modal-title i{
   padding-right: 10px;
@@ -588,18 +504,6 @@ form input{
 
 .form-control{
   height: 45px !important;
-}
-
-.fa-eye:hover{
-  font-weight: bold;
-  color: #028170;
-}
-.fa-eye{
-  color: #3f0050;
-}
-.fa-upload{
-  font-size: 50px;
-  color: #3f0050;
 }
 
 td button i{
