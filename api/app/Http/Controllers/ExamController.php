@@ -8,7 +8,10 @@ use App\Question;
 class ExamController extends ClassWorxController
 {
     function __construct(){
-      $this->model = new Exam();
+      $this->model = new Exam(); 
+      $this->notRequired = array(
+        'time_per_question'
+      );
     }
     public function retrieve(Request $request){
       $response = array(

@@ -9,6 +9,9 @@ class QuizController extends ClassWorxController
 {
     function __construct(){
     	$this->model = new Quiz();
+      $this->notRequired = array(
+        'time_per_question'
+      );
     }
 
     public function retrieve(Request $request){

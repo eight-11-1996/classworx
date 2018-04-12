@@ -34,18 +34,38 @@
           <thead>
             <tr>
               <td>Description</td>
-              <td>Type</td>
-              <td>Date</td>
-              <td>Timer</td>
+              <td>Available On</td>
+              <td>Timer Settings</td>
+              <td>Question Settings</td>
               <td>Actions</td>
             </tr>
           </thead>
           <tbody v-if="data.length > 0">
             <tr v-for="item, index in data" v-if="(index >= 0 && displayIndexAdder === 0 && index < totalDisplay) || (index < ((displayIndexAdder + 1) * totalDisplay) && index >= (displayIndexAdder * totalDisplay) && displayIndexAdder > 0)">
               <td>{{item.description}}</td>
-              <td>{{item.type}}</td>
-              <td>{{item.start + ' - ' + item.end}}</td>
-              <td>{{item.timer}}</td>
+              <td>
+                {{item.available_date + ' at ' + item.available_time}}
+                <br>
+                End after: <b class="text-danger">{{item.time_limit}} Hour(s)</b>
+              </td>
+              <td>
+                <span>
+                    Timer Flag: 
+                    <b v-if="parseInt(item.timer_flag) === 1" class="text-danger">OFF</b>
+                    <b v-else class="text-danger">ON</b>
+                  <br v-if="parseInt(item.timer_flag) === 2">
+                    <label v-if="parseInt(item.timer_flag) === 2">
+                    Time Per Question: <b class="text-danger">{{item.time_per_question}} Minute(s)</b>
+                    </label>
+                </span>
+              </td>
+              <td>
+                <span>
+                  Orders Setting: <b class="text-danger">{{item.orders_setting}}</b></label>
+                  <br>
+                  Choices Setting: <b class="text-danger">{{item.choices_setting}}</b></label>
+                </span>
+              </td>
               <td class="text-center">
                 <b class="text-primary action-link" v-on:click="redirect('questions/' + item.id)" data-hover="tooltip" data-placement="top" title="View Questions">{{item.total_questions}}</b> &nbsp;&nbsp;
                 <i class="fa fa-pencil text-warning action-link" v-on:click="editModalView(index)" data-toggle="modal" data-target="#editModal" data-hover="tooltip" data-placement="top" title="Edit Quiz">
@@ -56,7 +76,7 @@
           </tbody>
           <tbody v-else>
             <tr>
-              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Exam Now!</td>     
+              <td class="text-danger text-center empty-table" colspan="5" data-toggle="modal" data-target="#myModal" v-if="parameter !== 'default'">Click to Add Quiz Now!</td>     
               <td class="text-danger text-center" colspan="5" v-else>Empty! Please Select the options above.</td>
             </tr>
           </tbody>
@@ -94,25 +114,52 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.description" v-model="modalInput.description">
-            <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.type" v-model="modalInput.type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.start" v-model="modalInput.start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.end" v-model="modalInput.end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-bind:placeholder="modalView.timer" v-model="modalInput.timer">
+            <div class="input-group">
+              <span class="input-group-addon">Description</span>
+              <input type="text" class="form-control" v-model="modalView.description">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Available Date</span>
+              <input type="date" class="form-control" v-model="modalView.available_date">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Available Time</span>
+              <input type="time" class="form-control" v-model="modalView.available_time">
+            </div><div class="input-group">
+              <span class="input-group-addon">Time Limit</span>
+              <select class="form-control" v-model="modalView.time_limit">
+                <option v-for="i in 48" v-bind:value="i / 2">{{(i / 2)}}<label v-if="i % 2 === 0">.00</label><label v-else>0</label>
+                  &nbsp;Hour(s)
+                </option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Question Order Setting</span>
+              <select class="form-control" v-model="modalView.orders_setting">
+                <option value="SHUFFLE">SHUFFLE</option>
+                <option value="IN ORDER">IN ORDER</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Answer Choices Setting</span>
+              <select class="form-control" v-model="modalView.choices_setting">
+                <option value="SHUFFLE">SHUFFLE</option>
+                <option value="IN ORDER">IN ORDER</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Timer Flag</span>
+              <select class="form-control" v-model="modalView.timer_flag">
+                <option value="1">OFF</option>
+                <option value="2">ON</option>
+              </select>
+            </div>
+            <div class="input-group" v-if="modalView.timer_flag === 2 || modalView.timer_flag === '2'">
+              <span class="input-group-addon">Time Per Question</span>
+              <select class="form-control" v-model="modalView.time_per_question">
+                <option v-for="i in 15" v-bind:value="i">{{i}} Minute(s)</option>
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
@@ -142,25 +189,53 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" placeholder="Exam Description" v-model="description">
-            <br>
-            <label>Type</label>
-            <br>
-            <input type="text" class="form-control" v-model="type">
-            <br>
-            <label>Start Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="start">
-            <br>
-            <label>End Date and Time</label>
-            <br>
-            <input type="date" class="form-control" v-model="end">
-            <br>
-            <label>Timer</label>
-            <br>
-            <input type="time" class="form-control" v-model="timer">
+            <div class="input-group">
+              <span class="input-group-addon">Description</span>
+              <input type="text" class="form-control" v-model="newInput.description" placeholder="Quiz Title or Description">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Available Date</span>
+              <input type="date" class="form-control" v-model="newInput.available_date">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Available Time</span>
+              <input type="time" class="form-control" v-model="newInput.available_time">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Time Limit</span>
+              <select class="form-control" v-model="newInput.time_limit">
+                <option v-for="i in 48" v-bind:value="i / 2">{{(i / 2)}}<label v-if="i % 2 === 0">.00</label><label v-else>0</label>
+                  &nbsp;Hour(s)
+                </option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Question Order Setting</span>
+              <select class="form-control" v-model="newInput.orders_setting">
+                <option value="SHUFFLE">SHUFFLE</option>
+                <option value="IN ORDER">IN ORDER</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Answer Choices Setting</span>
+              <select class="form-control" v-model="newInput.choices_setting">
+                <option value="SHUFFLE">SHUFFLE</option>
+                <option value="IN ORDER">IN ORDER</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Timer Flag</span>
+              <select class="form-control" v-model="newInput.timer_flag">
+                <option value="1">OFF</option>
+                <option value="2">ON</option>
+              </select>
+            </div>
+            <div class="input-group" v-if="newInput.timer_flag === 2 || newInput.timer_flag === '2'">
+              <span class="input-group-addon">Time Per Question</span>
+              <select class="form-control" v-model="newInput.time_per_question">
+                <option v-for="i in 15" v-bind:value="i">{{i}} Minute(s)</option>
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -185,7 +260,7 @@ export default {
     return {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      modalTitle: 'Add Exam',
+      modalTitle: 'Add Quiz',
       parameter: this.$route.params.courseId,
       data: [],
       semesters: [],
@@ -197,19 +272,28 @@ export default {
       quizzes: [],
       errorMessage: null,
       closeFag: false,
-      description: null,
-      type: null,
-      start: null,
-      end: null,
-      timer: null,
+      newInput: {
+        course_id: this.$route.params.courseId,
+        description: null,
+        available_date: null,
+        available_time: null,
+        time_limit: null,
+        timer_flag: null,
+        time_per_question: null,
+        orders_setting: 'SHUFFLE',
+        choices_setting: 'SHUFFLE'
+      },
       modalView: null,
       modalInput: {
         id: null,
         description: null,
-        type: null,
-        start: null,
-        end: null,
-        timer: null
+        available_date: null,
+        available_time: null,
+        time_limit: null,
+        timer_flag: null,
+        time_per_question: null,
+        orders_setting: 'SHUFFLE',
+        choices_setting: 'SHUFFLE'
       },
       selectedTotalItems: null,
       totalDisplay: 5,
@@ -333,14 +417,7 @@ export default {
       }
     },
     createRequest(){
-      let formData = new FormData()
-      formData.append(this.methodId, this.parameter)
-      formData.append('description', this.description)
-      formData.append('type', this.type)
-      formData.append('start', this.start)
-      formData.append('end', this.end)
-      formData.append('timer', this.timer)
-      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
+      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', this.newInput).then(response => {
         if(response.data.data !== null){
           $('#myModal').modal('hide')
           this.createParameter(this.parameter)
@@ -362,7 +439,8 @@ export default {
       })
     },
     validation(){
-      if(this.description === null || this.type === null || this.start === null || this.end === null || this.timer === null){
+      this.newInput.course_id = this.parameter
+      if(this.newInput.description === null || this.newInput.available_date === null || this.newInput.available_time === null || this.newInput.time_limit === null || this.newInput.timer_flag === null || this.newInput.orders_setting === null || this.newInput.choices_setting === null){
         return false
       }else{
         return true
@@ -370,34 +448,25 @@ export default {
     },
     editModalView(index){
       this.modalView = this.data[index]
-      this.modalInput.id = this.modalView.id
     },
     updateRequest(){
-      let formData = new FormData()
-      formData.append('id', this.modalInput.id)
-      if(this.modalInput.description !== null){
-        formData.append('description', this.modalInput.description)
-      }
-      if(this.modalInput.type !== null){
-        formData.append('type', this.modalInput.type)
-      }
-      if(this.modalInput.start !== null){
-        formData.append('start', this.modalInput.start)
-      }
-      if(this.modalInput.end !== null){
-        formData.append('end', this.modalInput.end)
-      }
-      if(this.modalInput.timer !== null){
-        formData.append('timer', this.modalInput.timer)
+      if(this.validationUpdate() === true){
+        axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', this.modalView).then(response => {
+          if(response.data.data === true){
+            $('#editModal').modal('hide')
+            this.createParameter(this.parameter)
+          }
+        })
       }else{
-        //
+        this.errorMessage = 'Please fillup the required fields.'
       }
-      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
-        if(response.data.data === true){
-          $('#editModal').modal('hide')
-          this.createParameter(this.parameter)
-        }
-      })
+    },
+    validationUpdate(){
+      if(this.modalView.description === null || this.modalView.available_date === null || this.modalView.available_time === null || this.modalView.time_limit === null || this.modalView.timer_flag === null || this.modalView.orders_setting === null || this.modalView.choices_setting === null){
+        return false
+      }else{
+        return true
+      }
     },
     filter(){
       this.currentTotalIndex = 0
@@ -522,6 +591,21 @@ td button i{
 }
 thead{
   font-weight: 700;
+}
+
+.input-group{
+  margin-top: 5px;
+  font-size: 13px !important;
+}
+.input-group-addon{
+  width: 175px;
+  font-size: 13px !important;
+  background: #FCCD04;
+  color: #fff;
+  text-align: right !important;
+}
+.input-group-addon2{
+  width: 150px;
 }
 
 </style>
