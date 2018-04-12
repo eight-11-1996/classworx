@@ -146,24 +146,25 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.description" v-model="modalInput.description">
-            <br>
-            <label>Start Date</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.start_date" v-model="modalInput.startDate">
-            <br>
-            <label>End Date</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.end_date" v-model="modalInput.endDate">
-            <br>
-            <label>Grades Settings</label>
-            <br>
-            <select class="form-control" v-model="modalInput.gradeSetting">
-              <option value="0">Grade Setting is the same all Courses</option>
-              <option value="1">Grade Setting is different per Course</option>
-            </select>
+            <div class="input-group">
+              <span class="input-group-addon input-group-addon2">Description</span>
+              <input type="text" class="form-control" v-model="modalView.description">
+            </div>
+             <div class="input-group">
+              <span class="input-group-addon input-group-addon2">Start Date</span>
+              <input type="date" class="form-control" v-model="modalView.start_date">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon input-group-addon2">End Date</span>
+              <input type="date" class="form-control" v-model="modalView.end_date">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon input-group-addon2">Grades Settings</span>
+              <select class="form-control" v-model="modalView.grade_setting">
+                <option value="0">Grade Setting is the same all Courses</option>
+                <option value="1">Grade Setting is different per Course</option>
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
@@ -193,25 +194,25 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <br>
-            <label>Description</label>
-            <br>
-            <input type="text" class="form-control" placeholder="Description of the Semester" v-model="description">
-            <br>
-            <label>Start Date</label>
-            <br>
-            <input type="date" class="form-control" v-model="startDate">
-            <br>
-            <label>End Date</label>
-            <br>
-            <input type="date" class="form-control" v-model="endDate">
-            <br>
-            <label>Grades Settings</label>
-            <br>
-            <select class="form-control" v-model="gradeSetting">
-              <option value="0">Grade Setting is the same all Courses</option>
-              <option value="1">Grade Setting is different per Course</option>
-            </select>
+            <div class="input-group">
+              <span class="input-group-addon input-group-addon2">Description</span>
+              <input type="text" class="form-control" v-model="description">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon input-group-addon2">Start Date</span>
+              <input type="date" class="form-control" v-model="startDate">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon input-group-addon2">End Date</span>
+              <input type="date" class="form-control" v-model="endDate">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon input-group-addon2">Grades Settings</span>
+              <select class="form-control" v-model="gradeSetting">
+                <option value="0">Grade Setting is the same all Courses</option>
+                <option value="1">Grade Setting is different per Course</option>
+              </select>
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -325,7 +326,7 @@ export default {
         this.errorMessage = null
         this.createRequest()
       }else{
-        this.errorMessage = 'Please fillup the required information'
+        this.errorMessage = 'Please fillup the required informations.'
       }
     },
     createRequest(){
@@ -357,7 +358,7 @@ export default {
       })
     },
     validation(){
-      if(this.description === null || this.startDate === null || this.endDate === null){
+      if(this.description === null || this.description === '' || this.startDate === null || this.endDate === null || this.gradeSetting === null){
         return false
       }else{
         return true
@@ -365,31 +366,25 @@ export default {
     },
     editModalView(index){
       this.modalView = this.data[index]
-      this.modalInput.id = this.modalView.id
     },
     updateRequest(){
-      let formData = new FormData()
-      formData.append('id', this.modalInput.id)
-      if(this.modalInput.description !== null){
-        formData.append('description', this.modalInput.description)
-      }
-      if(this.modalInput.startDate !== null){
-        formData.append('start_date', this.modalInput.startDate)
-      }
-      if(this.modalInput.endDate !== null){
-        formData.append('end_date', this.modalInput.endDate)
-      }
-      if(this.modalInput.gradeSetting !== null){
-        formData.append('grade_setting', this.modalInput.gradeSetting)
+      if(this.validationUpdate() === true){
+        axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', this.modalView).then(response => {
+          if(response.data.data === true){
+            $('#editModal').modal('hide')
+            this.retrieveRequest(false)
+          }
+        })
       }else{
-        //
+        this.errorMessage = 'Please fillup the required informations.'
       }
-      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
-        if(response.data.data === true){
-          $('#editModal').modal('hide')
-          this.retrieveRequest(false)
-        }
-      })
+    },
+    validationUpdate(){
+      if(this.modalView.description === '' || this.modalView.start_date === null || this.modalView.end_date === null || this.modalView.grade_setting === null){
+        return false
+      }else{
+        return true
+      }
     },
     filter(){
       this.currentTotalIndex = 0
@@ -567,7 +562,7 @@ thead{
 .input-group-addon{
   width: 125px;
   font-size: 13px !important;
-  background: #3f0050;
+  background: #FCCD04 !important;
   color: #fff;
 }
 .input-group-addon2{

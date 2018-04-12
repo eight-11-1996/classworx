@@ -104,7 +104,7 @@
       <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
           <div class="modal-header bg-primary">
-            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Update Semester</h5>
+            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Update Exam</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true" class="text-white">&times;</span>
             </button>
@@ -191,7 +191,7 @@
             <br v-if="errorMessage !== null">
             <div class="input-group">
               <span class="input-group-addon">Description</span>
-              <input type="text" class="form-control" v-model="newInput.description" placeholder="Quiz Title or Description">
+              <input type="text" class="form-control" v-model="newInput.description" placeholder="Exam Title or Description">
             </div>
             <div class="input-group">
               <span class="input-group-addon">Available Date</span>
@@ -260,7 +260,7 @@ export default {
     return {
       user: AUTH.user,
       tokenData: AUTH.tokenData,
-      modalTitle: 'Add Quiz',
+      modalTitle: 'Add Exam',
       parameter: this.$route.params.courseId,
       data: [],
       semesters: [],
@@ -413,7 +413,7 @@ export default {
         this.errorMessage = null
         this.createRequest()
       }else{
-        this.errorMessage = 'Please fillup the required information'
+        this.errorMessage = 'Please fillup the required informations.'
       }
     },
     createRequest(){
@@ -440,7 +440,7 @@ export default {
     },
     validation(){
       this.newInput.course_id = this.parameter
-      if(this.newInput.description === null || this.newInput.available_date === null || this.newInput.available_time === null || this.newInput.time_limit === null || this.newInput.timer_flag === null || this.newInput.orders_setting === null || this.newInput.choices_setting === null){
+      if(this.newInput.description === '' || this.newInput.description === null || this.newInput.available_date === null || this.newInput.available_time === null || this.newInput.time_limit === null || this.newInput.timer_flag === null || this.newInput.orders_setting === null || this.newInput.choices_setting === null){
         return false
       }else{
         return true
@@ -458,11 +458,11 @@ export default {
           }
         })
       }else{
-        this.errorMessage = 'Please fillup the required fields.'
+        this.errorMessage = 'Please fillup the required informations.'
       }
     },
     validationUpdate(){
-      if(this.modalView.description === null || this.modalView.available_date === null || this.modalView.available_time === null || this.modalView.time_limit === null || this.modalView.timer_flag === null || this.modalView.orders_setting === null || this.modalView.choices_setting === null){
+      if(this.modalView.description === '' || this.modalView.available_date === null || this.modalView.available_time === null || this.modalView.time_limit === null || this.modalView.timer_flag === null || this.modalView.orders_setting === null || this.modalView.choices_setting === null){
         return false
       }else{
         return true
@@ -600,7 +600,7 @@ thead{
 .input-group-addon{
   width: 175px;
   font-size: 13px !important;
-  background: #FCCD04;
+  background: #FCCD04 !important;
   color: #fff;
   text-align: right !important;
 }

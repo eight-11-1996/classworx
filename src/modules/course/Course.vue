@@ -141,7 +141,7 @@
       <div class="modal-dialog modal-md" role="document">
         <div class="modal-content">
           <div class="modal-header bg-primary">
-            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Update Semester</h5>
+            <h5 class="modal-title" id="exampleModalLabel"><i class="fa fa-ellipsis-v"></i>Update Course</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true" class="text-white">&times;</span>
             </button>
@@ -151,29 +151,30 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Course Code</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.code" v-model="modalInput.code">
-            <br>
-            <label>Course Description</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.description" v-model="modalInput.description">
-            <br>
-            <label>Course Units</label>
-            <br>
-            <input type="text" class="form-control" v-bind:placeholder="modalView.units" v-model="modalInput.units">
-            <br>
-            <label>Time Start</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.time_start" v-model="modalInput.timeStart">
-            <br>
-            <label>End Date</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.time_end" v-model="modalInput.timeEnd">
-            <br>
-            <label>Days</label>
-            <br>
-            <input type="date" class="form-control" v-bind:placeholder="modalView.days" v-model="modalInput.days">
+            <div class="input-group">
+              <span class="input-group-addon">Course Code</span>
+              <input type="text" class="form-control" v-model="modalView.code">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Course Description</span>
+              <input type="text" class="form-control" v-model="modalView.description">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Course Units</span>
+              <input type="text" class="form-control" v-model="modalView.units">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Time Start</span>
+              <input type="time" class="form-control" v-model="modalView.time_start">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Time End</span>
+              <input type="time" class="form-control" v-model="modalView.time_end">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Days</span>
+              <input type="text" class="form-control" v-model="modalView.days">
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="updateRequest()" v-if="closeFag == false">update</button>
@@ -203,29 +204,30 @@
                 <label><b>Opps! </b>{{errorMessage}}</label>
             </span>
             <br v-if="errorMessage !== null">
-            <label>Course Code</label>
-            <br>
-            <input type="text" class="form-control" placeholder="Couse Code" v-model="code">
-            <br>
-            <label>Couse Description</label>
-            <br>
-            <input type="text" class="form-control" placeholder="Course Description" v-model="description">
-            <br>
-            <label>Couse Units</label>
-            <br>
-            <input type="text" class="form-control" placeholder="Course Units" v-model="units">
-            <br>
-            <label>Time Start</label>
-            <br>
-            <input type="time" class="form-control" v-model="timeStart">
-            <br>
-            <label>Time End</label>
-            <br>
-            <input type="time" class="form-control" v-model="timeEnd">
-            <br>
-            <label>Days</label>
-            <br>
-            <input type="text" class="form-control" v-model="days">
+            <div class="input-group">
+              <span class="input-group-addon">Course Code</span>
+              <input type="text" class="form-control" v-model="code" placeholder="School Course Code">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Course Description</span>
+              <input type="text" class="form-control" v-model="description" placeholder="Full Description">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Course Units</span>
+              <input type="text" class="form-control" v-model="units" placeholder="Number">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Time Start</span>
+              <input type="time" class="form-control" v-model="timeStart">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Time End</span>
+              <input type="time" class="form-control" v-model="timeEnd">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Days</span>
+              <input type="text" class="form-control" v-model="days" placeholder="MTWTHFSATSUN">
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -412,7 +414,6 @@ export default {
       formData.append('time_end', this.timeEnd)
       formData.append('days', this.days)
       axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/create', formData).then(response => {
-        console.log(response.data)
         if(response.data.data !== null || response.data.data > 0){
           $('#myModal').modal('hide')
           this.createParameter(this.parameter)
@@ -434,7 +435,7 @@ export default {
       })
     },
     validation(){
-      if(this.description === null || this.startDate === null || this.endDate === null){
+      if(this.code === '' || this.code === null || this.description === '' || this.description === null || this.units === '' || this.units === null || this.startDate === null || this.endDate === null || this.days === '' || this.days === null){
         return false
       }else{
         return true
@@ -442,37 +443,25 @@ export default {
     },
     editModalView(index){
       this.modalView = this.data[index]
-      this.modalInput.id = this.modalView.id
     },
     updateRequest(){
-      let formData = new FormData()
-      formData.append('id', this.modalInput.id)
-      if(this.modalInput.code !== null){
-        formData.append('code', this.modalInput.code)
-      }
-      if(this.modalInput.description !== null){
-        formData.append('description', this.modalInput.description)
-      }
-      if(this.modalInput.units !== null){
-        formData.append('units', this.modalInput.units)
-      }
-      if(this.modalInput.timeStart !== null){
-        formData.append('time_start', this.modalInput.timeStart)
-      }
-      if(this.modalInput.timeEnd !== null){
-        formData.append('time_end', this.modalInput.timeEnd)
-      }
-      if(this.modalInput.days !== null){
-        formData.append('days', this.modalInput.days)
+      if(this.validationUpdate() === true){
+        axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', this.modalView).then(response => {
+          if(response.data.data === true){
+            $('#editModal').modal('hide')
+            this.createParameter(this.parameter)
+          }
+        })
       }else{
-        //
+        this.errorMessage = 'Please fillup the required informations.'
       }
-      axios.post(CONFIG.BACKEND_URL + '/' + this.method + '/update', formData).then(response => {
-        if(response.data.data === true){
-          $('#editModal').modal('hide')
-          this.createParameter(this.parameter)
-        }
-      })
+    },
+    validationUpdate(){
+      if(this.modalView.code === '' || this.modalView.description === '' || this.modalView.units === '' || this.modalView.time_start === null || this.modalView.time_end === null || this.modalView.days === ''){
+        return false
+      }else{
+        return true
+      }
     },
     filter(){
       this.currentTotalIndex = 0
@@ -648,9 +637,9 @@ thead{
   font-size: 13px !important;
 }
 .input-group-addon{
-  width: 125px;
+  width: 150px;
   font-size: 13px !important;
-  background: #3f0050;
+  background: #FCCD04 !important;
   color: #fff;
 }
 .input-group-addon2{
