@@ -61,6 +61,8 @@
               </td>
               <td>
                 <span>
+                  Questions Per Page: <b class="text-danger">{{item.questions_per_page}}</b></label>
+                  <br>
                   Orders Setting: <b class="text-danger">{{item.orders_setting}}</b></label>
                   <br>
                   Choices Setting: <b class="text-danger">{{item.choices_setting}}</b></label>
@@ -131,6 +133,12 @@
                 <option v-for="i in 48" v-bind:value="i / 2">{{(i / 2)}}<label v-if="i % 2 === 0">.00</label><label v-else>0</label>
                   &nbsp;Hour(s)
                 </option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Questions Per Page</span>
+              <select class="form-control" v-model="modalView.questions_per_page">
+                <option v-for="i in 5" v-bind:value="i">{{i}}</option>
               </select>
             </div>
             <div class="input-group">
@@ -207,6 +215,12 @@
                 <option v-for="i in 48" v-bind:value="i / 2">{{(i / 2)}}<label v-if="i % 2 === 0">.00</label><label v-else>0</label>
                   &nbsp;Hour(s)
                 </option>
+              </select>
+            </div>
+             <div class="input-group">
+              <span class="input-group-addon">Questions Per Page</span>
+              <select class="form-control" v-model="newInput.questions_per_page">
+                <option v-for="i in 5" v-bind:value="i">{{i}}</option>
               </select>
             </div>
             <div class="input-group">
@@ -289,9 +303,10 @@ export default {
         description: null,
         available_date: null,
         available_time: null,
-        time_limit: null,
-        timer_flag: null,
-        time_per_question: null,
+        time_limit: 1,
+        timer_flag: 1,
+        time_per_question: 5,
+        questions_per_page: 1,
         orders_setting: 'SHUFFLE',
         choices_setting: 'SHUFFLE'
       },
@@ -440,7 +455,7 @@ export default {
     },
     validation(){
       this.newInput.course_id = this.parameter
-      if(this.newInput.description === '' || this.newInput.description === null || this.newInput.available_date === null || this.newInput.available_time === null || this.newInput.time_limit === null || this.newInput.timer_flag === null || this.newInput.orders_setting === null || this.newInput.choices_setting === null){
+      if(this.newInput.description === '' || this.newInput.description === null || this.newInput.available_date === null || this.newInput.available_time === null || this.newInput.time_limit === null || this.newInput.timer_flag === null || this.newInput.orders_setting === null || this.newInput.choices_setting === null || this.newInput.questions_per_page === null || this.newInput.questions_per_page === ''){
         return false
       }else{
         return true
@@ -462,7 +477,7 @@ export default {
       }
     },
     validationUpdate(){
-      if(this.modalView.description === '' || this.modalView.available_date === null || this.modalView.available_time === null || this.modalView.time_limit === null || this.modalView.timer_flag === null || this.modalView.orders_setting === null || this.modalView.choices_setting === null){
+      if(this.modalView.description === '' || this.modalView.available_date === null || this.modalView.available_time === null || this.modalView.time_limit === null || this.modalView.timer_flag === null || this.modalView.orders_setting === null || this.modalView.choices_setting === null || this.modalView.questions_per_page === null || this.modalView.questions_per_page === ''){
         return false
       }else{
         return true
