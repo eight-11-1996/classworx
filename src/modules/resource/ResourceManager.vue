@@ -47,7 +47,7 @@
             </span>
             <span>
               <input class="card-form" v-show = "filename.edit == true" v-model = "editedFileName"
-                v-on:blur= "filename.edit=false; editFileName(index); $emit('update')"
+                v-on:blur= "filename.edit=false;"
                 @keyup.enter = "filename.edit=false; editFileName(index); $emit('update')">
             </span>
           </div>
@@ -110,22 +110,26 @@
             </button>
           </div>
           <div class="modal-body">
-              <div>
-                <span><b>Resource Type</b></span>
-                <div style="margin-left: 15px;">
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="pdf">PDF</br>
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="word">Word</br>
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="excel">Excel</br>
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="ppt">Powerpoint</br>
-                  <input type="radio" name="type" placeholder="Type" v-model="type" value="vid">Video</br>
-                  Other File Type
-                  <input type="text" name="type" placeholder="Please specifiy" v-model="type" value="others"></br>
-                </div>
-                <span><b>Resource Title</b></span>
-                <input type="text" name="type" class="form-control" placeholder="Title" v-model="title"></br>
-                <span><b>Resource URL</b></span>
-                <input type="text" name="type" class="form-control" placeholder="Source" v-model="url">
-              </div>
+            <div class="input-group">
+              <span class="input-group-addon">Resource Type</span>
+              <select class="form-control" v-model="type" placeholder="File Type">
+                <option value="pdf">PDF</option>
+                <option value="word">Word</option>
+                <option value="excel">Excel</option>
+                <option value="ppt">Powerpoint</option>
+                <option value="vid">Video</option>
+                <option value="img">Image</option>
+                <option value="others">Others</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Resource Title</span>
+              <input type="text" class="form-control"placeholder="File Title" v-model="title">
+            </div>
+            <div class="input-group">
+              <span class="input-group-addon">Resource URL</span>
+              <input type="text" class="form-control" placeholder="Source URL" v-model="url">
+            </div>
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-primary" @click="submit()" v-if="closeFag == false">Submit</button>
@@ -328,6 +332,9 @@ export default {
           this.errorMessage = 'Unable to create'
         }
       })
+      this.title = null
+      this.type = null
+      this.url = null
     },
     deleteRequest(index){
       let parameter = {

@@ -234,8 +234,8 @@
           </div>
           <div class="table-result">
             <form>
-             <div class="input-area">
-                <input type="file" name="audio" accept="image" @change="fileCount = $event.target.files.length, readURL" class="btn">
+             <div class="">
+                <input type="file" name="audio" accept="image" @change="fileCount = $event.target.files.length, readURL(this)" class="btn">
                 <img id="profile_picture" src="#" alt="your image" />
               </div>
             </form>
